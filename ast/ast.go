@@ -2,28 +2,7 @@ package ast
 
 import (
 	"bytes"
-
-	"github.com/0xM-D/interpreter/token"
 )
-
-type Node interface {
-	TokenLiteral() string
-	String() string
-}
-
-type Statement interface {
-	Node
-	statementNode()
-}
-
-type Expression interface {
-	Node
-	expressionNode()
-}
-
-type Program struct {
-	Statements []Statement
-}
 
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
@@ -41,22 +20,6 @@ func (p *Program) String() string {
 	}
 
 	return out.String()
-}
-
-type LetStatement struct {
-	Token token.Token
-	Name  *Identifier
-	Value Expression
-}
-
-type ReturnStatement struct {
-	Token       token.Token
-	ReturnValue Expression
-}
-
-type ExpressionStatement struct {
-	Token      token.Token
-	Expression Expression
 }
 
 func (ls *LetStatement) statementNode()       {}
@@ -96,16 +59,11 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
-func (es *ExpressionStatement) expressionNode()      {}
+func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
 func (es *ExpressionStatement) String() string {
 	if es.Expression != nil {
 		return es.Expression.String()
 	}
 	return ""
-}
-
-type Identifier struct {
-	Token token.Token
-	Value string
 }
