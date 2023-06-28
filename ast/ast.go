@@ -93,10 +93,14 @@ func (oe *InfixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
-	out.WriteString(oe.Left.String())
-	out.WriteString(oe.Operator)
+	out.WriteString(oe.Left.String() + " ")
+	out.WriteString(oe.Operator + " ")
 	out.WriteString(oe.Right.String())
 	out.WriteString(")")
 
 	return out.String()
 }
+
+func (b *Boolean) expressionNode()      {}
+func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return b.Token.Literal }
