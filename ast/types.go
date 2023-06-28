@@ -59,3 +59,8 @@ type InfixExpression struct {
 	Operator string
 	Right    Expression
 }
+
+type Boolean struct {
+	Token token.Token
+	Value bool
+}

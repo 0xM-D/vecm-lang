@@ -25,15 +25,6 @@ func TestIdentifierExpression(t *testing.T) {
 		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements)
 	}
 
-	ident, ok := stmt.Expression.(*ast.Identifier)
-	if !ok {
-		t.Fatalf("exp not *ast.Identifier. got=%T", stmt.Expression)
-	}
-	if ident.Value != "foobar" {
-		t.Errorf("ident.Value not %s. got=%s", "foobar", ident.Value)
-	}
-	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("ident.TokenLiteral not %s. got=%s", "foobar", ident.TokenLiteral())
-	}
+	testIdentifier(t, stmt.Expression, "foobar")
 
 }
