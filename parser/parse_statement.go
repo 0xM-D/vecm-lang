@@ -8,9 +8,9 @@ import (
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
-		return p.ParseLetStatement()
+		return p.parseLetStatement()
 	case token.RETURN:
-		return p.ParseReturnStatement()
+		return p.parseReturnStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
