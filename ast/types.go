@@ -82,3 +82,9 @@ type FunctionLiteral struct {
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
+
+type CallExpression struct {
+	Token     token.Token
+	Function  Expression
+	Arguments []Expression
+}

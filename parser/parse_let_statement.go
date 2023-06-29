@@ -5,23 +5,23 @@ import (
 	"github.com/0xM-D/interpreter/token"
 )
 
-func (p *Parser) ParseLetStatement() *ast.LetStatement {
+func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: p.curToken}
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
-	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
+	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
 
-	// skip expressions for now, find semicolon
+	p.nextToken()
 
-	for !p.curTokenIs(token.SEMICOLON) {
+	stmt.Value = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
 	return stmt
-
 }

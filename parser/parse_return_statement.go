@@ -5,12 +5,13 @@ import (
 	"github.com/0xM-D/interpreter/token"
 )
 
-func (p *Parser) ParseReturnStatement() *ast.ReturnStatement {
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
 
 	p.nextToken()
 
-	if !p.curTokenIs(token.SEMICOLON) {
+	stmt.ReturnValue = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
