@@ -88,3 +88,24 @@ type CallExpression struct {
 	Function  Expression
 	Arguments []Expression
 }
+
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+type ArrayLiteral struct {
+	Token    token.Token
+	Elements []Expression
+}
+
+type IndexExpression struct {
+	Token token.Token
+	Left  Expression
+	Index Expression
+}
+
+type HashLiteral struct {
+	Token token.Token
+	Pairs map[Expression]Expression
+}
