@@ -42,6 +42,10 @@ func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
 }
 
 func (e *Environment) Set(name string, val Object) Object {
+	_, exists := e.store[name]
+	if exists {
+		return nil
+	}
 	e.store[name] = val
 	return val
 }

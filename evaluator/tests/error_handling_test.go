@@ -66,6 +66,10 @@ func TestErrorHandling(t *testing.T) {
 			`a := "fasdf"; bool c = a;`,
 			"Expression of type string cannot be assigned to bool",
 		},
+		{
+			`a := "fasdf"; string a = a;`,
+			"Identifier with name a already exists.",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)

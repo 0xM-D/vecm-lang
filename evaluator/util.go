@@ -252,16 +252,30 @@ func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *obj
 		return newError("Unknown type name: %s", typeIdentifier)
 	}
 
-	val := Eval(node.Value, env)
+	error := declareVariable(&(*node).DeclarationStatement, &objectType, env)
+	if error != nil {
+		return error
+	}
+
+	return nil
+}
+
+func declareVariable(declNode *ast.DeclarationStatement, expectedType *object.ObjectType, env *object.Environment) object.Object {
+	val := Eval(declNode.Value, env)
+
 	if isError(val) {
 		return val
 	}
 
-	if objectType != val.Type() {
-		return newError("Expression of type %s cannot be assigned to %s", val.Type(), objectType)
+	if expectedType != nil && *expectedType != val.Type() {
+		return newError("Expression of type %s cannot be assigned to %s", val.Type(), *expectedType)
 	}
 
-	env.Set(node.Name.Value, val)
+	newObject := env.Set(declNode.Name.Value, val)
+
+	if newObject == nil {
+		return newError("Identifier with name %s already exists.", declNode.Name.Value)
+	}
 
 	return nil
 }

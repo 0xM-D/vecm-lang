@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
+	stmt := &ast.DeclarationStatement{Token: p.curToken}
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
@@ -23,5 +23,5 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		p.nextToken()
 	}
 
-	return stmt
+	return &ast.LetStatement{DeclarationStatement: *stmt}
 }
