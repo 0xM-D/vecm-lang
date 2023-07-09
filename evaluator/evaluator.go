@@ -42,11 +42,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return &object.ReturnValue{Value: val}
 	case *ast.LetStatement:
-		val := Eval(node.Value, env)
-		if isError(val) {
-			return val
+		error := declareVariable(&(*node).DeclarationStatement, nil, env)
+		if error != nil {
+			return error
 		}
-		env.Set(node.Name.Value, val)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -91,11 +90,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return error
 		}
 	case *ast.AssignmentDeclarationStatement:
-		val := Eval(node.Value, env)
-		if isError(val) {
-			return val
+		error := declareVariable(&(*node).DeclarationStatement, nil, env)
+		if error != nil {
+			return error
 		}
-		env.Set(node.Name.Value, val)
 	}
 
 	return nil

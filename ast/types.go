@@ -23,10 +23,15 @@ type Program struct {
 	Statements []Statement
 }
 
-type LetStatement struct {
+type DeclarationStatement struct {
 	Token token.Token
 	Name  *Identifier
+	Type  *Identifier
 	Value Expression
+}
+
+type LetStatement struct {
+	DeclarationStatement
 }
 
 type ReturnStatement struct {
@@ -113,14 +118,9 @@ type HashLiteral struct {
 }
 
 type TypedDeclarationStatement struct {
-	Token token.Token
-	Type  *Identifier
-	Name  *Identifier
-	Value Expression
+	DeclarationStatement
 }
 
 type AssignmentDeclarationStatement struct {
-	Token token.Token
-	Name  *Identifier
-	Value Expression
+	DeclarationStatement
 }

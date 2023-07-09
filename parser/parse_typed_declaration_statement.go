@@ -8,7 +8,7 @@ import (
 )
 
 func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement {
-	stmt := &ast.TypedDeclarationStatement{Token: p.curToken}
+	stmt := &ast.DeclarationStatement{Token: p.curToken}
 
 	stmt.Type = p.parseIdentifier().(*ast.Identifier)
 	p.nextToken()
@@ -28,7 +28,7 @@ func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement
 		p.nextToken()
 	}
 
-	return stmt
+	return &ast.TypedDeclarationStatement{DeclarationStatement: *stmt}
 }
 
 func (p *Parser) invalidTokenInTypedDeclarationStatement(token token.Token) {

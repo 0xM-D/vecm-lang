@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Parser) parseAssignmentDeclarationStatement() *ast.AssignmentDeclarationStatement {
-	stmt := &ast.AssignmentDeclarationStatement{Token: p.curToken}
+	stmt := &ast.DeclarationStatement{Token: p.curToken}
 
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
 	p.nextToken()
@@ -18,5 +18,5 @@ func (p *Parser) parseAssignmentDeclarationStatement() *ast.AssignmentDeclaratio
 		p.nextToken()
 	}
 
-	return stmt
+	return &ast.AssignmentDeclarationStatement{DeclarationStatement: *stmt}
 }
