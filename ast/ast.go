@@ -221,3 +221,18 @@ func (hl *HashLiteral) String() string {
 
 	return out.String()
 }
+
+func (td *TypedDeclarationStatement) statementNode()       {}
+func (td *TypedDeclarationStatement) TokenLiteral() string { return td.Token.Literal }
+func (td *TypedDeclarationStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(td.Type.String())
+	out.WriteString(" ")
+	out.WriteString(td.Name.String())
+	out.WriteString(" = ")
+	out.WriteString(td.Value.String())
+	out.WriteString(";")
+
+	return out.String()
+}

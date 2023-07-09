@@ -1,6 +1,8 @@
 package ast
 
-import "github.com/0xM-D/interpreter/token"
+import (
+	"github.com/0xM-D/interpreter/token"
+)
 
 type Node interface {
 	TokenLiteral() string
@@ -24,6 +26,7 @@ type Program struct {
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
+	Type  *Identifier
 	Value Expression
 }
 
@@ -108,4 +111,11 @@ type IndexExpression struct {
 type HashLiteral struct {
 	Token token.Token
 	Pairs map[Expression]Expression
+}
+
+type TypedDeclarationStatement struct {
+	Token token.Token
+	Type  *Identifier
+	Name  *Identifier
+	Value Expression
 }

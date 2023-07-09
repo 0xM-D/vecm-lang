@@ -85,6 +85,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalIndexExpression(left, index)
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
+	case *ast.TypedDeclarationStatement:
+		error := evalTypedDeclarationStatement(node, env)
+		if error != nil {
+			return error
+		}
 	}
 
 	return nil

@@ -11,6 +11,11 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.IDENT:
+		if p.peekToken.Type == token.IDENT {
+			return p.parseTypedDeclarationStatement()
+		}
+		fallthrough
 	default:
 		return p.parseExpressionStatement()
 	}

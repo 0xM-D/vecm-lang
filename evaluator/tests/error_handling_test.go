@@ -13,27 +13,27 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + true;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"type mismatch: int + bool",
 		},
 		{
 			"5 + true; 5;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"type mismatch: int + bool",
 		},
 		{
 			"-true",
-			"unknown operator: -BOOLEAN",
+			"unknown operator: -bool",
 		},
 		{
 			"true + false;",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"unknown operator: bool + bool",
 		},
 		{
 			"5; true + false; 5",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"unknown operator: bool + bool",
 		},
 		{
 			"if (10 > 1) { true + false; }",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"unknown operator: bool + bool",
 		},
 		{
 			`
@@ -44,7 +44,7 @@ func TestErrorHandling(t *testing.T) {
 					return 1;
 				}
 			`,
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"unknown operator: bool + bool",
 		},
 		{
 			"foobar",
@@ -52,11 +52,11 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			`"Hello" - "World"`,
-			"unknown operator: STRING - STRING",
+			"unknown operator: string - string",
 		},
 		{
 			`{"name": "Monkey"}[fn(x) { x }];`,
-			"unusable as hash key: FUNCTION",
+			"unusable as hash key: function",
 		},
 	}
 	for _, tt := range tests {

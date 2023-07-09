@@ -7,13 +7,13 @@ type Object interface {
 }
 
 const (
-	INTEGER_OBJ      = "INTEGER"
-	BOOLEAN_OBJ      = "BOOLEAN"
-	NULL_OBJ         = "NULL"
-	RETURN_VALUE_OBJ = "RETURN_VALUE"
-	ERROR_OBJ        = "ERROR"
-	FUNCTION_OBJ     = "FUNCTION"
-	STRING_OBJ       = "STRING"
-	ARRAY_OBJ        = "ARRAY"
-	HASH_OBJ         = "HASH"
+	INTEGER_OBJ      = "int"
+	BOOLEAN_OBJ      = "bool"
+	NULL_OBJ         = "null"
+	RETURN_VALUE_OBJ = "returnvalue"
+	ERROR_OBJ        = "error"
+	FUNCTION_OBJ     = "function"
+	STRING_OBJ       = "string"
+	ARRAY_OBJ        = "array"
+	HASH_OBJ         = "hash"
 )
