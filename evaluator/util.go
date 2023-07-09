@@ -244,3 +244,24 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 
 	return pair.Value
 }
+
+func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *object.Environment) object.Object {
+	typeIdentifier := node.Type.Value
+	objectType, ok := env.GetObjectType(typeIdentifier)
+	if !ok {
+		return newError("Unknown type name: %s", typeIdentifier)
+	}
+
+	val := Eval(node.Value, env)
+	if isError(val) {
+		return val
+	}
+
+	if objectType != val.Type() {
+		return newError("Expression of type %s cannot be assigned to %s", val.Type(), objectType)
+	}
+
+	env.Set(node.Name.Value, val)
+
+	return nil
+}
