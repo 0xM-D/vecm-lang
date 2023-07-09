@@ -15,6 +15,9 @@ func (p *Parser) parseStatement() ast.Statement {
 		if p.peekToken.Type == token.IDENT {
 			return p.parseTypedDeclarationStatement()
 		}
+		if p.peekToken.Type == token.DECL_ASSIGN {
+			return p.parseAssignmentDeclarationStatement()
+		}
 		fallthrough
 	default:
 		return p.parseExpressionStatement()
