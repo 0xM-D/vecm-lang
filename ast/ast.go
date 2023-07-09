@@ -236,3 +236,16 @@ func (td *TypedDeclarationStatement) String() string {
 
 	return out.String()
 }
+
+func (ad *AssignmentDeclarationStatement) statementNode()       {}
+func (ad *AssignmentDeclarationStatement) TokenLiteral() string { return ad.Token.Literal }
+func (ad *AssignmentDeclarationStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ad.Name.String())
+	out.WriteString(" := ")
+	out.WriteString(ad.Value.String())
+	out.WriteString(";")
+
+	return out.String()
+}

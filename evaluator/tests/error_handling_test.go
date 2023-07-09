@@ -58,6 +58,14 @@ func TestErrorHandling(t *testing.T) {
 			`{"name": "Monkey"}[fn(x) { x }];`,
 			"unusable as hash key: function",
 		},
+		{
+			`int a = "fasdf"`,
+			"Expression of type string cannot be assigned to int",
+		},
+		{
+			`a := "fasdf"; bool c = a;`,
+			"Expression of type string cannot be assigned to bool",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)

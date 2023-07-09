@@ -26,7 +26,6 @@ type Program struct {
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
-	Type  *Identifier
 	Value Expression
 }
 
@@ -116,6 +115,12 @@ type HashLiteral struct {
 type TypedDeclarationStatement struct {
 	Token token.Token
 	Type  *Identifier
+	Name  *Identifier
+	Value Expression
+}
+
+type AssignmentDeclarationStatement struct {
+	Token token.Token
 	Name  *Identifier
 	Value Expression
 }
