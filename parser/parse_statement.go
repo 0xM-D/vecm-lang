@@ -11,11 +11,13 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.CONST:
+		return p.parseConstDeclarationStatement()
 	case token.IDENT:
-		if p.peekToken.Type == token.IDENT {
+		switch p.peekToken.Type {
+		case token.IDENT:
 			return p.parseTypedDeclarationStatement()
-		}
-		if p.peekToken.Type == token.DECL_ASSIGN {
+		case token.DECL_ASSIGN:
 			return p.parseAssignmentDeclarationStatement()
 		}
 		fallthrough

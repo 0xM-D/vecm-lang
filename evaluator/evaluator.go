@@ -5,7 +5,7 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func Eval(node ast.Node, env *object.Environment) object.Object {
+func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
@@ -22,15 +22,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return evalPrefixExpression(node.Operator, right)
 	case *ast.InfixExpression:
-		left := Eval(node.Left, env)
-		if isError(left) {
-			return left
-		}
-		right := Eval(node.Right, env)
-		if isError(right) {
-			return right
-		}
-		return evalInfixExpression(node.Operator, left, right)
+		return evalInfixExpression(node, env)
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
@@ -99,8 +91,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	return nil
 }
 
-func evalProgram(program *ast.Program, env *object.Environment) object.Object {
-	var result object.Object
+func evalProgram(program *ast.Program, env *object.Environment) object.ObjectValue {
+	var result object.ObjectValue
 
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
@@ -115,8 +107,8 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	return result
 }
 
-func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
-	var result object.Object
+func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.ObjectValue {
+	var result object.ObjectValue
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
 
@@ -130,7 +122,7 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 	return result
 }
 
-func applyFunction(fn object.Object, args []object.Object) object.Object {
+func applyFunction(fn object.ObjectValue, args []object.ObjectValue) object.ObjectValue {
 	function, ok := fn.(*object.Function)
 	if !ok {
 		return newError("not a function: %s", fn.Type())
@@ -141,16 +133,16 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 }
 func extendFunctionEnv(
 	fn *object.Function,
-	args []object.Object,
+	args []object.ObjectValue,
 ) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 	for paramIdx, param := range fn.Parameters {
-		env.Set(param.Value, args[paramIdx])
+		env.Declare(param.Value, false, args[paramIdx])
 	}
 	return env
 }
 
-func unwrapReturnValue(obj object.Object) object.Object {
+func unwrapReturnValue(obj object.ObjectValue) object.ObjectValue {
 	if returnValue, ok := obj.(*object.ReturnValue); ok {
 		return returnValue.Value
 	}

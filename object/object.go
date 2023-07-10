@@ -1,9 +1,13 @@
 package object
 
 type ObjectType string
-type Object interface {
+type ObjectValue interface {
 	Type() ObjectType
 	Inspect() string
+}
+type Object struct {
+	Value      ObjectValue
+	IsConstant bool
 }
 
 const (

@@ -1,7 +1,7 @@
 package object
 
 type ReturnValue struct {
-	Value Object
+	Value ObjectValue
 }
 
 func (rv *ReturnValue) Type() ObjectType { return RETURN_VALUE_OBJ }

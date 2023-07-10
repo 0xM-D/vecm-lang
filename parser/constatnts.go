@@ -1,6 +1,8 @@
 package parser
 
-import "github.com/0xM-D/interpreter/token"
+import (
+	"github.com/0xM-D/interpreter/token"
+)
 
 const (
 	_ int = iota
@@ -12,6 +14,7 @@ const (
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
 	INDEX       // array[index]
+	ASSIGN      // a = b
 )
 
 var precedences = map[token.TokenType]int{
@@ -25,4 +28,5 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
 	token.LBRACKET: INDEX,
+	token.ASSIGN:   ASSIGN,
 }
