@@ -24,10 +24,11 @@ type Program struct {
 }
 
 type DeclarationStatement struct {
-	Token token.Token
-	Name  *Identifier
-	Type  *Identifier
-	Value Expression
+	Token      token.Token
+	IsConstant bool
+	Name       *Identifier
+	Type       *Identifier
+	Value      Expression
 }
 
 type LetStatement struct {
@@ -123,4 +124,11 @@ type TypedDeclarationStatement struct {
 
 type AssignmentDeclarationStatement struct {
 	DeclarationStatement
+}
+
+type VariableUpdateStatement struct {
+	Token    token.Token
+	Left     *Identifier
+	Operator string
+	Right    Expression
 }

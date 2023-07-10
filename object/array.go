@@ -6,7 +6,7 @@ import (
 )
 
 type Array struct {
-	Elements []Object
+	Elements []ObjectValue
 }
 
 func (a *Array) Inspect() string {

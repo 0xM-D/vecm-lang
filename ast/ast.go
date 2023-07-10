@@ -249,3 +249,17 @@ func (ad *AssignmentDeclarationStatement) String() string {
 
 	return out.String()
 }
+
+func (vu *VariableUpdateStatement) statementNode()       {}
+func (vu *VariableUpdateStatement) TokenLiteral() string { return vu.Token.Literal }
+func (vu *VariableUpdateStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(vu.Left.String())
+	out.WriteString(" ")
+	out.WriteString(vu.Operator)
+	out.WriteString(" ")
+	out.WriteString(vu.Right.String())
+
+	return out.String()
+}

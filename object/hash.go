@@ -11,8 +11,8 @@ type Hashable interface {
 }
 
 type HashPair struct {
-	Key   Object
-	Value Object
+	Key   ObjectValue
+	Value ObjectValue
 }
 
 type Hash struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/0xM-D/interpreter/parser"
 )
 
-func testEval(input string) object.Object {
+func testEval(input string) object.ObjectValue {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
@@ -18,7 +18,7 @@ func testEval(input string) object.Object {
 	return evaluator.Eval(program, env)
 }
 
-func testNullObject(t *testing.T, obj object.Object) bool {
+func testNullObject(t *testing.T, obj object.ObjectValue) bool {
 	if obj != evaluator.NULL {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
 		return false
@@ -26,7 +26,7 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 	return true
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+func testIntegerObject(t *testing.T, obj object.ObjectValue, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {
 		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
@@ -40,7 +40,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	return true
 }
 
-func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+func testStringObject(t *testing.T, obj object.ObjectValue, expected string) bool {
 	result, ok := obj.(*object.String)
 	if !ok {
 		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
@@ -54,7 +54,7 @@ func testStringObject(t *testing.T, obj object.Object, expected string) bool {
 	return true
 }
 
-func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
+func testArrayObject(t *testing.T, obj object.ObjectValue, expected []string) bool {
 	result, ok := obj.(*object.Array)
 	if !ok {
 		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
