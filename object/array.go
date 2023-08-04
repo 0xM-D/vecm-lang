@@ -5,8 +5,15 @@ import (
 	"strings"
 )
 
+type ArrayObjectType struct {
+	ElementType ObjectType
+}
+
+func (a *ArrayObjectType) Signature() string { return a.ElementType.Signature() + "[]" }
+
 type Array struct {
-	Elements []ObjectValue
+	ArrayObjectType
+	Elements []Object
 }
 
 func (a *Array) Inspect() string {
@@ -23,4 +30,4 @@ func (a *Array) Inspect() string {
 
 	return out.String()
 }
-func (a *Array) Type() ObjectType { return ARRAY_OBJ }
+func (a *Array) Type() ObjectType { return &a.ArrayObjectType }
