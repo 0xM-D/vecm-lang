@@ -40,86 +40,6 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	return &object.Integer{Value: -value}
 }
 
-// func evalInfixExpression(
-// 	node *ast.InfixExpression,
-// 	env *object.Environment,
-// ) object.Object {
-// 	left := Eval(node.Left, env)
-// 	if object.IsError(left) {
-// 		return left
-// 	}
-// 	right := Eval(node.Right, env)
-// 	if object.IsError(right) {
-// 		return right
-// 	}
-// 	operator := node.Operator
-// 	switch {
-// 	case operator == "=":
-// 		identifier := node.Left.TokenLiteral()
-// 		currentValue := env.Get(identifier)
-// 		if currentValue == nil {
-// 			return newError("Unknown identifier: %s", identifier)
-// 		}
-// 		return env.Set(identifier, object.UnwrapReferenceObject(right))
-// 	case object.IsInteger(left) && object.IsInteger(right):
-// 		return evalIntegerInfixExpression(operator, left, right)
-// 	case object.IsString(left) && object.IsString(right):
-// 		return evalStringInfixExpression(operator, left, right)
-// 	case operator == "==":
-// 		return nativeBoolToBooleanObject(left == right)
-// 	case operator == "!=":
-// 		return nativeBoolToBooleanObject(left != right)
-// 	case left.Type() != right.Type():
-// 		return newError("type mismatch: %s %s %s",
-// 			left.Type().Signature(), operator, right.Type().Signature())
-// 	default:
-// 		return newError("unknown operator: %s %s %s",
-// 			left.Type().Signature(), operator, right.Type().Signature())
-// 	}
-// }
-
-// func evalIntegerInfixExpression(
-// 	operator string,
-// 	left, right object.Object,
-// ) object.Object {
-// 	leftVal := left.(*object.Integer).Value
-// 	rightVal := left.(*object.Integer).Value
-// 	switch operator {
-// 	case "+":
-// 		return &object.Integer{Value: leftVal + rightVal}
-// 	case "-":
-// 		return &object.Integer{Value: leftVal - rightVal}
-// 	case "*":
-// 		return &object.Integer{Value: leftVal * rightVal}
-// 	case "/":
-// 		return &object.Integer{Value: leftVal / rightVal}
-// 	case "<":
-// 		return nativeBoolToBooleanObject(leftVal < rightVal)
-// 	case ">":
-// 		return nativeBoolToBooleanObject(leftVal > rightVal)
-// 	case "==":
-// 		return nativeBoolToBooleanObject(leftVal == rightVal)
-// 	case "!=":
-// 		return nativeBoolToBooleanObject(leftVal != rightVal)
-// 	default:
-// 		return newError("unknown operator: %s %s %s",
-// 			left.Type().Signature(), operator, right.Type().Signature())
-// 	}
-// }
-
-// func evalStringInfixExpression(
-// 	operator string,
-// 	left, right object.Object,
-// ) object.Object {
-// 	if operator != "+" {
-// 		return newError("unknown operator: %s %s %s",
-// 			left.Type().Signature(), operator, right.Type().Signature())
-// 	}
-// 	leftVal := left.(*object.String).Value
-// 	rightVal := right.(*object.String).Value
-// 	return &object.String{Value: leftVal + rightVal}
-// }
-
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
 	condition := Eval(ie.Condition, env)
 	if object.IsError(condition) {
@@ -253,10 +173,9 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 }
 
 func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *object.Environment) object.Object {
-	typeIdentifier := node.Type.Value
-	objectType, ok := env.GetObjectType(typeIdentifier)
-	if !ok {
-		return newError("Unknown type name: %s", typeIdentifier)
+	objectType := evalType(node.Type, env)
+	if objectType == nil {
+		return newError("Unknown type: %s", node.Type.String())
 	}
 
 	error := declareVariable(&(*node).DeclarationStatement, objectType, env)
@@ -267,8 +186,28 @@ func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *obj
 	return nil
 }
 
+func evalType(typeNode ast.Type, env *object.Environment) object.ObjectType {
+	switch casted := typeNode.(type) {
+	case ast.HashType:
+		return &object.HashObjectType{KeyType: evalType(casted.KeyType, env), ValueType: evalType(casted.ValueType, env)}
+	case ast.ArrayType:
+		return &object.ArrayObjectType{ElementType: evalType(casted.ElementType, env)}
+	case ast.NamedType:
+		namedType, _ := env.GetObjectType(casted.Token.Literal)
+		return namedType
+	}
+
+	return nil
+}
+
 func declareVariable(declNode *ast.DeclarationStatement, expectedType object.ObjectType, env *object.Environment) object.Object {
 	val := object.UnwrapReferenceObject(Eval(declNode.Value, env))
+
+	if object.IsError(val) {
+		return val
+	}
+
+	val = typeCast(val, expectedType, IMPLICIT_CAST)
 
 	if object.IsError(val) {
 		return val

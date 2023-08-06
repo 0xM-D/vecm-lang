@@ -13,12 +13,18 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.CONST:
 		return p.parseConstDeclarationStatement()
+	case token.MAP_TYPE:
+		return p.parseTypedDeclarationStatement()
 	case token.IDENT:
 		switch p.peekToken.Type {
-		case token.IDENT:
-			return p.parseTypedDeclarationStatement()
 		case token.DECL_ASSIGN:
 			return p.parseAssignmentDeclarationStatement()
+		case token.IDENT:
+			fallthrough
+		case token.ARRAY_TYPE:
+			fallthrough
+		case token.LBRACE:
+			return p.parseTypedDeclarationStatement()
 		}
 		fallthrough
 	default:
