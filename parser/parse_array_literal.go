@@ -10,3 +10,7 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 	array.Elements = p.parseExpressionList(token.RBRACKET)
 	return array
 }
+
+func (p *Parser) parseEmptyArray() ast.Expression {
+	return &ast.ArrayLiteral{Token: p.curToken, Elements: []ast.Expression{}}
+}

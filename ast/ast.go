@@ -263,3 +263,24 @@ func (vu *VariableUpdateStatement) String() string {
 
 	return out.String()
 }
+
+func (ht HashType) typeNode()            {}
+func (ht HashType) TokenLiteral() string { return ht.TokenLiteral() }
+func (ht HashType) String() string {
+	var out bytes.Buffer
+	out.WriteString("map{ ")
+	out.WriteString(ht.KeyType.String())
+	out.WriteString(" -> ")
+	out.WriteString(ht.ValueType.String())
+	out.WriteString(" }")
+
+	return out.String()
+}
+
+func (at ArrayType) typeNode()            {}
+func (at ArrayType) TokenLiteral() string { return at.TokenLiteral() }
+func (at ArrayType) String() string       { return at.ElementType.String() + "[]" }
+
+func (it NamedType) typeNode()            {}
+func (it NamedType) TokenLiteral() string { return it.TokenLiteral() }
+func (it NamedType) String() string       { return it.TypeName.String() }

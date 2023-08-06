@@ -10,10 +10,7 @@ var GLOBAL_TYPES = map[string]ObjectType{
 	"int":    INTEGER_OBJ(),
 	"bool":   BOOLEAN_OBJ(),
 	"null":   NULL_OBJ(),
-	"fn":     &FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: INTEGER_OBJ()},
 	"string": STRING_OBJ(),
-	"array":  &ArrayObjectType{ElementType: INTEGER_OBJ()},
-	"hash":   &HashObjectType{KeyType: INTEGER_OBJ(), ValueType: INTEGER_OBJ()},
 }
 
 func NewEnvironment() *Environment {

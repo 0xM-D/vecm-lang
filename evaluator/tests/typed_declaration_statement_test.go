@@ -9,7 +9,7 @@ func TestTypedDeclarationStatement(t *testing.T) {
 	}{
 		{"int a = 5; a;", 5},
 		{"string a = \"testmmm\"; a;", "testmmm"},
-		{"array a = [1, 2, 3, 4]; let b = a; b;", []string{"1", "2", "3", "4"}},
+		{"int[] a = [1, 2, 3, 4]; let b = a; b;", []string{"1", "2", "3", "4"}},
 		{"bool a = true; let b = !a; b;", false},
 	}
 	for _, tt := range tests {

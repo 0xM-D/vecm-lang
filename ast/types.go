@@ -19,6 +19,11 @@ type Expression interface {
 	expressionNode()
 }
 
+type Type interface {
+	Node
+	typeNode()
+}
+
 type Program struct {
 	Statements []Statement
 }
@@ -27,7 +32,7 @@ type DeclarationStatement struct {
 	Token      token.Token
 	IsConstant bool
 	Name       *Identifier
-	Type       *Identifier
+	Type       Type
 	Value      Expression
 }
 
@@ -131,4 +136,30 @@ type VariableUpdateStatement struct {
 	Left     *Identifier
 	Operator string
 	Right    Expression
+}
+
+type NamedType struct {
+	Token    token.Token
+	TypeName Identifier
+}
+
+type ReturnType struct {
+	Type *NamedType // Nullable
+}
+
+type ArrayType struct {
+	Token       token.Token
+	ElementType Type
+}
+
+type HashType struct {
+	Token     token.Token
+	KeyType   Type
+	ValueType Type
+}
+
+type FunctionType struct {
+	Token          token.Token
+	ParameterTypes []Type
+	ReturnType     ReturnType
 }

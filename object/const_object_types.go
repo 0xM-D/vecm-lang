@@ -1,5 +1,9 @@
 package object
 
+type AnyObjectType struct{}
+
+func (*AnyObjectType) Signature() string { return "any" }
+
 func STRING_OBJ() ObjectType {
 	return &StringObjectType{}
 }

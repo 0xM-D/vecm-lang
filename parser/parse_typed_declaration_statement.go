@@ -10,8 +10,9 @@ import (
 func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement {
 	stmt := &ast.DeclarationStatement{Token: p.curToken}
 
-	stmt.Type = p.parseIdentifier().(*ast.Identifier)
+	stmt.Type = p.parseType()
 	p.nextToken()
+
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
 
 	if p.peekToken.Type != token.ASSIGN {
