@@ -13,11 +13,11 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + true;",
-			"type mismatch: int + bool",
+			"operator + not defined on types int and bool",
 		},
 		{
 			"5 + true; 5;",
-			"type mismatch: int + bool",
+			"operator + not defined on types int and bool",
 		},
 		{
 			"-true",
@@ -25,15 +25,15 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			"true + false;",
-			"unknown operator: bool + bool",
+			"operator + not defined on types bool and bool",
 		},
 		{
 			"5; true + false; 5",
-			"unknown operator: bool + bool",
+			"operator + not defined on types bool and bool",
 		},
 		{
 			"if (10 > 1) { true + false; }",
-			"unknown operator: bool + bool",
+			"operator + not defined on types bool and bool",
 		},
 		{
 			`
@@ -44,7 +44,7 @@ func TestErrorHandling(t *testing.T) {
 					return 1;
 				}
 			`,
-			"unknown operator: bool + bool",
+			"operator + not defined on types bool and bool",
 		},
 		{
 			"foobar",
@@ -52,7 +52,7 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			`"Hello" - "World"`,
-			"unknown operator: string - string",
+			"operator - not defined on types string and string",
 		},
 		{
 			`{"name": "Monkey"}[fn(x) { x }];`,
@@ -70,23 +70,26 @@ func TestErrorHandling(t *testing.T) {
 			`a := "fasdf"; string a = a;`,
 			"Identifier with name a already exists.",
 		},
-		// {
-		// 	`const a := "fasdf"; a = "fasdfsd";`,
-		// 	"Cannot assign to const variable",
-		// },
-		// {
-		// 	`const int a = 3; a = 5*6;`,
-		// 	"Cannot assign to const variable",
-		// },
+		{
+			`const a := "fasdf"; a = "fasdfsd";`,
+			"Cannot assign to const variable",
+		},
+		{
+			`const int a = 3; a = 5*6;`,
+			"Cannot assign to const variable",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		errObj, ok := evaluated.(*object.Error)
-		if !ok {
+
+		if !object.IsError(evaluated) {
 			t.Errorf("no error object returned. got=%T(%+v)",
 				evaluated, evaluated)
 			continue
 		}
+
+		errObj := evaluated.(*object.Error)
+
 		if errObj.Message != tt.expectedMessage {
 			t.Errorf("wrong error message. expected=%q, got=%q",
 				tt.expectedMessage, errObj.Message)
