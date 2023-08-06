@@ -78,6 +78,22 @@ func TestErrorHandling(t *testing.T) {
 			`const int a = 3; a = 5*6;`,
 			"Cannot assign to const variable",
 		},
+		{
+			`foo += 3`,
+			"identifier not found: foo",
+		},
+		{
+			`a := 3; a += "test"`,
+			"operator += not defined on types int and string",
+		},
+		{
+			`bool a = true; a += true`,
+			"operator += not defined on types bool and bool",
+		},
+		{
+			`const int a = 3; a += 1`,
+			"Cannot assign to const variable",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)

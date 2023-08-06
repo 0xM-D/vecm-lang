@@ -28,6 +28,11 @@ if (5 < 10) {
 "foo bar"
 [1, 2];
 {"foo": "bar"}
+a = 3
+str += "f"
+a -= 4
+bff *= "nadza"
+div /= 1
 `
 
 	tests := []struct {
@@ -120,6 +125,21 @@ if (5 < 10) {
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
 		{token.RBRACE, "}"},
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.INT, "3"},
+		{token.IDENT, "str"},
+		{token.PLUS_ASSIGN, "+="},
+		{token.STRING, "f"},
+		{token.IDENT, "a"},
+		{token.MINUS_ASSIGN, "-="},
+		{token.INT, "4"},
+		{token.IDENT, "bff"},
+		{token.ASTERISK_ASSIGN, "*="},
+		{token.STRING, "nadza"},
+		{token.IDENT, "div"},
+		{token.SLASH_ASSIGN, "/="},
+		{token.INT, "1"},
 		{token.EOF, ""}}
 
 	l := New(input)
