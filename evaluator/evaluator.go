@@ -32,7 +32,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if object.IsError(val) {
 			return val
 		}
-		println("RETURNVALUE:", val.Inspect())
 		return &object.ReturnValue{Value: val, ReturnValueObjectType: object.ReturnValueObjectType{ReturnType: val.Type()}}
 	case *ast.LetStatement:
 		error := declareVariable(&(*node).DeclarationStatement, nil, env)
@@ -72,7 +71,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if object.IsError(index) {
 			return index
 		}
-		return evalIndexExpression(left, index)
+		return evalIndexExpression(object.UnwrapReferenceObject(left), object.UnwrapReferenceObject(index))
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
@@ -123,7 +122,7 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
+	function, ok := object.UnwrapReferenceObject(fn).(*object.Function)
 	if !ok {
 		return newError("not a function: %s", fn.Type())
 	}

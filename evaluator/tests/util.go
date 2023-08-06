@@ -27,11 +27,13 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
-	result, ok := obj.(*object.Integer)
-	if !ok {
+	if !object.IsInteger(obj) {
 		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Integer)
+
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
 			result.Value, expected)
@@ -41,11 +43,13 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 }
 
 func testStringObject(t *testing.T, obj object.Object, expected string) bool {
-	result, ok := obj.(*object.String)
-	if !ok {
+	if !object.IsString(obj) {
 		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.String)
+
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%q, want=%q",
 			result.Value, expected)
@@ -55,11 +59,13 @@ func testStringObject(t *testing.T, obj object.Object, expected string) bool {
 }
 
 func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
-	result, ok := obj.(*object.Array)
-	if !ok {
+	if !object.IsArray(obj) {
 		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Array)
+
 	if len(result.Elements) != len(expected) {
 		t.Errorf("Incorrect array length. expected=%d. got=%d", len(result.Elements), len(expected))
 		return false

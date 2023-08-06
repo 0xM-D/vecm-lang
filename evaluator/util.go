@@ -40,85 +40,85 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	return &object.Integer{Value: -value}
 }
 
-func evalInfixExpression(
-	node *ast.InfixExpression,
-	env *object.Environment,
-) object.Object {
-	left := Eval(node.Left, env)
-	if object.IsError(left) {
-		return left
-	}
-	right := Eval(node.Right, env)
-	if object.IsError(right) {
-		return right
-	}
-	operator := node.Operator
-	switch {
-	case operator == "=":
-		identifier := node.Left.TokenLiteral()
-		currentValue := env.Get(identifier)
-		if currentValue == nil {
-			return newError("Unknown identifier: %s", identifier)
-		}
-		return env.Set(identifier, right)
-	case object.IsInteger(left) && object.IsInteger(right):
-		return evalIntegerInfixExpression(operator, left, right)
-	case object.IsString(left) && object.IsString(right):
-		return evalStringInfixExpression(operator, left, right)
-	case operator == "==":
-		return nativeBoolToBooleanObject(left == right)
-	case operator == "!=":
-		return nativeBoolToBooleanObject(left != right)
-	case left.Type() != right.Type():
-		return newError("type mismatch: %s %s %s",
-			left.Type().Signature(), operator, right.Type().Signature())
-	default:
-		return newError("unknown operator: %s %s %s",
-			left.Type().Signature(), operator, right.Type().Signature())
-	}
-}
+// func evalInfixExpression(
+// 	node *ast.InfixExpression,
+// 	env *object.Environment,
+// ) object.Object {
+// 	left := Eval(node.Left, env)
+// 	if object.IsError(left) {
+// 		return left
+// 	}
+// 	right := Eval(node.Right, env)
+// 	if object.IsError(right) {
+// 		return right
+// 	}
+// 	operator := node.Operator
+// 	switch {
+// 	case operator == "=":
+// 		identifier := node.Left.TokenLiteral()
+// 		currentValue := env.Get(identifier)
+// 		if currentValue == nil {
+// 			return newError("Unknown identifier: %s", identifier)
+// 		}
+// 		return env.Set(identifier, object.UnwrapReferenceObject(right))
+// 	case object.IsInteger(left) && object.IsInteger(right):
+// 		return evalIntegerInfixExpression(operator, left, right)
+// 	case object.IsString(left) && object.IsString(right):
+// 		return evalStringInfixExpression(operator, left, right)
+// 	case operator == "==":
+// 		return nativeBoolToBooleanObject(left == right)
+// 	case operator == "!=":
+// 		return nativeBoolToBooleanObject(left != right)
+// 	case left.Type() != right.Type():
+// 		return newError("type mismatch: %s %s %s",
+// 			left.Type().Signature(), operator, right.Type().Signature())
+// 	default:
+// 		return newError("unknown operator: %s %s %s",
+// 			left.Type().Signature(), operator, right.Type().Signature())
+// 	}
+// }
 
-func evalIntegerInfixExpression(
-	operator string,
-	left, right object.Object,
-) object.Object {
-	leftVal := left.(*object.Integer).Value
-	rightVal := right.(*object.Integer).Value
-	switch operator {
-	case "+":
-		return &object.Integer{Value: leftVal + rightVal}
-	case "-":
-		return &object.Integer{Value: leftVal - rightVal}
-	case "*":
-		return &object.Integer{Value: leftVal * rightVal}
-	case "/":
-		return &object.Integer{Value: leftVal / rightVal}
-	case "<":
-		return nativeBoolToBooleanObject(leftVal < rightVal)
-	case ">":
-		return nativeBoolToBooleanObject(leftVal > rightVal)
-	case "==":
-		return nativeBoolToBooleanObject(leftVal == rightVal)
-	case "!=":
-		return nativeBoolToBooleanObject(leftVal != rightVal)
-	default:
-		return newError("unknown operator: %s %s %s",
-			left.Type().Signature(), operator, right.Type().Signature())
-	}
-}
+// func evalIntegerInfixExpression(
+// 	operator string,
+// 	left, right object.Object,
+// ) object.Object {
+// 	leftVal := left.(*object.Integer).Value
+// 	rightVal := left.(*object.Integer).Value
+// 	switch operator {
+// 	case "+":
+// 		return &object.Integer{Value: leftVal + rightVal}
+// 	case "-":
+// 		return &object.Integer{Value: leftVal - rightVal}
+// 	case "*":
+// 		return &object.Integer{Value: leftVal * rightVal}
+// 	case "/":
+// 		return &object.Integer{Value: leftVal / rightVal}
+// 	case "<":
+// 		return nativeBoolToBooleanObject(leftVal < rightVal)
+// 	case ">":
+// 		return nativeBoolToBooleanObject(leftVal > rightVal)
+// 	case "==":
+// 		return nativeBoolToBooleanObject(leftVal == rightVal)
+// 	case "!=":
+// 		return nativeBoolToBooleanObject(leftVal != rightVal)
+// 	default:
+// 		return newError("unknown operator: %s %s %s",
+// 			left.Type().Signature(), operator, right.Type().Signature())
+// 	}
+// }
 
-func evalStringInfixExpression(
-	operator string,
-	left, right object.Object,
-) object.Object {
-	if operator != "+" {
-		return newError("unknown operator: %s %s %s",
-			left.Type().Signature(), operator, right.Type().Signature())
-	}
-	leftVal := left.(*object.String).Value
-	rightVal := right.(*object.String).Value
-	return &object.String{Value: leftVal + rightVal}
-}
+// func evalStringInfixExpression(
+// 	operator string,
+// 	left, right object.Object,
+// ) object.Object {
+// 	if operator != "+" {
+// 		return newError("unknown operator: %s %s %s",
+// 			left.Type().Signature(), operator, right.Type().Signature())
+// 	}
+// 	leftVal := left.(*object.String).Value
+// 	rightVal := right.(*object.String).Value
+// 	return &object.String{Value: leftVal + rightVal}
+// }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
 	condition := Eval(ie.Condition, env)
@@ -133,13 +133,14 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 		return NULL
 	}
 }
+
 func isTruthy(obj object.Object) bool {
 	if object.IsNull(obj) {
 		return false
 	}
 
 	if object.IsBoolean(obj) {
-		if obj.(*object.Boolean).Value {
+		if object.UnwrapReferenceObject(obj).(*object.Boolean).Value {
 			return true
 		} else {
 			return false
@@ -161,7 +162,7 @@ func evalIdentifier(
 	if obj == nil {
 		return newError("identifier not found: " + node.Value)
 	}
-	return *obj
+	return obj
 }
 
 func evalExpressions(
@@ -213,7 +214,7 @@ func evalHashLiteral(
 	pairs := make(map[object.HashKey]object.HashPair)
 
 	for keyNode, valueNode := range node.Pairs {
-		key := Eval(keyNode, env)
+		key := object.UnwrapReferenceObject(Eval(keyNode, env))
 		if object.IsError(key) {
 			return key
 		}
@@ -267,7 +268,7 @@ func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *obj
 }
 
 func declareVariable(declNode *ast.DeclarationStatement, expectedType object.ObjectType, env *object.Environment) object.Object {
-	val := Eval(declNode.Value, env)
+	val := object.UnwrapReferenceObject(Eval(declNode.Value, env))
 
 	if object.IsError(val) {
 		return val
