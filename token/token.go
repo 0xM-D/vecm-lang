@@ -17,18 +17,24 @@ const (
 	STRING = "STRING"
 
 	// Operators
-	ASSIGN   = "="
 	PLUS     = "+"
 	MINUS    = "-"
 	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
 
-	LT          = "<"
-	GT          = ">"
-	EQ          = "=="
-	NOT_EQ      = "!="
-	DECL_ASSIGN = ":="
+	// Assignment operators
+	ASSIGN          = "="
+	DECL_ASSIGN     = ":="
+	PLUS_ASSIGN     = "+="
+	MINUS_ASSIGN    = "-="
+	ASTERISK_ASSIGN = "*="
+	SLASH_ASSIGN    = "/="
+
+	LT     = "<"
+	GT     = ">"
+	EQ     = "=="
+	NOT_EQ = "!="
 
 	// Delimiters
 	COMMA     = ","
