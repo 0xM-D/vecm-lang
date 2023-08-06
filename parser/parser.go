@@ -52,6 +52,10 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.ASSIGN, p.parseInfixExpression)
+	p.registerInfix(token.PLUS_ASSIGN, p.parseInfixExpression)
+	p.registerInfix(token.MINUS_ASSIGN, p.parseInfixExpression)
+	p.registerInfix(token.ASTERISK_ASSIGN, p.parseInfixExpression)
+	p.registerInfix(token.SLASH_ASSIGN, p.parseInfixExpression)
 
 	p.nextToken()
 	p.nextToken()

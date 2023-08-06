@@ -17,17 +17,25 @@ var infixEvalFns = map[OperatorFnSignature]InfixEvalFn{
 	{"=", "int", "int"}:       assignment,
 	{"=", "string", "string"}: assignment,
 	{"=", "bool", "bool"}:     assignment,
-	{"+", "int", "int"}:       integerAddition,
-	{"-", "int", "int"}:       integerSubtraction,
-	{"*", "int", "int"}:       integerMultiplication,
-	{"/", "int", "int"}:       integerDivision,
-	{"==", "int", "int"}:      integerEquals,
-	{"!=", "int", "int"}:      integerNotEquals,
-	{"<", "int", "int"}:       integerLessThan,
-	{">", "int", "int"}:       integerGreaterThan,
-	{"==", "bool", "bool"}:    booleanEquals,
-	{"!=", "bool", "bool"}:    booleanNotEquals,
-	{"+", "string", "string"}: stringAddition,
+
+	{"+", "int", "int"}:  integerAddition,
+	{"-", "int", "int"}:  integerSubtraction,
+	{"*", "int", "int"}:  integerMultiplication,
+	{"/", "int", "int"}:  integerDivision,
+	{"==", "int", "int"}: integerEquals,
+	{"!=", "int", "int"}: integerNotEquals,
+	{"<", "int", "int"}:  integerLessThan,
+	{">", "int", "int"}:  integerGreaterThan,
+	{"+=", "int", "int"}: integerPlusEquals,
+	{"-=", "int", "int"}: integerMinusEquals,
+	{"*=", "int", "int"}: integerTimesEquals,
+	{"/=", "int", "int"}: integerDivideEquals,
+
+	{"==", "bool", "bool"}: booleanEquals,
+	{"!=", "bool", "bool"}: booleanNotEquals,
+
+	{"+", "string", "string"}:  stringAddition,
+	{"+=", "string", "string"}: stringPlusEquals,
 }
 
 func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) object.Object {
@@ -41,7 +49,6 @@ func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) obj
 		return right
 	}
 	operator := node.Operator
-
 	operatorFnSignature := OperatorFnSignature{Operator: operator, LType: left.Type().Signature(), RType: right.Type().Signature()}
 	evalFn := infixEvalFns[operatorFnSignature]
 	if evalFn == nil {
@@ -107,6 +114,22 @@ func integerNotEquals(left object.Object, right object.Object, env *object.Envir
 	return nativeBoolToBooleanObject(leftInt.Value != rightInt.Value)
 }
 
+func integerPlusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, integerAddition(left, right, env), env)
+}
+
+func integerMinusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, integerSubtraction(left, right, env), env)
+}
+
+func integerTimesEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, integerMultiplication(left, right, env), env)
+}
+
+func integerDivideEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, integerDivision(left, right, env), env)
+}
+
 func assignment(left object.Object, right object.Object, env *object.Environment) object.Object {
 	lvalue, ok := left.(*object.ObjectReference)
 	if !ok {
@@ -140,4 +163,8 @@ func stringAddition(left object.Object, right object.Object, env *object.Environ
 	rightStr := object.UnwrapReferenceObject(right).(*object.String)
 
 	return &object.String{Value: leftStr.Value + rightStr.Value}
+}
+
+func stringPlusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, stringAddition(left, right, env), env)
 }
