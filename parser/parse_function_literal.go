@@ -6,13 +6,25 @@ import (
 )
 
 func (p *Parser) parseFunctionLiteral() ast.Expression {
-	lit := &ast.FunctionLiteral{Token: p.curToken}
+	lit := &ast.FunctionLiteral{Token: p.curToken, Type: ast.FunctionType{Token: p.curToken}}
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
-	lit.Parameters = p.parseFunctionParameters()
+	lit.Parameters, lit.Type.ParameterTypes = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.DASH_ARROW) {
+		return nil
+	}
+	p.nextToken()
+
+	returnType := p.parseType()
+	if returnType == nil {
+		return nil
+	}
+
+	lit.Type.ReturnType = ast.ReturnType{Type: &returnType}
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil
@@ -23,29 +35,43 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	return lit
 }
 
-func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 	identifiers := []*ast.Identifier{}
+	types := []ast.Type{}
 
 	if p.peekTokenIs(token.RPAREN) {
 		p.nextToken()
-		return identifiers
+		return identifiers, types
 	}
 
-	p.nextToken()
-
-	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	ident, param_type := p.parseFunctionParameter()
 	identifiers = append(identifiers, ident)
+	types = append(types, param_type)
 
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
-		p.nextToken()
-		ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+		ident, param_type := p.parseFunctionParameter()
 		identifiers = append(identifiers, ident)
+		types = append(types, param_type)
 	}
 
 	if !p.expectPeek(token.RPAREN) {
-		return nil
+		return nil, nil
 	}
 
-	return identifiers
+	return identifiers, types
+}
+
+func (p *Parser) parseFunctionParameter() (*ast.Identifier, ast.Type) {
+	p.nextToken()
+	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+
+	if !p.expectPeek(token.COLON) {
+		return nil, nil
+	}
+
+	p.nextToken()
+	param_type := p.parseType()
+
+	return ident, param_type
 }

@@ -55,8 +55,8 @@ func TestErrorHandling(t *testing.T) {
 			"operator - not defined on types string and string",
 		},
 		{
-			`{"name": "Monkey"}[fn(x) { x }];`,
-			"unusable as hash key: function() -> int",
+			`{"name": "Monkey"}[fn(x:string)->string { x }];`,
+			"unusable as hash key: function(string) -> string",
 		},
 		{
 			`int a = "fasdf"`,
@@ -97,7 +97,6 @@ func TestErrorHandling(t *testing.T) {
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-
 		if !object.IsError(evaluated) {
 			t.Errorf("no error object returned. got=%T(%+v)",
 				evaluated, evaluated)

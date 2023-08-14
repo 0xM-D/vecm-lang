@@ -12,7 +12,7 @@ type FunctionObjectType struct {
 	ReturnValueType ObjectType
 }
 
-func (f *FunctionObjectType) Signature() string {
+func (f FunctionObjectType) Signature() string {
 	var out bytes.Buffer
 
 	paramTypes := []string{}

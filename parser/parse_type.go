@@ -11,28 +11,16 @@ func (p *Parser) parseType() ast.Type {
 
 	switch p.curToken.Type {
 	case token.MAP_TYPE:
-		if !p.expectPeek(token.LBRACE) {
-			return nil
-		}
-		p.nextToken()
-
-		keyType := p.parseType()
-
-		if !p.expectPeek(token.DASH_ARROW) {
-			return nil
-		}
-		p.nextToken()
-
-		valueType := p.parseType()
-
-		if !p.expectPeek(token.RBRACE) {
-			return nil
-		}
-
-		result = ast.HashType{Token: p.curToken, KeyType: keyType, ValueType: valueType}
+		result = p.parseMapType()
+	case token.FUNCTION_TYPE:
+		result = p.parseFunctionType()
 	case token.IDENT:
 		typeIdentifier := p.parseIdentifier().(*ast.Identifier)
 		result = ast.NamedType{Token: p.curToken, TypeName: *typeIdentifier}
+	}
+
+	if result == nil {
+		return nil
 	}
 
 	for p.peekToken.Type == token.ARRAY_TYPE {
@@ -41,4 +29,84 @@ func (p *Parser) parseType() ast.Type {
 	}
 
 	return result
+}
+
+func (p *Parser) parseMapType() ast.Type {
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	p.nextToken()
+
+	keyType := p.parseType()
+
+	if !p.expectPeek(token.DASH_ARROW) {
+		return nil
+	}
+	p.nextToken()
+
+	valueType := p.parseType()
+
+	if !p.expectPeek(token.RBRACE) {
+		return nil
+	}
+
+	return ast.HashType{Token: p.curToken, KeyType: keyType, ValueType: valueType}
+}
+
+func (p *Parser) parseFunctionType() ast.Type {
+
+	functionType := ast.FunctionType{Token: p.curToken}
+
+	functionType.ParameterTypes = p.parseFunctionTypeParameters()
+
+	if functionType.ParameterTypes == nil {
+		return nil
+	}
+
+	if !p.expectPeek(token.DASH_ARROW) {
+		return nil
+	}
+	p.nextToken()
+
+	returnType := p.parseType()
+
+	if returnType == nil {
+		return nil
+	}
+
+	functionType.ReturnType = ast.ReturnType{Type: &returnType}
+	return functionType
+}
+
+func (p *Parser) parseFunctionTypeParameters() []ast.Type {
+	parameterTypes := []ast.Type{}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	for true {
+		if p.peekTokenIs(token.RPAREN) {
+			break
+		}
+		p.nextToken()
+
+		nextType := p.parseType()
+		if nextType == nil {
+			return nil
+		}
+
+		parameterTypes = append(parameterTypes, nextType)
+
+		if !p.peekTokenIs(token.COMMA) {
+			break
+		}
+		p.nextToken()
+	}
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return parameterTypes
 }

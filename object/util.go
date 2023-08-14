@@ -35,6 +35,11 @@ func IsHash(i Object) bool {
 	return ok
 }
 
+func IsFunction(i Object) bool {
+	_, ok := UnwrapReferenceObject(i).Type().(*FunctionObjectType)
+	return ok
+}
+
 func IsReturnValue(i Object) bool {
 	_, ok := UnwrapReferenceObject(i).Type().(ReturnValueObjectType)
 	return ok

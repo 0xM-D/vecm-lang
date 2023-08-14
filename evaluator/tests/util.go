@@ -78,3 +78,52 @@ func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
 	}
 	return true
 }
+
+type ExpectedFunction struct {
+	String string
+	Type   object.FunctionObjectType
+}
+
+func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFunction) bool {
+	if !object.IsFunction(obj) {
+		t.Errorf("object is not Function. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Function)
+
+	if !testFunctionType(t, obj.Type(), expected.Type) {
+
+	}
+
+	if result.Inspect() != expected.String {
+		t.Errorf("function body incorrect. got=\n%s\n, want=\n%s",
+			result.Inspect(), expected.String)
+		return false
+	}
+
+	return true
+}
+
+func testFunctionType(t *testing.T, objectType object.ObjectType, expected object.FunctionObjectType) bool {
+	functionType, ok := objectType.(*object.FunctionObjectType)
+	if !ok {
+		t.Errorf("objectType is not function. got=%s", objectType.Signature())
+		return false
+	}
+
+	for index, pt := range functionType.ParameterTypes {
+		expectedSignature := expected.ParameterTypes[index].Signature()
+		if pt.Signature() != expectedSignature {
+			t.Errorf("function parameter %d has wrong type. got=%s, want=%s", index, objectType.Signature(), expectedSignature)
+			return false
+		}
+	}
+
+	if functionType.ReturnValueType.Signature() != expected.ReturnValueType.Signature() {
+		t.Errorf("function return value has wrong type. got=%s, want=%s", functionType.ReturnValueType.Signature(), expected.ReturnValueType.Signature())
+		return false
+	}
+
+	return true
+}
