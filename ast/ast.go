@@ -141,15 +141,18 @@ func (fl *FunctionLiteral) String() string {
 	var out bytes.Buffer
 
 	params := []string{}
-	for _, p := range fl.Parameters {
-		params = append(params, p.String())
+	for index, p := range fl.Parameters {
+		params = append(params, p.String()+":"+fl.Type.ParameterTypes[index].String())
 	}
 
 	out.WriteString(fl.TokenLiteral())
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ","))
-	out.WriteString(")")
+	out.WriteString(")->")
+	out.WriteString(fl.Type.ReturnType.String())
+	out.WriteString("{")
 	out.WriteString(fl.Body.String())
+	out.WriteString("}")
 
 	return out.String()
 }
@@ -284,3 +287,28 @@ func (at ArrayType) String() string       { return at.ElementType.String() + "[]
 func (it NamedType) typeNode()            {}
 func (it NamedType) TokenLiteral() string { return it.TokenLiteral() }
 func (it NamedType) String() string       { return it.TypeName.String() }
+
+func (ft FunctionType) typeNode()            {}
+func (ft FunctionType) TokenLiteral() string { return ft.TokenLiteral() }
+func (ft FunctionType) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range ft.ParameterTypes {
+		params = append(params, p.String())
+	}
+
+	out.WriteString("function(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")->")
+	out.WriteString(ft.ReturnType.String())
+
+	return out.String()
+}
+
+func (rt ReturnType) String() string {
+	if rt.Type == nil {
+		return "void"
+	}
+	return (*rt.Type).String()
+}

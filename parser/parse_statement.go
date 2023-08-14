@@ -15,6 +15,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseConstDeclarationStatement()
 	case token.MAP_TYPE:
 		return p.parseTypedDeclarationStatement()
+	case token.FUNCTION_TYPE:
+		return p.parseTypedDeclarationStatement()
 	case token.IDENT:
 		switch p.peekToken.Type {
 		case token.DECL_ASSIGN:

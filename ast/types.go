@@ -94,6 +94,7 @@ type FunctionLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier
 	Body       *BlockStatement
+	Type       FunctionType
 }
 
 type CallExpression struct {
@@ -144,7 +145,7 @@ type NamedType struct {
 }
 
 type ReturnType struct {
-	Type *NamedType // Nullable
+	Type *Type // Nullable
 }
 
 type ArrayType struct {

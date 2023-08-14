@@ -16,7 +16,7 @@ func TestAssignmentDeclaration(t *testing.T) {
 	}{
 		{"a := 10;", "a", "10"},
 		{"b := true;", "b", "true"},
-		{"c := fn(b) { return b * 2 };", "c", "fn(b)return (b * 2);"},
+		{"c := fn(b: int) -> int { return b * 2 };", "c", "fn(b:int)->int{return (b * 2);}"},
 		{"d := {1: 2, 2: 3};", "d", "{1:2, 2:3}"},
 		{"e := [1, 2, 3, 4, 5];", "e", "[1, 2, 3, 4, 5]"},
 		{`f := "string value";`, "f", "string value"},

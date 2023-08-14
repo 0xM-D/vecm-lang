@@ -59,22 +59,24 @@ const (
 	CONST    = "CONST"
 
 	// Type tokens
-	DASH_ARROW   = "->"
-	EQUALS_ARROW = "=>"
-	MAP_TYPE     = "map"
-	ARRAY_TYPE   = "[]"
+	DASH_ARROW    = "->"
+	EQUALS_ARROW  = "=>"
+	MAP_TYPE      = "map"
+	ARRAY_TYPE    = "[]"
+	FUNCTION_TYPE = "function"
 )
 
 var keywords = map[string]TokenType{
-	"fn":     FUNCTION,
-	"let":    LET,
-	"true":   TRUE,
-	"false":  FALSE,
-	"if":     IF,
-	"else":   ELSE,
-	"return": RETURN,
-	"const":  CONST,
-	"map":    MAP_TYPE,
+	"fn":       FUNCTION,
+	"let":      LET,
+	"true":     TRUE,
+	"false":    FALSE,
+	"if":       IF,
+	"else":     ELSE,
+	"return":   RETURN,
+	"const":    CONST,
+	"map":      MAP_TYPE,
+	"function": FUNCTION_TYPE,
 }
 
 func LookupIdent(ident string) TokenType {

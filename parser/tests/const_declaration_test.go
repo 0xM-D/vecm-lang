@@ -16,7 +16,7 @@ func TestConstDeclaration(t *testing.T) {
 	}{
 		{"const a := 10;", "a", "10"},
 		{"const bool a = true;", "a", "true"},
-		{"const c := fn(b) { return b * 2 };", "c", "fn(b)return (b * 2);"},
+		{"const c := fn(b: int)->int { return b * 2 };", "c", "fn(b:int)->int{return (b * 2);}"},
 		{"const a := {1: 2, 2: 3};", "a", "{1:2, 2:3}"},
 		{"const array e = [1, 2, 3, 4, 5];", "e", "[1, 2, 3, 4, 5]"},
 		{`const string f = "string value";`, "f", "string value"},

@@ -17,7 +17,8 @@ func TestTypedDeclaration(t *testing.T) {
 	}{
 		{"int a = 10;", "a", "int", "10"},
 		{"bool b = true;", "b", "bool", "true"},
-		{"function c = fn(b) { return b * 2 };", "c", "function", "fn(b)return (b * 2);"},
+		{"function(int) -> int c = fn(b:int)->int { return b * 2 };", "c", "function(int)->int", "fn(b:int)->int{return (b * 2);}"},
+		{"function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }", "sum", "function(int, int)->int", "fn(a:int,b:int)->int{return (a + b);}"},
 		{"map{ int -> int } d = {1: 2, 2: 3};", "d", "map{ int -> int }", "{1:2, 2:3}"},
 		{"int[] e = [1, 2, 3, 4, 5];", "e", "int[]", "[1, 2, 3, 4, 5]"},
 		{"int[][] e = [[1, 2, 3, 4, 5]];", "e", "int[][]", "[[1, 2, 3, 4, 5]]"},

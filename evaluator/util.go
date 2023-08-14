@@ -195,6 +195,16 @@ func evalType(typeNode ast.Type, env *object.Environment) object.ObjectType {
 	case ast.NamedType:
 		namedType, _ := env.GetObjectType(casted.Token.Literal)
 		return namedType
+	case ast.FunctionType:
+		parameterTypes := []object.ObjectType{}
+		var returnType object.ObjectType
+		if casted.ReturnType.Type != nil {
+			returnType = evalType(*casted.ReturnType.Type, env)
+		}
+		for _, p := range casted.ParameterTypes {
+			parameterTypes = append(parameterTypes, evalType(p, env))
+		}
+		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}
 	}
 
 	return nil
@@ -207,11 +217,11 @@ func declareVariable(declNode *ast.DeclarationStatement, expectedType object.Obj
 		return val
 	}
 
-	val = typeCast(val, expectedType, IMPLICIT_CAST)
+	// val = typeCast(val, expectedType, IMPLICIT_CAST)
 
-	if object.IsError(val) {
-		return val
-	}
+	// if object.IsError(val) {
+	// 	return val
+	// }
 
 	if expectedType != nil && !object.TypesMatch(expectedType, val.Type()) {
 		return newError("Expression of type %s cannot be assigned to %s", val.Type().Signature(), expectedType.Signature())
@@ -224,4 +234,14 @@ func declareVariable(declNode *ast.DeclarationStatement, expectedType object.Obj
 	}
 
 	return nil
+}
+
+func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) object.Object {
+	function := &object.Function{
+		Parameters:         node.Parameters,
+		Env:                env,
+		Body:               node.Body,
+		FunctionObjectType: *evalType(node.Type, env).(*object.FunctionObjectType),
+	}
+	return function
 }
