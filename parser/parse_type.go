@@ -68,13 +68,12 @@ func (p *Parser) parseFunctionType() ast.Type {
 	}
 	p.nextToken()
 
-	returnType := p.parseType()
+	functionType.ReturnType = p.parseType()
 
-	if returnType == nil {
+	if functionType.ReturnType == nil {
 		return nil
 	}
 
-	functionType.ReturnType = ast.ReturnType{Type: &returnType}
 	return functionType
 }
 

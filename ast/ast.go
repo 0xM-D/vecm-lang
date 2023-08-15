@@ -268,7 +268,7 @@ func (vu *VariableUpdateStatement) String() string {
 }
 
 func (ht HashType) typeNode()            {}
-func (ht HashType) TokenLiteral() string { return ht.TokenLiteral() }
+func (ht HashType) TokenLiteral() string { return ht.Token.Literal }
 func (ht HashType) String() string {
 	var out bytes.Buffer
 	out.WriteString("map{ ")
@@ -281,15 +281,15 @@ func (ht HashType) String() string {
 }
 
 func (at ArrayType) typeNode()            {}
-func (at ArrayType) TokenLiteral() string { return at.TokenLiteral() }
+func (at ArrayType) TokenLiteral() string { return at.Token.Literal }
 func (at ArrayType) String() string       { return at.ElementType.String() + "[]" }
 
 func (it NamedType) typeNode()            {}
-func (it NamedType) TokenLiteral() string { return it.TokenLiteral() }
+func (it NamedType) TokenLiteral() string { return it.Token.Literal }
 func (it NamedType) String() string       { return it.TypeName.String() }
 
 func (ft FunctionType) typeNode()            {}
-func (ft FunctionType) TokenLiteral() string { return ft.TokenLiteral() }
+func (ft FunctionType) TokenLiteral() string { return ft.Token.Literal }
 func (ft FunctionType) String() string {
 	var out bytes.Buffer
 
@@ -304,11 +304,4 @@ func (ft FunctionType) String() string {
 	out.WriteString(ft.ReturnType.String())
 
 	return out.String()
-}
-
-func (rt ReturnType) String() string {
-	if rt.Type == nil {
-		return "void"
-	}
-	return (*rt.Type).String()
 }

@@ -32,10 +32,6 @@ func ARRAY_OBJ() ArrayObjectType {
 	return ArrayObjectType{ElementType: INTEGER_OBJ()}
 }
 
-func FUNCTION_OBJ() FunctionObjectType {
-	return FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: INTEGER_OBJ()}
-}
-
-func RETURN_VALUE_OBJ() ReturnValueObjectType {
-	return ReturnValueObjectType{ReturnType: INTEGER_OBJ()}
+func VOID_OBJ() VoidObjectType {
+	return VoidObjectType{}
 }
