@@ -13,6 +13,7 @@ func TestFunctionApplication(t *testing.T) {
 		{"let add = fn(x: int, y: int) -> int { x + y; }; add(5, 5);", 10},
 		{"let add = fn(x: int, y: int) -> int { x + y; }; add(5 + 5, add(5, 5));", 20},
 		{"fn(x: int)-> int { x; }(5)", 5},
+		{"a := 3; b := 4; let add = fn(x: int, y: int) -> int { x + y; }; add(a, b);", 7},
 	}
 	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)

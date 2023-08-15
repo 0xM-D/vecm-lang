@@ -134,7 +134,7 @@ func extendFunctionEnv(
 ) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 	for paramIdx, param := range fn.Parameters {
-		env.Declare(param.Value, false, args[paramIdx])
+		env.Declare(param.Value, false, object.UnwrapReferenceObject(args[paramIdx]))
 	}
 	return env
 }
