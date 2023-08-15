@@ -24,15 +24,13 @@ func TestTypedDeclarationStatement(t *testing.T) {
 				ReturnValueType: object.INTEGER_OBJ(),
 			},
 		}},
-		// {"function()->void sum = fn() -> void {}; sum", ExpectedFunction{
-		// 	"fn(a, b) {" + "\n" +
-		// 		"return (a + b);" + "\n" +
-		// 		"}",
-		// 	object.FunctionObjectType{
-		// 		ParameterTypes:  []object.ObjectType{object.INTEGER_OBJ(), object.INTEGER_OBJ()},
-		// 		ReturnValueType: object.INTEGER_OBJ(),
-		// 	},
-		// }},
+		{"function()->void sum = fn() -> void {}; sum", ExpectedFunction{
+			"fn() {\n\n}",
+			object.FunctionObjectType{
+				ParameterTypes:  []object.ObjectType{},
+				ReturnValueType: object.VOID_OBJ(),
+			},
+		}},
 	}
 	for _, tt := range tests {
 		switch expected := tt.expected.(type) {

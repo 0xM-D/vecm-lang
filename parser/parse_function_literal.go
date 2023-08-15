@@ -19,12 +19,10 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	}
 	p.nextToken()
 
-	returnType := p.parseType()
-	if returnType == nil {
+	lit.Type.ReturnType = p.parseType()
+	if lit.Type.ReturnType == nil {
 		return nil
 	}
-
-	lit.Type.ReturnType = ast.ReturnType{Type: &returnType}
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil

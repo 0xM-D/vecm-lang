@@ -139,13 +139,13 @@ type VariableUpdateStatement struct {
 	Right    Expression
 }
 
+type VoidType struct {
+	Token token.Token
+}
+
 type NamedType struct {
 	Token    token.Token
 	TypeName Identifier
-}
-
-type ReturnType struct {
-	Type *Type // Nullable
 }
 
 type ArrayType struct {
@@ -162,5 +162,5 @@ type HashType struct {
 type FunctionType struct {
 	Token          token.Token
 	ParameterTypes []Type
-	ReturnType     ReturnType
+	ReturnType     Type
 }

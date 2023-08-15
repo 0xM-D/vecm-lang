@@ -173,9 +173,9 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 }
 
 func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *object.Environment) object.Object {
-	objectType := evalType(node.Type, env)
-	if objectType == nil {
-		return newError("Unknown type: %s", node.Type.String())
+	objectType, err := evalType(node.Type, env)
+	if err != nil {
+		return newError(err.Error())
 	}
 
 	error := declareVariable(&(*node).DeclarationStatement, objectType, env)
@@ -186,28 +186,48 @@ func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *obj
 	return nil
 }
 
-func evalType(typeNode ast.Type, env *object.Environment) object.ObjectType {
+func evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, error) {
 	switch casted := typeNode.(type) {
 	case ast.HashType:
-		return &object.HashObjectType{KeyType: evalType(casted.KeyType, env), ValueType: evalType(casted.ValueType, env)}
+		keyType, err := evalType(casted.KeyType, env)
+		if err != nil {
+			return nil, err
+		}
+		valueType, err := evalType(casted.ValueType, env)
+		if err != nil {
+			return nil, err
+		}
+		return &object.HashObjectType{KeyType: keyType, ValueType: valueType}, nil
 	case ast.ArrayType:
-		return &object.ArrayObjectType{ElementType: evalType(casted.ElementType, env)}
+		elementType, err := evalType(casted.ElementType, env)
+		if err != nil {
+			return nil, err
+		}
+		return &object.ArrayObjectType{ElementType: elementType}, nil
 	case ast.NamedType:
-		namedType, _ := env.GetObjectType(casted.Token.Literal)
-		return namedType
+		namedType, found := env.GetObjectType(casted.TokenLiteral())
+		if !found {
+			return nil, fmt.Errorf("Unknown type %s in: %s", casted.TokenLiteral(), typeNode.String())
+		}
+		return namedType, nil
 	case ast.FunctionType:
 		parameterTypes := []object.ObjectType{}
-		var returnType object.ObjectType
-		if casted.ReturnType.Type != nil {
-			returnType = evalType(*casted.ReturnType.Type, env)
+		returnType, err := evalType(casted.ReturnType, env)
+		if err != nil {
+			return nil, err
 		}
+
 		for _, p := range casted.ParameterTypes {
-			parameterTypes = append(parameterTypes, evalType(p, env))
+			paramType, err := evalType(p, env)
+			if err != nil {
+				return nil, err
+			}
+			parameterTypes = append(parameterTypes, paramType)
 		}
-		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}
+		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}, nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("Unknown type: %s", typeNode.String())
 }
 
 func declareVariable(declNode *ast.DeclarationStatement, expectedType object.ObjectType, env *object.Environment) object.Object {
@@ -217,11 +237,16 @@ func declareVariable(declNode *ast.DeclarationStatement, expectedType object.Obj
 		return val
 	}
 
-	// val = typeCast(val, expectedType, IMPLICIT_CAST)
+	if expectedType != nil {
+		cast := typeCast(val, expectedType, IMPLICIT_CAST)
+		if !object.IsError(cast) {
+			val = cast
+		}
+	}
 
-	// if object.IsError(val) {
-	// 	return val
-	// }
+	if object.IsError(val) {
+		return val
+	}
 
 	if expectedType != nil && !object.TypesMatch(expectedType, val.Type()) {
 		return newError("Expression of type %s cannot be assigned to %s", val.Type().Signature(), expectedType.Signature())
@@ -237,11 +262,16 @@ func declareVariable(declNode *ast.DeclarationStatement, expectedType object.Obj
 }
 
 func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) object.Object {
+	functionType, err := evalType(node.Type, env)
+	if err != nil {
+		return newError(err.Error())
+	}
+
 	function := &object.Function{
 		Parameters:         node.Parameters,
 		Env:                env,
 		Body:               node.Body,
-		FunctionObjectType: *evalType(node.Type, env).(*object.FunctionObjectType),
+		FunctionObjectType: *functionType.(*object.FunctionObjectType),
 	}
 	return function
 }

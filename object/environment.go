@@ -11,6 +11,7 @@ var GLOBAL_TYPES = map[string]ObjectType{
 	"bool":   BOOLEAN_OBJ(),
 	"null":   NULL_OBJ(),
 	"string": STRING_OBJ(),
+	"void":   VOID_OBJ(),
 }
 
 func NewEnvironment() *Environment {
