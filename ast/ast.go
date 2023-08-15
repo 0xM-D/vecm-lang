@@ -141,15 +141,18 @@ func (fl *FunctionLiteral) String() string {
 	var out bytes.Buffer
 
 	params := []string{}
-	for _, p := range fl.Parameters {
-		params = append(params, p.String())
+	for index, p := range fl.Parameters {
+		params = append(params, p.String()+":"+fl.Type.ParameterTypes[index].String())
 	}
 
 	out.WriteString(fl.TokenLiteral())
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ","))
-	out.WriteString(")")
+	out.WriteString(")->")
+	out.WriteString(fl.Type.ReturnType.String())
+	out.WriteString("{")
 	out.WriteString(fl.Body.String())
+	out.WriteString("}")
 
 	return out.String()
 }
@@ -260,6 +263,45 @@ func (vu *VariableUpdateStatement) String() string {
 	out.WriteString(vu.Operator)
 	out.WriteString(" ")
 	out.WriteString(vu.Right.String())
+
+	return out.String()
+}
+
+func (ht HashType) typeNode()            {}
+func (ht HashType) TokenLiteral() string { return ht.Token.Literal }
+func (ht HashType) String() string {
+	var out bytes.Buffer
+	out.WriteString("map{ ")
+	out.WriteString(ht.KeyType.String())
+	out.WriteString(" -> ")
+	out.WriteString(ht.ValueType.String())
+	out.WriteString(" }")
+
+	return out.String()
+}
+
+func (at ArrayType) typeNode()            {}
+func (at ArrayType) TokenLiteral() string { return at.Token.Literal }
+func (at ArrayType) String() string       { return at.ElementType.String() + "[]" }
+
+func (it NamedType) typeNode()            {}
+func (it NamedType) TokenLiteral() string { return it.Token.Literal }
+func (it NamedType) String() string       { return it.TypeName.String() }
+
+func (ft FunctionType) typeNode()            {}
+func (ft FunctionType) TokenLiteral() string { return ft.Token.Literal }
+func (ft FunctionType) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range ft.ParameterTypes {
+		params = append(params, p.String())
+	}
+
+	out.WriteString("function(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")->")
+	out.WriteString(ft.ReturnType.String())
 
 	return out.String()
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/0xM-D/interpreter/parser"
 )
 
-func testEval(input string) object.ObjectValue {
+func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
@@ -18,7 +18,7 @@ func testEval(input string) object.ObjectValue {
 	return evaluator.Eval(program, env)
 }
 
-func testNullObject(t *testing.T, obj object.ObjectValue) bool {
+func testNullObject(t *testing.T, obj object.Object) bool {
 	if obj != evaluator.NULL {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
 		return false
@@ -26,12 +26,14 @@ func testNullObject(t *testing.T, obj object.ObjectValue) bool {
 	return true
 }
 
-func testIntegerObject(t *testing.T, obj object.ObjectValue, expected int64) bool {
-	result, ok := obj.(*object.Integer)
-	if !ok {
+func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+	if !object.IsInteger(obj) {
 		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Integer)
+
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
 			result.Value, expected)
@@ -40,12 +42,14 @@ func testIntegerObject(t *testing.T, obj object.ObjectValue, expected int64) boo
 	return true
 }
 
-func testStringObject(t *testing.T, obj object.ObjectValue, expected string) bool {
-	result, ok := obj.(*object.String)
-	if !ok {
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	if !object.IsString(obj) {
 		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.String)
+
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%q, want=%q",
 			result.Value, expected)
@@ -54,12 +58,14 @@ func testStringObject(t *testing.T, obj object.ObjectValue, expected string) boo
 	return true
 }
 
-func testArrayObject(t *testing.T, obj object.ObjectValue, expected []string) bool {
-	result, ok := obj.(*object.Array)
-	if !ok {
+func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
+	if !object.IsArray(obj) {
 		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Array)
+
 	if len(result.Elements) != len(expected) {
 		t.Errorf("Incorrect array length. expected=%d. got=%d", len(result.Elements), len(expected))
 		return false
@@ -70,5 +76,54 @@ func testArrayObject(t *testing.T, obj object.ObjectValue, expected []string) bo
 			return false
 		}
 	}
+	return true
+}
+
+type ExpectedFunction struct {
+	String string
+	Type   object.FunctionObjectType
+}
+
+func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFunction) bool {
+	if !object.IsFunction(obj) {
+		t.Errorf("object is not Function. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Function)
+
+	if !testFunctionType(t, obj.Type(), expected.Type) {
+
+	}
+
+	if result.Inspect() != expected.String {
+		t.Errorf("function body incorrect. got=\n%s\n, want=\n%s",
+			result.Inspect(), expected.String)
+		return false
+	}
+
+	return true
+}
+
+func testFunctionType(t *testing.T, objectType object.ObjectType, expected object.FunctionObjectType) bool {
+	functionType, ok := objectType.(*object.FunctionObjectType)
+	if !ok {
+		t.Errorf("objectType is not function. got=%s", objectType.Signature())
+		return false
+	}
+
+	for index, pt := range functionType.ParameterTypes {
+		expectedSignature := expected.ParameterTypes[index].Signature()
+		if pt.Signature() != expectedSignature {
+			t.Errorf("function parameter %d has wrong type. got=%s, want=%s", index, objectType.Signature(), expectedSignature)
+			return false
+		}
+	}
+
+	if functionType.ReturnValueType.Signature() != expected.ReturnValueType.Signature() {
+		t.Errorf("function return value has wrong type. got=%s, want=%s", functionType.ReturnValueType.Signature(), expected.ReturnValueType.Signature())
+		return false
+	}
+
 	return true
 }

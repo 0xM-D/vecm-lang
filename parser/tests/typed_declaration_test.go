@@ -17,9 +17,13 @@ func TestTypedDeclaration(t *testing.T) {
 	}{
 		{"int a = 10;", "a", "int", "10"},
 		{"bool b = true;", "b", "bool", "true"},
-		{"function c = fn(b) { return b * 2 };", "c", "function", "fn(b)return (b * 2);"},
-		{"map d = {1: 2, 2: 3};", "d", "map", "{1:2, 2:3}"},
-		{"array e = [1, 2, 3, 4, 5];", "e", "array", "[1, 2, 3, 4, 5]"},
+		{"function(int) -> int c = fn(b:int)->int { return b * 2 };", "c", "function(int)->int", "fn(b:int)->int{return (b * 2);}"},
+		{"function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }", "sum", "function(int, int)->int", "fn(a:int,b:int)->int{return (a + b);}"},
+		{"map{ int -> int } d = {1: 2, 2: 3};", "d", "map{ int -> int }", "{1:2, 2:3}"},
+		{"int[] e = [1, 2, 3, 4, 5];", "e", "int[]", "[1, 2, 3, 4, 5]"},
+		{"int[][] e = [[1, 2, 3, 4, 5]];", "e", "int[][]", "[[1, 2, 3, 4, 5]]"},
+		{`map{ string -> int }[] d = [{"foo": 2, "bar": 3}];`, "d", "map{ string -> int }[]", `[{foo:2, bar:3}]`},
+		{`map{ string -> int[] }[] d = [{"foo": [1, 2], "bar": [3, 4]}];`, "d", "map{ string -> int[] }[]", `[{foo:[1, 2], bar:[3, 4]}]`},
 		{`string f = "string value";`, "f", "string", "string value"},
 	}
 
@@ -41,6 +45,10 @@ func TestTypedDeclaration(t *testing.T) {
 
 		if decl.Name.Value != tt.expectedName {
 			t.Fatalf("decl.Name is not %q. got=%q", tt.expectedName, decl.Name.Value)
+		}
+
+		if decl.Type == nil {
+			t.Fatalf("decl.Type is null")
 		}
 
 		if decl.Type.String() != tt.expectedType {

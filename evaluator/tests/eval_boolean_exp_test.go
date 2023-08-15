@@ -37,12 +37,14 @@ func TestEvalBooleanExpression(t *testing.T) {
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }
-func testBooleanObject(t *testing.T, obj object.ObjectValue, expected bool) bool {
-	result, ok := obj.(*object.Boolean)
-	if !ok {
+func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
+	if !object.IsBoolean(obj) {
 		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
 		return false
 	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Boolean)
+
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%t, want=%t",
 			result.Value, expected)

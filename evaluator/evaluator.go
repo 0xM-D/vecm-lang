@@ -5,7 +5,7 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
+func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
@@ -17,7 +17,7 @@ func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 		return nativeBoolToBooleanObject(node.Value)
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
-		if isError(right) {
+		if object.IsError(right) {
 			return right
 		}
 		return evalPrefixExpression(node.Operator, right)
@@ -29,10 +29,10 @@ func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 		return evalIfExpression(node, env)
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
-		if isError(val) {
+		if object.IsError(val) {
 			return val
 		}
-		return &object.ReturnValue{Value: val}
+		return &object.ReturnValue{Value: val, ReturnValueObjectType: object.ReturnValueObjectType{ReturnType: val.Type()}}
 	case *ast.LetStatement:
 		error := declareVariable(&(*node).DeclarationStatement, nil, env)
 		if error != nil {
@@ -41,16 +41,14 @@ func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
-		params := node.Parameters
-		body := node.Body
-		return &object.Function{Parameters: params, Env: env, Body: body}
+		return evalFunctionLiteral(node, env)
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
-		if isError(function) {
+		if object.IsError(function) {
 			return function
 		}
 		args := evalExpressions(node.Arguments, env)
-		if len(args) == 1 && isError(args[0]) {
+		if len(args) == 1 && object.IsError(args[0]) {
 			return args[0]
 		}
 		return applyFunction(function, args)
@@ -58,22 +56,20 @@ func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 		return &object.String{Value: node.Value}
 	case *ast.ArrayLiteral:
 		elements := evalExpressions(node.Elements, env)
-
-		if len(elements) == 1 && isError(elements[0]) {
+		if len(elements) == 1 && object.IsError(elements[0]) {
 			return elements[0]
 		}
-
-		return &object.Array{Elements: elements}
+		return &object.Array{Elements: elements, ArrayObjectType: object.ARRAY_OBJ()}
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
-		if isError(left) {
+		if object.IsError(left) {
 			return left
 		}
 		index := Eval(node.Index, env)
-		if isError(index) {
+		if object.IsError(index) {
 			return index
 		}
-		return evalIndexExpression(left, index)
+		return evalIndexExpression(object.UnwrapReferenceObject(left), object.UnwrapReferenceObject(index))
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
@@ -91,30 +87,31 @@ func Eval(node ast.Node, env *object.Environment) object.ObjectValue {
 	return nil
 }
 
-func evalProgram(program *ast.Program, env *object.Environment) object.ObjectValue {
-	var result object.ObjectValue
+func evalProgram(program *ast.Program, env *object.Environment) object.Object {
+	var result object.Object
 
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
 
-		switch result := result.(type) {
-		case *object.ReturnValue:
-			return result.Value
-		case *object.Error:
-			return result
+		if result != nil {
+			if object.IsError(result) {
+				return result
+			}
+			if object.IsReturnValue(result) {
+				return unwrapReturnValue(result)
+			}
 		}
 	}
 	return result
 }
 
-func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.ObjectValue {
-	var result object.ObjectValue
+func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
+	var result object.Object
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
 
 		if result != nil {
-			rt := result.Type()
-			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+			if object.IsError(result) || object.IsReturnValue(result) {
 				return result
 			}
 		}
@@ -122,8 +119,8 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 	return result
 }
 
-func applyFunction(fn object.ObjectValue, args []object.ObjectValue) object.ObjectValue {
-	function, ok := fn.(*object.Function)
+func applyFunction(fn object.Object, args []object.Object) object.Object {
+	function, ok := object.UnwrapReferenceObject(fn).(*object.Function)
 	if !ok {
 		return newError("not a function: %s", fn.Type())
 	}
@@ -133,7 +130,7 @@ func applyFunction(fn object.ObjectValue, args []object.ObjectValue) object.Obje
 }
 func extendFunctionEnv(
 	fn *object.Function,
-	args []object.ObjectValue,
+	args []object.Object,
 ) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 	for paramIdx, param := range fn.Parameters {
@@ -142,7 +139,7 @@ func extendFunctionEnv(
 	return env
 }
 
-func unwrapReturnValue(obj object.ObjectValue) object.ObjectValue {
+func unwrapReturnValue(obj object.Object) object.Object {
 	if returnValue, ok := obj.(*object.ReturnValue); ok {
 		return returnValue.Value
 	}

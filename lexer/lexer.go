@@ -41,8 +41,27 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.PLUS_ASSIGN, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.PLUS, l.ch)
+		}
 	case '-':
-		tok = newToken(token.MINUS, l.ch)
+		tok = newToken(token.PLUS, l.ch)
+		switch l.peekChar() {
+		case '=':
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.MINUS_ASSIGN, Literal: string(ch) + string(l.ch)}
+		case '>':
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.DASH_ARROW, Literal: string(ch) + string(l.ch)}
+		default:
+			tok = newToken(token.MINUS, l.ch)
+		}
 	case '!':
 		if l.peekChar() == '=' {
 			ch := l.ch
@@ -52,9 +71,21 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.BANG, l.ch)
 		}
 	case '/':
-		tok = newToken(token.SLASH, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.SLASH_ASSIGN, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.SLASH, l.ch)
+		}
 	case '*':
-		tok = newToken(token.ASTERISK, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.ASTERISK_ASSIGN, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.ASTERISK, l.ch)
+		}
 	case '<':
 		tok = newToken(token.LT, l.ch)
 	case '>':
@@ -67,7 +98,13 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
 	case '[':
-		tok = newToken(token.LBRACKET, l.ch)
+		if l.peekChar() == ']' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.ARRAY_TYPE, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.LBRACKET, l.ch)
+		}
 	case ']':
 		tok = newToken(token.RBRACKET, l.ch)
 	case ':':

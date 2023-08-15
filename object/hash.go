@@ -6,16 +6,34 @@ import (
 	"strings"
 )
 
+type HashObjectType struct {
+	KeyType   ObjectType
+	ValueType ObjectType
+}
+
+func (h *HashObjectType) Signature() string {
+	var out bytes.Buffer
+
+	out.WriteString("{")
+	out.WriteString(h.KeyType.Signature())
+	out.WriteString(" -> ")
+	out.WriteString(h.ValueType.Signature())
+	out.WriteString("}")
+
+	return out.String()
+}
+
 type Hashable interface {
 	HashKey() HashKey
 }
 
 type HashPair struct {
-	Key   ObjectValue
-	Value ObjectValue
+	Key   Object
+	Value Object
 }
 
 type Hash struct {
+	HashObjectType
 	Pairs map[HashKey]HashPair
 }
 
@@ -33,4 +51,4 @@ func (h *Hash) Inspect() string {
 
 	return out.String()
 }
-func (h *Hash) Type() ObjectType { return HASH_OBJ }
+func (h *Hash) Type() ObjectType { return &h.HashObjectType }

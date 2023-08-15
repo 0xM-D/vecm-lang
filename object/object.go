@@ -1,23 +1,19 @@
 package object
 
-type ObjectType string
-type ObjectValue interface {
+type ObjectType interface {
+	Signature() string
+}
+
+type Object interface {
 	Type() ObjectType
 	Inspect() string
 }
-type Object struct {
-	Value      ObjectValue
+
+type ObjectReference struct {
+	Object     Object
 	IsConstant bool
+	Identifier string
 }
 
-const (
-	INTEGER_OBJ      = "int"
-	BOOLEAN_OBJ      = "bool"
-	NULL_OBJ         = "null"
-	RETURN_VALUE_OBJ = "returnvalue"
-	ERROR_OBJ        = "error"
-	FUNCTION_OBJ     = "function"
-	STRING_OBJ       = "string"
-	ARRAY_OBJ        = "array"
-	HASH_OBJ         = "hash"
-)
+func (or *ObjectReference) Type() ObjectType { return or.Object.Type() }
+func (or *ObjectReference) Inspect() string  { return or.Object.Inspect() }
