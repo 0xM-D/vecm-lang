@@ -94,10 +94,19 @@ func TestErrorHandling(t *testing.T) {
 			`const int a = 3; a += 1`,
 			"Cannot assign to const variable",
 		},
+		{
+			`fun := fn()->void {}; fun(1)`,
+			"Incorrect parameter count for function() -> void fun. expected=0, got=1",
+		},
+		{
+			`fun := fn(a: int, b: int)->int { return a + b; }; fun()`,
+			"Incorrect parameter count for function(int, int) -> int fun. expected=2, got=0",
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		if !object.IsError(evaluated) {
+
+		if evaluated == nil || !object.IsError(evaluated) {
 			t.Errorf("no error object returned. got=%T(%+v)",
 				evaluated, evaluated)
 			continue

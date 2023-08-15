@@ -124,6 +124,11 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	if !ok {
 		return newError("not a function: %s", fn.Type())
 	}
+
+	if len(function.Parameters) != len(args) {
+		return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.Parameters), len(args))
+	}
+
 	extendedEnv := extendFunctionEnv(function, args)
 	evaluated := Eval(function.Body, extendedEnv)
 	return unwrapReturnValue(evaluated)

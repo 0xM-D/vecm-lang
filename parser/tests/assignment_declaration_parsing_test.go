@@ -20,6 +20,7 @@ func TestAssignmentDeclaration(t *testing.T) {
 		{"d := {1: 2, 2: 3};", "d", "{1:2, 2:3}"},
 		{"e := [1, 2, 3, 4, 5];", "e", "[1, 2, 3, 4, 5]"},
 		{`f := "string value";`, "f", "string value"},
+		{"fun := fn()->void {};", "fun", "fn()->void{}"},
 	}
 
 	for _, tt := range tests {
