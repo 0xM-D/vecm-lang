@@ -103,8 +103,16 @@ func evalExpressions(
 
 }
 
-func evalAccessExpression(left object.Object, right string) object.Object {
-	return newError("fasdfsda")
+func evalAccessExpression(left object.Object, right string, env *object.Environment) object.Object {
+	member := left.Type().Builtins().Get(right)
+	if member == nil {
+		return &object.Null{}
+	}
+
+	if object.IsBuiltinFunction(member) {
+		return object.BuiltinFunction{BoundParams: []object.Object{left}, Function: member.Function, FunctionObjectType: member.FunctionObjectType, Name: member.Name}
+	}
+	return member
 }
 
 func evalIndexExpression(left, index object.Object) object.Object {

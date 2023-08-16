@@ -33,6 +33,10 @@ func IsFunction(i Object) bool {
 	return i.Type().Kind() == FunctionKind
 }
 
+func IsBuiltinFunction(i Object) bool {
+	return i.Type().Kind() == BuiltinFunctionKind
+}
+
 func IsReturnValue(i Object) bool {
 	_, ok := UnwrapReferenceObject(i).Type().(ReturnValueObjectType)
 	return ok

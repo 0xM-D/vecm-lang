@@ -31,7 +31,6 @@ var castRules = map[CastRuleSignature]CastRule{
 func typeCast(obj object.Object, targetType object.ObjectType, implicit bool) object.Object {
 	fromSignature := obj.Type().Signature()
 	toSignature := targetType.Signature()
-	println(fromSignature, toSignature)
 	castRuleSignature := CastRuleSignature{fromSignature, toSignature}
 
 	castRule, castRuleExists := castRules[castRuleSignature]
