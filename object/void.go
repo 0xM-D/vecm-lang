@@ -1,10 +1,6 @@
 package object
 
-type VoidObjectType struct{}
-
-func (n VoidObjectType) Signature() string { return "void" }
-
 type Void struct{}
 
-func (n *Void) Type() ObjectType { return VOID_OBJ() }
-func (n *Void) Inspect() string  { return "void" }
+func (n *Void) Type() ObjectType { return VoidKind }
+func (n *Void) Inspect() string  { return VoidKind.Signature() }

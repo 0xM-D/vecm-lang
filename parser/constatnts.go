@@ -13,6 +13,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
+	ACCESS      // type.member or type.memberFn()
 	INDEX       // array[index]
 	ASSIGN      // a = b
 )
@@ -34,4 +35,5 @@ var precedences = map[token.TokenType]int{
 	token.MINUS_ASSIGN:    ASSIGN,
 	token.ASTERISK_ASSIGN: ASSIGN,
 	token.SLASH_ASSIGN:    ASSIGN,
+	token.ACCESS:          ACCESS,
 }

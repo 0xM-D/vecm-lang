@@ -34,8 +34,8 @@ func TestFunctionLiteralParsing(t *testing.T) {
 		t.Fatalf("function literal parameters wrong. want 2, got=%d\n", len(function.Parameters))
 	}
 
-	testLiteralExpression(t, function.Parameters[0], "x")
-	testLiteralExpression(t, function.Parameters[1], "y")
+	testLiteralExpression(t, function.Parameters[0], TestIdentifier{"x"})
+	testLiteralExpression(t, function.Parameters[1], TestIdentifier{"y"})
 
 	if len(function.Body.Statements) != 1 {
 		t.Fatalf("function.Body.Statements has not 1 statements. got=%d\n",
@@ -48,6 +48,6 @@ func TestFunctionLiteralParsing(t *testing.T) {
 			function.Body.Statements[0])
 	}
 
-	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+	testInfixExpression(t, bodyStmt.Expression, TestIdentifier{"x"}, "+", TestIdentifier{"y"})
 
 }

@@ -25,11 +25,13 @@ var castRules = map[CastRuleSignature]CastRule{
 	{"int", "string"}:                         {false, intToString},
 	{"{string -> string}", "{int -> string}"}: {true, castEmptyMap},
 	{"int[]", "string[]"}:                     {true, castEmptyArray},
+	{"any[]", "int[]"}:                        {true, castEmptyArray},
 }
 
 func typeCast(obj object.Object, targetType object.ObjectType, implicit bool) object.Object {
 	fromSignature := obj.Type().Signature()
 	toSignature := targetType.Signature()
+	println(fromSignature, toSignature)
 	castRuleSignature := CastRuleSignature{fromSignature, toSignature}
 
 	castRule, castRuleExists := castRules[castRuleSignature]
@@ -54,7 +56,7 @@ func castEmptyMap(obj object.Object) object.Object {
 	if len(hash.Pairs) != 0 {
 		return newError("Can't cast non empty hash")
 	}
-	return &object.Hash{Pairs: hash.Pairs, HashObjectType: object.HashObjectType{KeyType: object.INTEGER_OBJ(), ValueType: object.STRING_OBJ()}}
+	return &object.Hash{Pairs: hash.Pairs, HashObjectType: object.HashObjectType{KeyType: object.IntegerKind, ValueType: object.IntegerKind}}
 }
 
 func castEmptyArray(obj object.Object) object.Object {
@@ -62,5 +64,5 @@ func castEmptyArray(obj object.Object) object.Object {
 	if len(array.Elements) != 0 {
 		return newError("Can't cast non empty array")
 	}
-	return &object.Array{Elements: array.Elements, ArrayObjectType: object.ArrayObjectType{ElementType: object.STRING_OBJ()}}
+	return &object.Array{Elements: array.Elements, ArrayObjectType: object.ArrayObjectType{ElementType: object.StringKind}}
 }

@@ -103,6 +103,10 @@ func evalExpressions(
 
 }
 
+func evalAccessExpression(left object.Object, right string) object.Object {
+	return newError("fasdfsda")
+}
+
 func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case object.IsArray(left) && object.IsInteger(index):
@@ -153,7 +157,7 @@ func evalHashLiteral(
 		pairs[hashed] = object.HashPair{Key: key, Value: value}
 	}
 
-	return &object.Hash{Pairs: pairs, HashObjectType: object.HASH_OBJ()}
+	return &object.Hash{Pairs: pairs, HashObjectType: object.HashObjectType{KeyType: object.AnyKind, ValueType: object.AnyKind}}
 }
 
 func evalHashIndexExpression(hash, index object.Object) object.Object {

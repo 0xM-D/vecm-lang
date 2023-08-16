@@ -4,7 +4,9 @@ type ReturnValueObjectType struct {
 	ReturnType ObjectType
 }
 
-func (r ReturnValueObjectType) Signature() string { return "R" + r.ReturnType.Signature() }
+func (r ReturnValueObjectType) Signature() string             { return r.ReturnType.Signature() }
+func (r ReturnValueObjectType) Kind() ObjectKind              { return r.ReturnType.Kind() }
+func (r ReturnValueObjectType) Builtins() *FunctionRepository { return r.ReturnType.Kind().Builtins() }
 
 type ReturnValue struct {
 	ReturnValueObjectType

@@ -23,6 +23,9 @@ func (h *HashObjectType) Signature() string {
 	return out.String()
 }
 
+func (h *HashObjectType) Kind() ObjectKind              { return HashKind }
+func (h *HashObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
+
 type Hashable interface {
 	HashKey() HashKey
 }

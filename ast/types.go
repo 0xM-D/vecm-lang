@@ -119,6 +119,12 @@ type IndexExpression struct {
 	Index Expression
 }
 
+type AccessExpression struct {
+	Token token.Token
+	Left  Expression
+	Right Expression
+}
+
 type HashLiteral struct {
 	Token token.Token
 	Pairs map[Expression]Expression

@@ -2,6 +2,7 @@ package parser_tests
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -60,6 +61,26 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	return true
 }
 
+func testStringLiteral(t *testing.T, exp ast.Expression, value string) bool {
+	str, ok := exp.(*ast.StringLiteral)
+	if !ok {
+		t.Errorf("str not *ast.StringLiteral. got=%T", exp)
+		return false
+	}
+
+	if str.Value != value {
+		t.Errorf("str.Value not %s. got=%s", value, str.Value)
+		return false
+	}
+
+	if str.TokenLiteral() != value {
+		t.Errorf("str.TokenLiteral not %s. got=%s", value, str.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
 func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 	boolean, ok := exp.(*ast.Boolean)
 	if !ok {
@@ -80,19 +101,41 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 	return true
 }
 
+type TestIdentifier struct {
+	string
+}
+
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+
+	expectedKind := reflect.TypeOf(expected).Kind()
+	if expectedKind == reflect.Array || expectedKind == reflect.Slice {
+
+		arrayLiteral := exp.(*ast.ArrayLiteral)
+		expectedElements := expected.([]interface{})
+
+		for i, exp := range arrayLiteral.Elements {
+			if !testLiteralExpression(t, exp, expectedElements[i]) {
+				return false
+			}
+		}
+
+		return true
+	}
+
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
 	case int64:
 		return testIntegerLiteral(t, exp, v)
 	case string:
-		return testIdentifier(t, exp, v)
+		return testStringLiteral(t, exp, v)
+	case TestIdentifier:
+		return testIdentifier(t, exp, v.string)
 	case bool:
 		return testBooleanLiteral(t, exp, v)
 	}
 
-	t.Errorf("type of exp not handled. got=%T", exp)
+	t.Errorf("type of exp not handled. got=%T %T", exp, expected)
 	return false
 }
 
@@ -112,6 +155,24 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, ope
 	}
 
 	if !testLiteralExpression(t, opExp.Right, right) {
+		return false
+	}
+
+	return true
+}
+
+func testAccessExpression(t *testing.T, exp ast.Expression, left interface{}, right interface{}) bool {
+	accessExp, ok := exp.(*ast.AccessExpression)
+
+	if !ok {
+		t.Errorf("exp is not ast.AccessExpression. got=%T(%s)", exp, exp)
+	}
+
+	if !testLiteralExpression(t, accessExp.Left, left) {
+		return false
+	}
+
+	if !testLiteralExpression(t, accessExp.Right, right) {
 		return false
 	}
 

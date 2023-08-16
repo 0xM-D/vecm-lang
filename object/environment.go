@@ -6,12 +6,12 @@ type Environment struct {
 	outer     *Environment
 }
 
-var GLOBAL_TYPES = map[string]ObjectType{
-	"int":    INTEGER_OBJ(),
-	"bool":   BOOLEAN_OBJ(),
-	"null":   NULL_OBJ(),
-	"string": STRING_OBJ(),
-	"void":   VOID_OBJ(),
+var GLOBAL_TYPES = map[ObjectKind]bool{
+	IntegerKind: true,
+	BooleanKind: true,
+	NullKind:    true,
+	StringKind:  true,
+	VoidKind:    true,
 }
 
 func NewEnvironment() *Environment {
@@ -28,9 +28,9 @@ func (e *Environment) Get(name string) *ObjectReference {
 }
 
 func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
-	objectType, ok := GLOBAL_TYPES[name]
-	if ok {
-		return objectType, true
+	_, exists := GLOBAL_TYPES[ObjectKind(name)]
+	if exists {
+		return ObjectKind(name), true
 	}
 	obj, ok := e.typeStore[name]
 	if !ok && e.outer != nil {
