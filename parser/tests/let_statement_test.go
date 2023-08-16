@@ -11,12 +11,12 @@ import (
 func TestLetStatements(t *testing.T) {
 	tests := []struct {
 		input              string
-		expectedIdentifier string
+		expectedIdentifier TestIdentifier
 		expectedValue      interface{}
 	}{
-		{"let x = 5;", "x", 5},
-		{"let y = true;", "y", true},
-		{"let foobar = y;", "foobar", "y"},
+		{"let x = 5;", TestIdentifier{"x"}, 5},
+		{"let y = true;", TestIdentifier{"y"}, true},
+		{"let foobar = y;", TestIdentifier{"foobar"}, TestIdentifier{"y"}},
 	}
 
 	for _, tt := range tests {
@@ -42,7 +42,7 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+func testLetStatement(t *testing.T, s ast.Statement, name TestIdentifier) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
 		return false
@@ -54,12 +54,12 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 		return false
 	}
 
-	if letStmt.Name.Value != name {
+	if letStmt.Name.Value != name.string {
 		t.Errorf("letStmt.Name.Value not '%s'. got=%s", name, letStmt.Name.Value)
 		return false
 	}
 
-	if letStmt.Name.TokenLiteral() != name {
+	if letStmt.Name.TokenLiteral() != name.string {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name)
 		return false
 	}

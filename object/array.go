@@ -9,7 +9,9 @@ type ArrayObjectType struct {
 	ElementType ObjectType
 }
 
-func (a *ArrayObjectType) Signature() string { return a.ElementType.Signature() + "[]" }
+func (a *ArrayObjectType) Signature() string             { return a.ElementType.Signature() + "[]" }
+func (a *ArrayObjectType) Kind() ObjectKind              { return ArrayKind }
+func (a *ArrayObjectType) Builtins() *FunctionRepository { return ArrayKind.Builtins() }
 
 type Array struct {
 	ArrayObjectType

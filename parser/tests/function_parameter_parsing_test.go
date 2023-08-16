@@ -11,11 +11,11 @@ import (
 func TestFunctionParameterParsing(t *testing.T) {
 	tests := []struct {
 		input          string
-		expectedParams []string
+		expectedParams []TestIdentifier
 	}{
-		{input: "fn()->void {};", expectedParams: []string{}},
-		{input: "fn(x: int)->void {};", expectedParams: []string{"x"}},
-		{input: "fn(x: int, y: string, z: map{int -> string})->void {};", expectedParams: []string{"x", "y", "z"}},
+		{input: "fn()->void {};", expectedParams: []TestIdentifier{}},
+		{input: "fn(x: int)->void {};", expectedParams: []TestIdentifier{{"x"}}},
+		{input: "fn(x: int, y: string, z: map{int -> string})->void {};", expectedParams: []TestIdentifier{{"x"}, {"y"}, {"z"}}},
 	}
 	for _, tt := range tests {
 		l := lexer.New(tt.input)

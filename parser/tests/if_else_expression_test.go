@@ -33,7 +33,7 @@ func TestIfElseExpression(t *testing.T) {
 			stmt.Expression)
 	}
 
-	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+	if !testInfixExpression(t, exp.Condition, TestIdentifier{"x"}, "<", TestIdentifier{"y"}) {
 		return
 	}
 

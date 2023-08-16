@@ -20,15 +20,15 @@ func TestTypedDeclarationStatement(t *testing.T) {
 				"return (a + b);" + "\n" +
 				"}",
 			object.FunctionObjectType{
-				ParameterTypes:  []object.ObjectType{object.INTEGER_OBJ(), object.INTEGER_OBJ()},
-				ReturnValueType: object.INTEGER_OBJ(),
+				ParameterTypes:  []object.ObjectType{object.IntegerKind, object.IntegerKind},
+				ReturnValueType: object.IntegerKind,
 			},
 		}},
 		{"function()->void sum = fn() -> void {}; sum", ExpectedFunction{
 			"fn() {\n\n}",
 			object.FunctionObjectType{
 				ParameterTypes:  []object.ObjectType{},
-				ReturnValueType: object.VOID_OBJ(),
+				ReturnValueType: object.VoidKind,
 			},
 		}},
 	}

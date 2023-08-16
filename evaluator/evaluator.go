@@ -56,10 +56,14 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.String{Value: node.Value}
 	case *ast.ArrayLiteral:
 		elements := evalExpressions(node.Elements, env)
+		var elementType object.ObjectType = object.AnyKind
 		if len(elements) == 1 && object.IsError(elements[0]) {
 			return elements[0]
 		}
-		return &object.Array{Elements: elements, ArrayObjectType: object.ARRAY_OBJ()}
+		if len(elements) > 0 {
+			elementType = elements[0].Type()
+		}
+		return &object.Array{Elements: elements, ArrayObjectType: object.ArrayObjectType{ElementType: elementType}}
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if object.IsError(left) {
@@ -70,6 +74,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return index
 		}
 		return evalIndexExpression(object.UnwrapReferenceObject(left), object.UnwrapReferenceObject(index))
+	case *ast.AccessExpression:
+		left := Eval(node.Left, env)
+		if object.IsError(left) {
+			return left
+		}
+		right, ok := node.Right.(*ast.Identifier)
+		if !ok {
+			return newError("Right side of access expression is not an identifier")
+		}
+		return evalAccessExpression(object.UnwrapReferenceObject(left), right.Value, env)
+
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
@@ -120,19 +135,31 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := object.UnwrapReferenceObject(fn).(*object.Function)
-	if !ok {
-		return newError("not a function: %s", fn.Type())
-	}
+	switch {
+	case object.IsFunction(fn):
+		function := object.UnwrapReferenceObject(fn).(*object.Function)
 
-	if len(function.Parameters) != len(args) {
-		return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.Parameters), len(args))
-	}
+		if len(function.ParameterTypes) != len(args) {
+			return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.ParameterTypes), len(args))
+		}
 
-	extendedEnv := extendFunctionEnv(function, args)
-	evaluated := Eval(function.Body, extendedEnv)
-	return unwrapReturnValue(evaluated)
+		extendedEnv := extendFunctionEnv(function, args)
+		evaluated := Eval(function.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
+	case object.IsBuiltinFunction(fn):
+		function := object.UnwrapReferenceObject(fn).(object.BuiltinFunction)
+
+		if len(function.ParameterTypes) != len(args) {
+			return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.ParameterTypes), len(args))
+		}
+		params := make([]object.Object, len(args)+len(function.BoundParams))
+		copy(params, function.BoundParams)
+		return function.Function(append(params, args...)...)
+	default:
+		return newError("object is not a function: %s", fn.Inspect())
+	}
 }
+
 func extendFunctionEnv(
 	fn *object.Function,
 	args []object.Object,

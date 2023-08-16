@@ -103,6 +103,18 @@ func evalExpressions(
 
 }
 
+func evalAccessExpression(left object.Object, right string, env *object.Environment) object.Object {
+	member := left.Type().Builtins().Get(right)
+	if member == nil {
+		return &object.Null{}
+	}
+
+	if object.IsBuiltinFunction(member) {
+		return object.BuiltinFunction{BoundParams: []object.Object{left}, Function: member.Function, FunctionObjectType: member.FunctionObjectType, Name: member.Name}
+	}
+	return member
+}
+
 func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case object.IsArray(left) && object.IsInteger(index):
@@ -153,7 +165,7 @@ func evalHashLiteral(
 		pairs[hashed] = object.HashPair{Key: key, Value: value}
 	}
 
-	return &object.Hash{Pairs: pairs, HashObjectType: object.HASH_OBJ()}
+	return &object.Hash{Pairs: pairs, HashObjectType: object.HashObjectType{KeyType: object.AnyKind, ValueType: object.AnyKind}}
 }
 
 func evalHashIndexExpression(hash, index object.Object) object.Object {

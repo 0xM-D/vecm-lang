@@ -1,43 +1,40 @@
 package object
 
 func IsInteger(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*IntegerObjectType)
-	return ok
+	return i.Type().Kind() == IntegerKind
 }
 
 func IsBoolean(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*BooleanObjectType)
-	return ok
+	return i.Type().Kind() == BooleanKind
+
 }
 
 func IsNull(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*NullObjectType)
-	return ok
+	return i.Type().Kind() == NullKind
 }
 
 func IsString(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*StringObjectType)
-	return ok
+	return i.Type().Kind() == StringKind
 }
 
 func IsError(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*ErrorObjectType)
-	return ok
+	return i.Type().Kind() == ErrorKind
 }
 
 func IsArray(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*ArrayObjectType)
-	return ok
+	return i.Type().Kind() == ArrayKind
 }
 
 func IsHash(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*HashObjectType)
-	return ok
+	return i.Type().Kind() == HashKind
 }
 
 func IsFunction(i Object) bool {
-	_, ok := UnwrapReferenceObject(i).Type().(*FunctionObjectType)
-	return ok
+	return i.Type().Kind() == FunctionKind
+}
+
+func IsBuiltinFunction(i Object) bool {
+	return i.Type().Kind() == BuiltinFunctionKind
 }
 
 func IsReturnValue(i Object) bool {

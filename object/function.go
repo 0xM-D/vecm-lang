@@ -28,6 +28,9 @@ func (f FunctionObjectType) Signature() string {
 	return out.String()
 }
 
+func (f FunctionObjectType) Kind() ObjectKind              { return FunctionKind }
+func (f FunctionObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
+
 type Function struct {
 	FunctionObjectType
 	Parameters []*ast.Identifier

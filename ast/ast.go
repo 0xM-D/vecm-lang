@@ -208,6 +208,18 @@ func (ie *IndexExpression) String() string {
 	return out.String()
 }
 
+func (ae *AccessExpression) expressionNode()      {}
+func (ae *AccessExpression) TokenLiteral() string { return ae.Token.Literal }
+func (ae *AccessExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ae.Left.String())
+	out.WriteString(".")
+	out.WriteString(ae.Right.String())
+
+	return out.String()
+}
+
 func (hl *HashLiteral) expressionNode()      {}
 func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
 func (hl *HashLiteral) String() string {
