@@ -15,6 +15,8 @@ func TestTypeBuiltins(t *testing.T) {
 		{`"bleh".length()`, 4},
 		{"1.toString()", "1"},
 		{"(123*456).toString()", "56088"},
+		{"let arr = [1, 2, 3]; arr.push(4); arr.size()", 4},
+		{"[].push(1).size();", 1},
 	}
 	for _, tt := range tests {
 		switch expected := tt.expected.(type) {

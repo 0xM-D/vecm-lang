@@ -55,7 +55,7 @@ func initArrayBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
 	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, arraySize)
-	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, arraySize)
+	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: IntegerKind}, arrayPush)
 
 	return &repo
 }
@@ -80,6 +80,6 @@ func arrayPush(params ...Object) Object {
 	elem := params[1]
 
 	arr.Elements = append(arr.Elements, elem)
-
+	println(len(arr.Elements))
 	return arr
 }
