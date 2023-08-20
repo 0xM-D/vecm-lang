@@ -13,6 +13,8 @@ func (o ObjectKind) Builtins() *FunctionRepository { return intrinsicTypeFunctio
 const (
 	Invalid             ObjectKind = "invalid"
 	IntegerKind         ObjectKind = "int"
+	Float32Kind         ObjectKind = "float32"
+	Float64Kind         ObjectKind = "float64"
 	BooleanKind         ObjectKind = "bool"
 	StringKind          ObjectKind = "string"
 	ArrayKind           ObjectKind = "array"
@@ -61,18 +63,18 @@ func initArrayBuiltins() *FunctionRepository {
 }
 
 func intToString(params ...Object) Object {
-	integer := params[0].(*Integer)
+	integer := params[0].(Number[int64])
 	return &String{strconv.FormatInt(integer.Value, 10)}
 }
 
 func stringLength(params ...Object) Object {
 	str := params[0].(*String)
-	return &Integer{int64(len(str.Value))}
+	return Number[int64]{int64(len(str.Value))}
 }
 
 func arraySize(params ...Object) Object {
 	arr := params[0].(*Array)
-	return &Integer{int64(len(arr.Elements))}
+	return Number[int64]{int64(len(arr.Elements))}
 }
 
 func arrayPush(params ...Object) Object {
@@ -80,6 +82,5 @@ func arrayPush(params ...Object) Object {
 	elem := params[1]
 
 	arr.Elements = append(arr.Elements, elem)
-	println(len(arr.Elements))
 	return arr
 }

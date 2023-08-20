@@ -33,8 +33,14 @@ str += "f"
 a -= 4
 bff *= "nadza"
 div /= 1
+1.2f
+.123434f
+3f
+1.2312
+.1
+123.1
+123
 `
-
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -140,6 +146,13 @@ div /= 1
 		{token.IDENT, "div"},
 		{token.SLASH_ASSIGN, "/="},
 		{token.INT, "1"},
+		{token.FLOAT32, "1.2f"},
+		{token.FLOAT32, ".123434f"},
+		{token.FLOAT32, "3f"},
+		{token.FLOAT64, "1.2312"},
+		{token.FLOAT64, ".1"},
+		{token.FLOAT64, "123.1"},
+		{token.INT, "123"},
 		{token.EOF, ""}}
 
 	l := New(input)

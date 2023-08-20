@@ -75,6 +75,18 @@ func (il *IntegerLiteral) String() string {
 	return il.Token.Literal
 }
 
+func (fp *Float64Literal) expressionNode()      {}
+func (fp *Float64Literal) TokenLiteral() string { return fp.Token.Literal }
+func (fp *Float64Literal) String() string {
+	return fp.Token.Literal
+}
+
+func (fp *Float32Literal) expressionNode()      {}
+func (fp *Float32Literal) TokenLiteral() string { return fp.Token.Literal }
+func (fp *Float32Literal) String() string {
+	return fp.Token.Literal
+}
+
 func (pe *PrefixExpression) expressionNode()      {}
 func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
 func (pe *PrefixExpression) String() string {

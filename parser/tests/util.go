@@ -43,6 +43,36 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+func testFloat32Literal(t *testing.T, fl ast.Expression, value float32) bool {
+	float, ok := fl.(*ast.Float32Literal)
+	if !ok {
+		t.Errorf("fl not *ast.Float32Literal. got=%T", fl)
+		return false
+	}
+
+	if float.Value != value {
+		t.Errorf("float.Value not %f. got=%f", value, float.Value)
+		return false
+	}
+
+	return true
+}
+
+func testFloat64Literal(t *testing.T, fl ast.Expression, value float64) bool {
+	float, ok := fl.(*ast.Float64Literal)
+	if !ok {
+		t.Errorf("fl not *ast.Float64Literal. got=%T", fl)
+		return false
+	}
+
+	if float.Value != value {
+		t.Errorf("float.Value not %f. got=%f", value, float.Value)
+		return false
+	}
+
+	return true
+}
+
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
