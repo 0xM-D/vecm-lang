@@ -34,12 +34,28 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) readNumber() string {
+func (l *Lexer) readNumber() (token.TokenType, string) {
 	position := l.position
+	tokenType := token.INT
+
 	for isDigit(l.ch) {
 		l.readChar()
 	}
-	return l.input[position:l.position]
+
+	if l.ch == '.' && isDigit(l.peekChar()) {
+		tokenType = token.FLOAT64
+		l.readChar()
+
+		for isDigit(l.ch) {
+			l.readChar()
+		}
+	}
+
+	if l.ch == 'f' {
+		tokenType = token.FLOAT32
+		l.readChar()
+	}
+	return tokenType, l.input[position:l.position]
 }
 
 func isLetter(ch byte) bool {

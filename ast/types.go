@@ -60,6 +60,16 @@ type IntegerLiteral struct {
 	Value int64
 }
 
+type Float32Literal struct {
+	Token token.Token
+	Value float32
+}
+
+type Float64Literal struct {
+	Token token.Token
+	Value float64
+}
+
 type PrefixExpression struct {
 	Token    token.Token
 	Operator string

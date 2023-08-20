@@ -12,7 +12,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
 	case *ast.IntegerLiteral:
-		return &object.Integer{Value: node.Value}
+		return object.Number[int64]{Value: node.Value}
+	case *ast.Float32Literal:
+		return object.Number[float32]{Value: node.Value}
+	case *ast.Float64Literal:
+		return object.Number[float64]{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
 	case *ast.PrefixExpression:

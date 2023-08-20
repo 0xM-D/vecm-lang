@@ -4,9 +4,24 @@ func IsInteger(i Object) bool {
 	return i.Type().Kind() == IntegerKind
 }
 
+func IsFloat32(i Object) bool {
+	return i.Type().Kind() == Float32Kind
+}
+
+func IsFloat64(i Object) bool {
+	return i.Type().Kind() == Float64Kind
+}
+
+func IsFloat(i Object) bool {
+	return IsFloat32(i) || IsFloat64(i)
+}
+
+func IsNumber(i Object) bool {
+	return IsInteger(i) || IsFloat(i)
+}
+
 func IsBoolean(i Object) bool {
 	return i.Type().Kind() == BooleanKind
-
 }
 
 func IsNull(i Object) bool {
