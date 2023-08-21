@@ -60,3 +60,12 @@ func (l *Lexer) readString() string {
 	}
 	return l.input[position:l.position]
 }
+
+func (l *Lexer) getTokenWithPeek(c byte, singleCharToken token.TokenType, twoCharsToken token.TokenType) token.Token {
+	if l.peekChar() == c {
+		ch := l.ch
+		l.readChar()
+		return token.Token{Type: twoCharsToken, Literal: string(ch) + string(l.ch)}
+	}
+	return newToken(singleCharToken, l.ch)
+}

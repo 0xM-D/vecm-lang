@@ -29,11 +29,18 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"foobar / barfoo;", TestIdentifier{"foobar"}, "/", TestIdentifier{"barfoo"}},
 		{"foobar > barfoo;", TestIdentifier{"foobar"}, ">", TestIdentifier{"barfoo"}},
 		{"foobar < barfoo;", TestIdentifier{"foobar"}, "<", TestIdentifier{"barfoo"}},
+		{"foobar >= barfoo;", TestIdentifier{"foobar"}, ">=", TestIdentifier{"barfoo"}},
+		{"foobar <= barfoo;", TestIdentifier{"foobar"}, "<=", TestIdentifier{"barfoo"}},
 		{"foobar == barfoo;", TestIdentifier{"foobar"}, "==", TestIdentifier{"barfoo"}},
 		{"foobar != barfoo;", TestIdentifier{"foobar"}, "!=", TestIdentifier{"barfoo"}},
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"true && false", true, "&&", false},
+		{"false || false", false, "||", false},
+		{"foobar & barfoo;", TestIdentifier{"foobar"}, "&", TestIdentifier{"barfoo"}},
+		{"foobar | barfoo;", TestIdentifier{"foobar"}, "|", TestIdentifier{"barfoo"}},
+		{"foobar ^ barfoo;", TestIdentifier{"foobar"}, "^", TestIdentifier{"barfoo"}},
 	}
 
 	for _, tt := range infixTests {

@@ -32,10 +32,23 @@ const (
 	ASTERISK_ASSIGN = "*="
 	SLASH_ASSIGN    = "/="
 
+	// Comparison operators
 	LT     = "<"
 	GT     = ">"
+	LTE    = "<="
+	GTE    = ">="
 	EQ     = "=="
 	NOT_EQ = "!="
+
+	// Boolean operators
+	AND = "&&"
+	OR  = "||"
+
+	// Bitwise operators
+	B_AND = "&"
+	B_OR  = "|"
+	B_XOR = "^"
+	B_INV = "~"
 
 	// Delimiters
 	COMMA     = ","

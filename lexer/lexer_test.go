@@ -33,6 +33,9 @@ str += "f"
 a -= 4
 bff *= "nadza"
 div /= 1
+5 <= 10 >= 5;
+true && false || true
+~0 ^ (123 & 111 | 0)
 `
 
 	tests := []struct {
@@ -140,6 +143,27 @@ div /= 1
 		{token.IDENT, "div"},
 		{token.SLASH_ASSIGN, "/="},
 		{token.INT, "1"},
+		{token.INT, "5"},
+		{token.LTE, "<="},
+		{token.INT, "10"},
+		{token.GTE, ">="},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.TRUE, "true"},
+		{token.AND, "&&"},
+		{token.FALSE, "false"},
+		{token.OR, "||"},
+		{token.TRUE, "true"},
+		{token.B_INV, "~"},
+		{token.INT, "0"},
+		{token.B_XOR, "^"},
+		{token.LPAREN, "("},
+		{token.INT, "123"},
+		{token.B_AND, "&"},
+		{token.INT, "111"},
+		{token.B_OR, "|"},
+		{token.INT, "0"},
+		{token.RPAREN, ")"},
 		{token.EOF, ""}}
 
 	l := New(input)

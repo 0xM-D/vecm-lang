@@ -120,6 +120,26 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add(a * b[2], b[1], 2 * [1, 2][1])",
 			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
 		},
+		{
+			"(a < b && a > c)",
+			"((a < b) && (a > c))",
+		},
+		{
+			"(a < b && a > c || c != d)",
+			"(((a < b) && (a > c)) || (c != d))",
+		},
+		{
+			"a * b < c + d * e && a == c || -d != e / f",
+			"((((a * b) < (c + (d * e))) && (a == c)) || ((-d) != (e / f)))",
+		},
+		{
+			"~a & b | c == 13 * 4",
+			"(((~a) & b) | (c == (13 * 4)))",
+		},
+		{
+			"(~a & b | c) == 13 * 4",
+			"((((~a) & b) | c) == (13 * 4))",
+		},
 	}
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
