@@ -30,9 +30,16 @@ var infixEvalFns = map[OperatorFnSignature]InfixEvalFn{
 	{"-=", "int", "int"}: integerMinusEquals,
 	{"*=", "int", "int"}: integerTimesEquals,
 	{"/=", "int", "int"}: integerDivideEquals,
+	{"&", "int", "int"}:  integerDivideEquals,
+	{"|", "int", "int"}:  integerDivideEquals,
+	{"^", "int", "int"}:  integerDivideEquals,
+	{"<<", "int", "int"}: integerDivideEquals,
+	{">>", "int", "int"}: integerDivideEquals,
 
 	{"==", "bool", "bool"}: booleanEquals,
 	{"!=", "bool", "bool"}: booleanNotEquals,
+	{"&&", "bool", "bool"}: booleanEquals,
+	{"||", "bool", "bool"}: booleanNotEquals,
 
 	{"+", "string", "string"}:  stringAddition,
 	{"+=", "string", "string"}: stringPlusEquals,

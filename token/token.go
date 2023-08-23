@@ -45,10 +45,12 @@ const (
 	OR  = "||"
 
 	// Bitwise operators
-	B_AND = "&"
-	B_OR  = "|"
-	B_XOR = "^"
-	B_INV = "~"
+	B_AND     = "&"
+	B_OR      = "|"
+	B_XOR     = "^"
+	B_INV     = "~"
+	B_SHIFT_L = "<<"
+	B_SHIFT_R = ">>"
 
 	// Delimiters
 	COMMA     = ","

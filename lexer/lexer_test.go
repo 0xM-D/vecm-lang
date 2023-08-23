@@ -36,6 +36,8 @@ div /= 1
 5 <= 10 >= 5;
 true && false || true
 ~0 ^ (123 & 111 | 0)
+foo << 3
+foo >> bar
 `
 
 	tests := []struct {
@@ -164,6 +166,12 @@ true && false || true
 		{token.B_OR, "|"},
 		{token.INT, "0"},
 		{token.RPAREN, ")"},
+		{token.IDENT, "foo"},
+		{token.B_SHIFT_L, "<<"},
+		{token.INT, "3"},
+		{token.IDENT, "foo"},
+		{token.B_SHIFT_R, ">>"},
+		{token.IDENT, "bar"},
 		{token.EOF, ""}}
 
 	l := New(input)

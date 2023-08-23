@@ -140,6 +140,14 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"(~a & b | c) == 13 * 4",
 			"((((~a) & b) | c) == (13 * 4))",
 		},
+		{
+			"a << 3 == 0",
+			"((a << 3) == 0)",
+		},
+		{
+			"a >> b && 3",
+			"((a >> b) && 3)",
+		},
 	}
 	for _, tt := range tests {
 		l := lexer.New(tt.input)

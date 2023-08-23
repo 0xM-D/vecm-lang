@@ -24,7 +24,7 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		tok = l.getTokenWithPeek('=', token.ASSIGN, token.EQ)
+		tok = l.getTokenWithPeek(token.ASSIGN, TokenMapping{'=', token.EQ})
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '(':
@@ -34,7 +34,7 @@ func (l *Lexer) NextToken() token.Token {
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
-		tok = l.getTokenWithPeek('=', token.PLUS, token.PLUS_ASSIGN)
+		tok = l.getTokenWithPeek(token.PLUS, TokenMapping{'=', token.PLUS_ASSIGN})
 	case '-':
 		tok = newToken(token.PLUS, l.ch)
 		switch l.peekChar() {
@@ -50,15 +50,15 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.MINUS, l.ch)
 		}
 	case '!':
-		tok = l.getTokenWithPeek('=', token.BANG, token.NOT_EQ)
+		tok = l.getTokenWithPeek(token.BANG, TokenMapping{'=', token.NOT_EQ})
 	case '/':
-		tok = l.getTokenWithPeek('=', token.SLASH, token.SLASH_ASSIGN)
+		tok = l.getTokenWithPeek(token.SLASH, TokenMapping{'=', token.SLASH_ASSIGN})
 	case '*':
-		tok = l.getTokenWithPeek('=', token.ASTERISK, token.ASTERISK_ASSIGN)
+		tok = l.getTokenWithPeek(token.ASTERISK, TokenMapping{'=', token.ASTERISK_ASSIGN})
 	case '<':
-		tok = l.getTokenWithPeek('=', token.LT, token.LTE)
+		tok = l.getTokenWithPeek(token.LT, TokenMapping{'=', token.LTE}, TokenMapping{'<', token.B_SHIFT_L})
 	case '>':
-		tok = l.getTokenWithPeek('=', token.GT, token.GTE)
+		tok = l.getTokenWithPeek(token.GT, TokenMapping{'=', token.GTE}, TokenMapping{'>', token.B_SHIFT_R})
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
@@ -67,17 +67,17 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
 	case '[':
-		tok = l.getTokenWithPeek(']', token.LBRACKET, token.ARRAY_TYPE)
+		tok = l.getTokenWithPeek(token.LBRACKET, TokenMapping{']', token.ARRAY_TYPE})
 	case ']':
 		tok = newToken(token.RBRACKET, l.ch)
 	case '.':
 		tok = newToken(token.ACCESS, l.ch)
 	case ':':
-		tok = l.getTokenWithPeek('=', token.COLON, token.DECL_ASSIGN)
+		tok = l.getTokenWithPeek(token.COLON, TokenMapping{'=', token.DECL_ASSIGN})
 	case '&':
-		tok = l.getTokenWithPeek('&', token.B_AND, token.AND)
+		tok = l.getTokenWithPeek(token.B_AND, TokenMapping{'&', token.AND})
 	case '|':
-		tok = l.getTokenWithPeek('|', token.B_OR, token.OR)
+		tok = l.getTokenWithPeek(token.B_OR, TokenMapping{'|', token.OR})
 	case '^':
 		tok = newToken(token.B_XOR, l.ch)
 	case '~':
