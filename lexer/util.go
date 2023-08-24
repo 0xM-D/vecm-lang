@@ -76,3 +76,20 @@ func (l *Lexer) readString() string {
 	}
 	return l.input[position:l.position]
 }
+
+type TokenMapping struct {
+	byte
+	token.TokenType
+}
+
+func (l *Lexer) getTokenWithPeek(defaultToken token.TokenType, tokenMappings ...TokenMapping) token.Token {
+	for _, tokenMapping := range tokenMappings {
+		if l.peekChar() == tokenMapping.byte {
+			ch := l.ch
+			l.readChar()
+			return token.Token{Type: tokenMapping.TokenType, Literal: string(ch) + string(l.ch)}
+		}
+	}
+
+	return newToken(defaultToken, l.ch)
+}

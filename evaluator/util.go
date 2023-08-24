@@ -20,6 +20,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 		return evalBangOperatorExpression(right)
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
+	case "~":
+		return evalTildePrefixOperatorExpression(right)
 	default:
 		return newError("unknown operator: %s%s", operator, right.Type())
 	}
@@ -40,6 +42,16 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 		return object.Number[float32]{Value: -right.(object.Number[float32]).Value}
 	case object.Float64Kind:
 		return object.Number[float64]{Value: -right.(object.Number[float64]).Value}
+	default:
+		return newError("unknown operator: -%s", right.Type().Signature())
+
+	}
+}
+
+func evalTildePrefixOperatorExpression(right object.Object) object.Object {
+	switch right.Type() {
+	case object.IntegerKind:
+		return object.Number[int64]{Value: ^right.(object.Number[int64]).Value}
 	default:
 		return newError("unknown operator: -%s", right.Type().Signature())
 

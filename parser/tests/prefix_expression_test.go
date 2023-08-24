@@ -18,6 +18,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 		{"-15", "-", 15},
 		{"!true;", "!", true},
 		{"!false;", "!", false},
+		{"~1;", "~", 1},
 	}
 
 	for _, tt := range prefixTests {

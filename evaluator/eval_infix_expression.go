@@ -17,6 +17,14 @@ type InfixEvalFn func(object.Object, object.Object, *object.Environment) object.
 var infixEvalFns = map[OperatorFnSignature]InfixEvalFn{
 	{"==", string(object.BooleanKind), string(object.BooleanKind)}: booleanEquals,
 	{"!=", string(object.BooleanKind), string(object.BooleanKind)}: booleanNotEquals,
+	{"&&", string(object.BooleanKind), string(object.BooleanKind)}: booleanAnd,
+	{"||", string(object.BooleanKind), string(object.BooleanKind)}: booleanOr,
+
+	{"&", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseAnd,
+	{"|", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseOr,
+	{"^", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseXor,
+	{">>", string(object.IntegerKind), string(object.IntegerKind)}: integerBitwiseShiftRight,
+	{"<<", string(object.IntegerKind), string(object.IntegerKind)}: integerBitwiseShiftLeft,
 
 	{"+", string(object.StringKind), string(object.StringKind)}:  stringAddition,
 	{"+=", string(object.StringKind), string(object.StringKind)}: stringPlusEquals,
@@ -40,12 +48,13 @@ func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) obj
 		return assignment(left, right, env)
 	}
 
-	if object.IsNumber(left) && object.IsNumber(right) {
+	operatorFnSignature := OperatorFnSignature{Operator: operator, LType: left.Type().Signature(), RType: right.Type().Signature()}
+	evalFn := infixEvalFns[operatorFnSignature]
+
+	if evalFn == nil && object.IsNumber(left) && object.IsNumber(right) {
 		return evalNumberInfixExpression(left, right, operator, env)
 	}
 
-	operatorFnSignature := OperatorFnSignature{Operator: operator, LType: left.Type().Signature(), RType: right.Type().Signature()}
-	evalFn := infixEvalFns[operatorFnSignature]
 	if evalFn == nil {
 		return newError("operator %s not defined on types %s and %s", operatorFnSignature.Operator, operatorFnSignature.LType, operatorFnSignature.RType)
 	}
@@ -71,6 +80,10 @@ func evalNumberInfixExpression(left object.Object, right object.Object, operator
 		return numberGreaterThan(left, right, env)
 	case string(token.LT):
 		return numberLessThan(left, right, env)
+	case string(token.LTE):
+		return numberGreaterThan(left, right, env)
+	case string(token.GTE):
+		return numberLessThan(left, right, env)
 	case string(token.PLUS_ASSIGN):
 		return numberPlusEquals(left, right, env)
 	case string(token.MINUS_ASSIGN):
@@ -79,6 +92,7 @@ func evalNumberInfixExpression(left object.Object, right object.Object, operator
 		return numberTimesEquals(left, right, env)
 	case string(token.SLASH_ASSIGN):
 		return numberDivideEquals(left, right, env)
+
 	default:
 		return newError("operator %s not defined on types %s and %s", operator, left.Type().Signature(), right.Type().Signature())
 	}
@@ -114,6 +128,26 @@ func equals[T int64 | float32 | float64](a object.Object, b object.Object) *obje
 
 func notEquals[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
 	return nativeBoolToBooleanObject(a.(object.Number[T]).Value != b.(object.Number[T]).Value)
+}
+
+func integerBitwiseAnd(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value & b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseOr(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value | b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseXor(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value ^ b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseShiftLeft(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value << b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseShiftRight(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value >> b.(object.Number[int64]).Value}
 }
 
 func numberAddition(left object.Object, right object.Object, env *object.Environment) object.Object {
@@ -189,6 +223,14 @@ func numberLessThan(left object.Object, right object.Object, env *object.Environ
 	}
 
 	return nil
+}
+
+func numberLessThanEqual(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return evalBangOperatorExpression(numberGreaterThan(left, right, env))
+}
+
+func numberGreaterThanEqual(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return evalBangOperatorExpression(numberLessThan(left, right, env))
 }
 
 func numberGreaterThan(left object.Object, right object.Object, env *object.Environment) object.Object {
@@ -278,6 +320,20 @@ func booleanNotEquals(left object.Object, right object.Object, env *object.Envir
 	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value != rightBool.Value)
+}
+
+func booleanAnd(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+
+	return nativeBoolToBooleanObject(leftBool.Value && rightBool.Value)
+}
+
+func booleanOr(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+
+	return nativeBoolToBooleanObject(leftBool.Value || rightBool.Value)
 }
 
 func stringAddition(left object.Object, right object.Object, env *object.Environment) object.Object {

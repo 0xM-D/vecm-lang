@@ -34,10 +34,25 @@ const (
 	ASTERISK_ASSIGN TokenType = "*="
 	SLASH_ASSIGN    TokenType = "/="
 
-	LT     TokenType = "<"
-	GT     TokenType = ">"
-	EQ     TokenType = "=="
-	NOT_EQ TokenType = "!="
+	// Comparison operators
+	LT     = "<"
+	GT     = ">"
+	LTE    = "<="
+	GTE    = ">="
+	EQ     = "=="
+	NOT_EQ = "!="
+
+	// Boolean operators
+	AND = "&&"
+	OR  = "||"
+
+	// Bitwise operators
+	B_AND     = "&"
+	B_OR      = "|"
+	B_XOR     = "^"
+	B_INV     = "~"
+	B_SHIFT_L = "<<"
+	B_SHIFT_R = ">>"
 
 	// Delimiters
 	COMMA     TokenType = ","
