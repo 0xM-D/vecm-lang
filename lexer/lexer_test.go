@@ -38,8 +38,14 @@ true && false || true
 ~0 ^ (123 & 111 | 0)
 foo << 3
 foo >> bar
+1.2f
+.123434f
+3f
+1.2312
+.1
+123.1
+123
 `
-
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -172,6 +178,13 @@ foo >> bar
 		{token.IDENT, "foo"},
 		{token.B_SHIFT_R, ">>"},
 		{token.IDENT, "bar"},
+		{token.FLOAT32, "1.2f"},
+		{token.FLOAT32, ".123434f"},
+		{token.FLOAT32, "3f"},
+		{token.FLOAT64, "1.2312"},
+		{token.FLOAT64, ".1"},
+		{token.FLOAT64, "123.1"},
+		{token.INT, "123"},
 		{token.EOF, ""}}
 
 	l := New(input)

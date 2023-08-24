@@ -8,6 +8,8 @@ type Environment struct {
 
 var GLOBAL_TYPES = map[ObjectKind]bool{
 	IntegerKind: true,
+	Float32Kind: true,
+	Float64Kind: true,
 	BooleanKind: true,
 	NullKind:    true,
 	StringKind:  true,

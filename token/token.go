@@ -8,29 +8,31 @@ type Token struct {
 }
 
 const (
-	ILLEGAL = "ILLEGAL"
-	EOF     = "EOF"
+	ILLEGAL TokenType = "ILLEGAL"
+	EOF     TokenType = "EOF"
 
 	// Identifiers + literals
-	IDENT  = "IDENT"
-	INT    = "INT"
-	STRING = "STRING"
+	IDENT   TokenType = "IDENT"
+	INT     TokenType = "INT"
+	FLOAT32 TokenType = "FLOAT32"
+	FLOAT64 TokenType = "FLOAT64"
+	STRING  TokenType = "STRING"
 
 	// Operators
-	PLUS     = "+"
-	MINUS    = "-"
-	BANG     = "!"
-	ASTERISK = "*"
-	SLASH    = "/"
-	ACCESS   = "."
+	PLUS     TokenType = "+"
+	MINUS    TokenType = "-"
+	BANG     TokenType = "!"
+	ASTERISK TokenType = "*"
+	SLASH    TokenType = "/"
+	ACCESS   TokenType = "."
 
 	// Assignment operators
-	ASSIGN          = "="
-	DECL_ASSIGN     = ":="
-	PLUS_ASSIGN     = "+="
-	MINUS_ASSIGN    = "-="
-	ASTERISK_ASSIGN = "*="
-	SLASH_ASSIGN    = "/="
+	ASSIGN          TokenType = "="
+	DECL_ASSIGN     TokenType = ":="
+	PLUS_ASSIGN     TokenType = "+="
+	MINUS_ASSIGN    TokenType = "-="
+	ASTERISK_ASSIGN TokenType = "*="
+	SLASH_ASSIGN    TokenType = "/="
 
 	// Comparison operators
 	LT     = "<"
@@ -53,33 +55,33 @@ const (
 	B_SHIFT_R = ">>"
 
 	// Delimiters
-	COMMA     = ","
-	SEMICOLON = ";"
-	COLON     = ":"
+	COMMA     TokenType = ","
+	SEMICOLON TokenType = ";"
+	COLON     TokenType = ":"
 
-	LPAREN   = "("
-	RPAREN   = ")"
-	LBRACE   = "{"
-	RBRACE   = "}"
-	LBRACKET = "["
-	RBRACKET = "]"
+	LPAREN   TokenType = "("
+	RPAREN   TokenType = ")"
+	LBRACE   TokenType = "{"
+	RBRACE   TokenType = "}"
+	LBRACKET TokenType = "["
+	RBRACKET TokenType = "]"
 
 	// Keywords
-	FUNCTION = "FUNCTION"
-	LET      = "LET"
-	TRUE     = "TRUE"
-	FALSE    = "FALSE"
-	IF       = "IF"
-	ELSE     = "ELSE"
-	RETURN   = "RETURN"
-	CONST    = "CONST"
+	FUNCTION TokenType = "FUNCTION"
+	LET      TokenType = "LET"
+	TRUE     TokenType = "TRUE"
+	FALSE    TokenType = "FALSE"
+	IF       TokenType = "IF"
+	ELSE     TokenType = "ELSE"
+	RETURN   TokenType = "RETURN"
+	CONST    TokenType = "CONST"
 
 	// Type tokens
-	DASH_ARROW    = "->"
-	EQUALS_ARROW  = "=>"
-	MAP_TYPE      = "map"
-	ARRAY_TYPE    = "[]"
-	FUNCTION_TYPE = "function"
+	DASH_ARROW    TokenType = "->"
+	EQUALS_ARROW  TokenType = "=>"
+	MAP_TYPE      TokenType = "map"
+	ARRAY_TYPE    TokenType = "[]"
+	FUNCTION_TYPE TokenType = "function"
 )
 
 var keywords = map[string]TokenType{

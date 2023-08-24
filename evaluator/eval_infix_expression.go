@@ -3,6 +3,7 @@ package evaluator
 import (
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/object"
+	"github.com/0xM-D/interpreter/token"
 )
 
 type OperatorFnSignature struct {
@@ -14,39 +15,24 @@ type OperatorFnSignature struct {
 type InfixEvalFn func(object.Object, object.Object, *object.Environment) object.Object
 
 var infixEvalFns = map[OperatorFnSignature]InfixEvalFn{
-	{"=", "int", "int"}:       assignment,
-	{"=", "string", "string"}: assignment,
-	{"=", "bool", "bool"}:     assignment,
+	{"==", string(object.BooleanKind), string(object.BooleanKind)}: booleanEquals,
+	{"!=", string(object.BooleanKind), string(object.BooleanKind)}: booleanNotEquals,
+	{"&&", string(object.BooleanKind), string(object.BooleanKind)}: booleanAnd,
+	{"||", string(object.BooleanKind), string(object.BooleanKind)}: booleanOr,
 
-	{"+", "int", "int"}:  integerAddition,
-	{"-", "int", "int"}:  integerSubtraction,
-	{"*", "int", "int"}:  integerMultiplication,
-	{"/", "int", "int"}:  integerDivision,
-	{"==", "int", "int"}: integerEquals,
-	{"!=", "int", "int"}: integerNotEquals,
-	{"<", "int", "int"}:  integerLessThan,
-	{">", "int", "int"}:  integerGreaterThan,
-	{"+=", "int", "int"}: integerPlusEquals,
-	{"-=", "int", "int"}: integerMinusEquals,
-	{"*=", "int", "int"}: integerTimesEquals,
-	{"/=", "int", "int"}: integerDivideEquals,
-	{"&", "int", "int"}:  integerDivideEquals,
-	{"|", "int", "int"}:  integerDivideEquals,
-	{"^", "int", "int"}:  integerDivideEquals,
-	{"<<", "int", "int"}: integerDivideEquals,
-	{">>", "int", "int"}: integerDivideEquals,
+	{"&", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseAnd,
+	{"|", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseOr,
+	{"^", string(object.IntegerKind), string(object.IntegerKind)}:  integerBitwiseXor,
+	{">>", string(object.IntegerKind), string(object.IntegerKind)}: integerBitwiseShiftRight,
+	{"<<", string(object.IntegerKind), string(object.IntegerKind)}: integerBitwiseShiftLeft,
 
-	{"==", "bool", "bool"}: booleanEquals,
-	{"!=", "bool", "bool"}: booleanNotEquals,
-	{"&&", "bool", "bool"}: booleanEquals,
-	{"||", "bool", "bool"}: booleanNotEquals,
-
-	{"+", "string", "string"}:  stringAddition,
-	{"+=", "string", "string"}: stringPlusEquals,
+	{"+", string(object.StringKind), string(object.StringKind)}:  stringAddition,
+	{"+=", string(object.StringKind), string(object.StringKind)}: stringPlusEquals,
 }
 
 func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) object.Object {
 	left := Eval(node.Left, env)
+
 	if object.IsError(left) {
 		return left
 	}
@@ -55,9 +41,20 @@ func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) obj
 	if object.IsError(right) {
 		return right
 	}
+
 	operator := node.Operator
+
+	if operator == string(token.ASSIGN) {
+		return assignment(left, right, env)
+	}
+
 	operatorFnSignature := OperatorFnSignature{Operator: operator, LType: left.Type().Signature(), RType: right.Type().Signature()}
 	evalFn := infixEvalFns[operatorFnSignature]
+
+	if evalFn == nil && object.IsNumber(left) && object.IsNumber(right) {
+		return evalNumberInfixExpression(left, right, operator, env)
+	}
+
 	if evalFn == nil {
 		return newError("operator %s not defined on types %s and %s", operatorFnSignature.Operator, operatorFnSignature.LType, operatorFnSignature.RType)
 	}
@@ -65,76 +62,236 @@ func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) obj
 	return evalFn(left, right, env)
 }
 
-func integerAddition(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
+func evalNumberInfixExpression(left object.Object, right object.Object, operator string, env *object.Environment) object.Object {
+	switch operator {
+	case string(token.PLUS):
+		return numberAddition(left, right, env)
+	case string(token.MINUS):
+		return numberSubtraction(left, right, env)
+	case string(token.ASTERISK):
+		return numberMultiplication(left, right, env)
+	case string(token.SLASH):
+		return numberDivision(left, right, env)
+	case string(token.EQ):
+		return numberEquals(left, right, env)
+	case string(token.NOT_EQ):
+		return numberNotEquals(left, right, env)
+	case string(token.GT):
+		return numberGreaterThan(left, right, env)
+	case string(token.LT):
+		return numberLessThan(left, right, env)
+	case string(token.LTE):
+		return numberGreaterThan(left, right, env)
+	case string(token.GTE):
+		return numberLessThan(left, right, env)
+	case string(token.PLUS_ASSIGN):
+		return numberPlusEquals(left, right, env)
+	case string(token.MINUS_ASSIGN):
+		return numberMinusEquals(left, right, env)
+	case string(token.ASTERISK_ASSIGN):
+		return numberTimesEquals(left, right, env)
+	case string(token.SLASH_ASSIGN):
+		return numberDivideEquals(left, right, env)
 
-	return &object.Integer{Value: leftInt.Value + rightInt.Value}
+	default:
+		return newError("operator %s not defined on types %s and %s", operator, left.Type().Signature(), right.Type().Signature())
+	}
 }
 
-func integerSubtraction(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return &object.Integer{Value: leftInt.Value - rightInt.Value}
+func add[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
+	return object.Number[T]{Value: a.(object.Number[T]).Value + b.(object.Number[T]).Value}
 }
 
-func integerDivision(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return &object.Integer{Value: leftInt.Value / rightInt.Value}
+func subtract[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
+	return object.Number[T]{Value: a.(object.Number[T]).Value - b.(object.Number[T]).Value}
 }
 
-func integerMultiplication(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return &object.Integer{Value: leftInt.Value * rightInt.Value}
+func multiply[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
+	return object.Number[T]{Value: a.(object.Number[T]).Value * b.(object.Number[T]).Value}
 }
 
-func integerLessThan(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return nativeBoolToBooleanObject(leftInt.Value < rightInt.Value)
+func divide[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
+	return object.Number[T]{Value: a.(object.Number[T]).Value / b.(object.Number[T]).Value}
 }
 
-func integerGreaterThan(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return nativeBoolToBooleanObject(leftInt.Value > rightInt.Value)
+func lessThan[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
+	return nativeBoolToBooleanObject(a.(object.Number[T]).Value < b.(object.Number[T]).Value)
 }
 
-func integerEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return nativeBoolToBooleanObject(leftInt.Value == rightInt.Value)
+func greaterThan[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
+	return nativeBoolToBooleanObject(a.(object.Number[T]).Value > b.(object.Number[T]).Value)
 }
 
-func integerNotEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	leftInt := object.UnwrapReferenceObject(left).(*object.Integer)
-	rightInt := object.UnwrapReferenceObject(right).(*object.Integer)
-
-	return nativeBoolToBooleanObject(leftInt.Value != rightInt.Value)
+func equals[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
+	return nativeBoolToBooleanObject(a.(object.Number[T]).Value == b.(object.Number[T]).Value)
 }
 
-func integerPlusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	return assignment(left, integerAddition(left, right, env), env)
+func notEquals[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
+	return nativeBoolToBooleanObject(a.(object.Number[T]).Value != b.(object.Number[T]).Value)
 }
 
-func integerMinusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	return assignment(left, integerSubtraction(left, right, env), env)
+func integerBitwiseAnd(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value & b.(object.Number[int64]).Value}
 }
 
-func integerTimesEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	return assignment(left, integerMultiplication(left, right, env), env)
+func integerBitwiseOr(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value | b.(object.Number[int64]).Value}
 }
 
-func integerDivideEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
-	return assignment(left, integerDivision(left, right, env), env)
+func integerBitwiseXor(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value ^ b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseShiftLeft(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value << b.(object.Number[int64]).Value}
+}
+
+func integerBitwiseShiftRight(a object.Object, b object.Object, env *object.Environment) object.Object {
+	return object.Number[int64]{Value: a.(object.Number[int64]).Value >> b.(object.Number[int64]).Value}
+}
+
+func numberAddition(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return add[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return add[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return add[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberSubtraction(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return subtract[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return subtract[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return subtract[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberMultiplication(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return multiply[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return multiply[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return multiply[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberDivision(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return divide[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return divide[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return divide[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberLessThan(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return lessThan[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return lessThan[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return lessThan[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberLessThanEqual(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return evalBangOperatorExpression(numberGreaterThan(left, right, env))
+}
+
+func numberGreaterThanEqual(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return evalBangOperatorExpression(numberLessThan(left, right, env))
+}
+
+func numberGreaterThan(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return greaterThan[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return greaterThan[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return greaterThan[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return equals[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return equals[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return equals[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberNotEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftNum, rightNum, kind := castToLargerNumberType(left, right)
+
+	switch kind {
+	case object.IntegerKind:
+		return notEquals[int64](leftNum, rightNum)
+	case object.Float32Kind:
+		return notEquals[float32](leftNum, rightNum)
+	case object.Float64Kind:
+		return notEquals[float64](leftNum, rightNum)
+	}
+
+	return nil
+}
+
+func numberPlusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, numberAddition(left, right, env), env)
+}
+
+func numberMinusEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, numberSubtraction(left, right, env), env)
+}
+
+func numberTimesEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, numberMultiplication(left, right, env), env)
+}
+
+func numberDivideEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
+	return assignment(left, numberDivision(left, right, env), env)
 }
 
 func assignment(left object.Object, right object.Object, env *object.Environment) object.Object {
@@ -163,6 +320,20 @@ func booleanNotEquals(left object.Object, right object.Object, env *object.Envir
 	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value != rightBool.Value)
+}
+
+func booleanAnd(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+
+	return nativeBoolToBooleanObject(leftBool.Value && rightBool.Value)
+}
+
+func booleanOr(left object.Object, right object.Object, env *object.Environment) object.Object {
+	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+
+	return nativeBoolToBooleanObject(leftBool.Value || rightBool.Value)
 }
 
 func stringAddition(left object.Object, right object.Object, env *object.Environment) object.Object {

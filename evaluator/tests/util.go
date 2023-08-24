@@ -32,7 +32,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Integer)
+	result := object.UnwrapReferenceObject(obj).(object.Number[int64])
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
@@ -40,6 +40,54 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 		return false
 	}
 	return true
+}
+
+func testFloat32Object(t *testing.T, obj object.Object, expected float32) bool {
+	if !object.IsFloat32(obj) {
+		t.Errorf("object is not Float32. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	result := object.UnwrapReferenceObject(obj).(object.Number[float32])
+
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%f, want=%f",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
+
+func testFloat64Object(t *testing.T, obj object.Object, expected float64) bool {
+	if !object.IsFloat64(obj) {
+		t.Errorf("object is not Float64. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	result := object.UnwrapReferenceObject(obj).(object.Number[float64])
+
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%f, want=%f",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
+
+func testNumber(t *testing.T, obj object.Object, expected interface{}) bool {
+	switch v := expected.(type) {
+	case int:
+		return testIntegerObject(t, obj, int64(v))
+	case int64:
+		return testIntegerObject(t, obj, v)
+	case float32:
+		return testFloat32Object(t, obj, v)
+	case float64:
+		return testFloat64Object(t, obj, v)
+	default:
+		t.Errorf("Invalid expected type got=%T", expected)
+		return false
+	}
 }
 
 func testStringObject(t *testing.T, obj object.Object, expected string) bool {

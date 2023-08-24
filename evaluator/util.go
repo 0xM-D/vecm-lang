@@ -20,6 +20,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 		return evalBangOperatorExpression(right)
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
+	case "~":
+		return evalTildePrefixOperatorExpression(right)
 	default:
 		return newError("unknown operator: %s%s", operator, right.Type())
 	}
@@ -33,11 +35,27 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
-	if !object.IsInteger(right) {
+	switch right.Type() {
+	case object.IntegerKind:
+		return object.Number[int64]{Value: -right.(object.Number[int64]).Value}
+	case object.Float32Kind:
+		return object.Number[float32]{Value: -right.(object.Number[float32]).Value}
+	case object.Float64Kind:
+		return object.Number[float64]{Value: -right.(object.Number[float64]).Value}
+	default:
 		return newError("unknown operator: -%s", right.Type().Signature())
+
 	}
-	value := right.(*object.Integer).Value
-	return &object.Integer{Value: -value}
+}
+
+func evalTildePrefixOperatorExpression(right object.Object) object.Object {
+	switch right.Type() {
+	case object.IntegerKind:
+		return object.Number[int64]{Value: ^right.(object.Number[int64]).Value}
+	default:
+		return newError("unknown operator: -%s", right.Type().Signature())
+
+	}
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
@@ -129,7 +147,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 
-	idx := index.(*object.Integer).Value
+	idx := index.(object.Number[int64]).Value
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {
