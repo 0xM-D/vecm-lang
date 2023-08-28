@@ -1,6 +1,8 @@
 package object
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type ObjectKind string
 
@@ -9,6 +11,7 @@ var intrinsicTypeFunctionRepositories = initIntrinsicTypeBuiltins()
 func (o ObjectKind) Signature() string             { return string(o) }
 func (o ObjectKind) Kind() ObjectKind              { return o }
 func (o ObjectKind) Builtins() *FunctionRepository { return intrinsicTypeFunctionRepositories[o] }
+func (o ObjectKind) IsConstant() bool              { return true }
 
 const (
 	Invalid             ObjectKind = "invalid"
@@ -57,24 +60,24 @@ func initArrayBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
 	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, arraySize)
-	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: IntegerKind}, arrayPush)
-
+	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: ArrayKind}, arrayPush)
+	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayDelete)
 	return &repo
 }
 
 func intToString(params ...Object) Object {
-	integer := params[0].(Number[int64])
+	integer := params[0].(*Number[int64])
 	return &String{strconv.FormatInt(integer.Value, 10)}
 }
 
 func stringLength(params ...Object) Object {
 	str := params[0].(*String)
-	return Number[int64]{int64(len(str.Value))}
+	return &Number[int64]{int64(len(str.Value))}
 }
 
 func arraySize(params ...Object) Object {
 	arr := params[0].(*Array)
-	return Number[int64]{int64(len(arr.Elements))}
+	return &Number[int64]{int64(len(arr.Elements))}
 }
 
 func arrayPush(params ...Object) Object {
@@ -82,5 +85,24 @@ func arrayPush(params ...Object) Object {
 	elem := params[1]
 
 	arr.Elements = append(arr.Elements, elem)
+	return arr
+}
+
+func arrayDelete(params ...Object) Object {
+	arr := params[0].(*Array)
+	startIndex := params[1].(*Number[int64]).Value
+	count := params[2].(*Number[int64]).Value
+	arrLen := int64(len(arr.Elements))
+
+	if startIndex+count >= arrLen {
+		if startIndex >= arrLen {
+			arr.Elements = []Object{}
+		} else {
+			arr.Elements = arr.Elements[:startIndex]
+		}
+	} else {
+		arr.Elements = append(arr.Elements[:startIndex], arr.Elements[startIndex+count:]...)
+	}
+
 	return arr
 }

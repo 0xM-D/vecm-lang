@@ -25,6 +25,7 @@ func (h *HashObjectType) Signature() string {
 
 func (h *HashObjectType) Kind() ObjectKind              { return HashKind }
 func (h *HashObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
+func (h *HashObjectType) IsConstant() bool              { return false }
 
 type Hashable interface {
 	HashKey() HashKey

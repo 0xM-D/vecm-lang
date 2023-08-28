@@ -12,11 +12,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
 	case *ast.IntegerLiteral:
-		return object.Number[int64]{Value: node.Value}
+		return &object.Number[int64]{Value: node.Value}
 	case *ast.Float32Literal:
-		return object.Number[float32]{Value: node.Value}
+		return &object.Number[float32]{Value: node.Value}
 	case *ast.Float64Literal:
-		return object.Number[float64]{Value: node.Value}
+		return &object.Number[float64]{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
 	case *ast.PrefixExpression:
@@ -156,9 +156,10 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 		if len(function.ParameterTypes) != len(args) {
 			return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.ParameterTypes), len(args))
 		}
-		params := make([]object.Object, len(args)+len(function.BoundParams))
-		copy(params, function.BoundParams)
-		return function.Function(append(params, args...)...)
+		params := []object.Object{}
+		params = append(params, function.BoundParams...)
+		params = append(params, args...)
+		return function.Function(params...)
 	default:
 		return newError("object is not a function: %s", fn.Inspect())
 	}

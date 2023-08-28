@@ -1,8 +1,15 @@
 package object
 
+import "fmt"
+
+type EnvStoreEntry struct {
+	Object
+	IsConstant bool
+}
+
 type Environment struct {
 	typeStore map[string]ObjectType
-	store     map[string]*ObjectReference
+	store     map[string]*EnvStoreEntry
 	outer     *Environment
 }
 
@@ -17,16 +24,30 @@ var GLOBAL_TYPES = map[ObjectKind]bool{
 }
 
 func NewEnvironment() *Environment {
-	s := make(map[string]*ObjectReference)
+	s := make(map[string]*EnvStoreEntry)
 	return &Environment{store: s, outer: nil}
 }
 
-func (e *Environment) Get(name string) *ObjectReference {
-	obj, ok := e.store[name]
+func (e *Environment) GetReference(name string) Object {
+	entry, ok := e.store[name]
 	if !ok && e.outer != nil {
 		return e.outer.Get(name)
 	}
-	return obj
+	if !ok {
+		return nil
+	}
+	return &VariableReference{Env: e, Name: name, ReferenceType: ReferenceType{IsConstantReference: entry.IsConstant, ValueType: entry.Object.Type()}}
+}
+
+func (e *Environment) Get(name string) Object {
+	entry, ok := e.store[name]
+	if !ok && e.outer != nil {
+		return e.outer.Get(name)
+	}
+	if !ok {
+		return nil
+	}
+	return entry.Object
 }
 
 func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
@@ -41,25 +62,23 @@ func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
 	return obj, ok
 }
 
-func (e *Environment) Declare(name string, isConstant bool, val Object) *ObjectReference {
+func (e *Environment) Declare(name string, isConstant bool, val Object) ObjectReference {
 	_, exists := e.store[name]
 	if exists {
 		return nil
 	}
-	newReference := &ObjectReference{val, isConstant, name}
-	e.store[name] = newReference
+	newReference := &VariableReference{e, name, ReferenceType{isConstant, val.Type()}}
+	e.store[name] = &EnvStoreEntry{val, isConstant}
 	return newReference
 }
 
-func (e *Environment) Set(name string, val Object) *ObjectReference {
+func (e *Environment) Set(name string, val Object) (Object, error) {
 	entry, exists := e.store[name]
-	if exists {
-		if entry.IsConstant {
-			return nil
-		}
-		entry.Object = val
+	if exists && entry.IsConstant {
+		return nil, fmt.Errorf("Cannot assign to const variable")
 	}
-	return entry
+	e.store[name] = &EnvStoreEntry{val, entry.IsConstant}
+	return e.store[name].Object, nil
 }
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {

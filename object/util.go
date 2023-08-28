@@ -62,9 +62,17 @@ func TypesMatch(t1 ObjectType, t2 ObjectType) bool {
 }
 
 func UnwrapReferenceObject(or Object) Object {
-	object, ok := or.(*ObjectReference)
+	object, ok := or.(ObjectReference)
 	if ok {
-		return object.Object
+		return object.GetValue()
 	}
 	return or
+}
+
+func UnwrapReferenceType(t ObjectType) ObjectType {
+	reference, ok := t.(ReferenceType)
+	if ok {
+		return reference.ValueType
+	}
+	return t
 }

@@ -49,13 +49,13 @@ func typeCast(obj object.Object, targetType object.ObjectType, implicit bool) ob
 }
 
 func intToString(obj object.Object) object.Object {
-	integer := object.UnwrapReferenceObject(obj).(object.Number[int64])
+	integer := object.UnwrapReferenceObject(obj).(*object.Number[int64])
 	return &object.String{Value: strconv.FormatInt(integer.Value, 10)}
 }
 
 func numberCast[F int64 | float32 | float64, T int64 | float32 | float64](obj object.Object) object.Object {
-	val := object.UnwrapReferenceObject(obj).(object.Number[F])
-	return object.Number[T]{Value: T(val.Value)}
+	val := object.UnwrapReferenceObject(obj).(*object.Number[F])
+	return &object.Number[T]{Value: T(val.Value)}
 }
 
 func castEmptyMap(obj object.Object) object.Object {

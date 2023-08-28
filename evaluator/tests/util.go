@@ -32,7 +32,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(object.Number[int64])
+	result := object.UnwrapReferenceObject(obj).(*object.Number[int64])
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
@@ -48,7 +48,7 @@ func testFloat32Object(t *testing.T, obj object.Object, expected float32) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(object.Number[float32])
+	result := object.UnwrapReferenceObject(obj).(*object.Number[float32])
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
@@ -64,7 +64,7 @@ func testFloat64Object(t *testing.T, obj object.Object, expected float64) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(object.Number[float64])
+	result := object.UnwrapReferenceObject(obj).(*object.Number[float64])
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
@@ -115,7 +115,7 @@ func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
 	result := object.UnwrapReferenceObject(obj).(*object.Array)
 
 	if len(result.Elements) != len(expected) {
-		t.Errorf("Incorrect array length. expected=%d. got=%d", len(result.Elements), len(expected))
+		t.Errorf("Incorrect array length. expected=%d. got=%d", len(expected), len(result.Elements))
 		return false
 	}
 	for i, el := range result.Elements {
@@ -141,7 +141,7 @@ func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFuncti
 	result := object.UnwrapReferenceObject(obj).(*object.Function)
 
 	if !testFunctionType(t, obj.Type(), expected.Type) {
-
+		return false
 	}
 
 	if result.Inspect() != expected.String {
@@ -154,7 +154,7 @@ func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFuncti
 }
 
 func testFunctionType(t *testing.T, objectType object.ObjectType, expected object.FunctionObjectType) bool {
-	functionType, ok := objectType.(*object.FunctionObjectType)
+	functionType, ok := object.UnwrapReferenceType(objectType).(*object.FunctionObjectType)
 	if !ok {
 		t.Errorf("objectType is not function. got=%s", objectType.Signature())
 		return false

@@ -8,7 +8,7 @@ type Number[V int64 | float32 | float64] struct {
 	Value V
 }
 
-func (i Number[V]) Inspect() string {
+func (i *Number[V]) Inspect() string {
 	switch val := any(i.Value).(type) {
 	case int64:
 		return fmt.Sprintf("%d", val)
@@ -20,7 +20,7 @@ func (i Number[V]) Inspect() string {
 	return "This should never ever be reached"
 }
 
-func (i Number[V]) Type() ObjectType {
+func (i *Number[V]) Type() ObjectType {
 	switch any(i.Value).(type) {
 	case int64:
 		return IntegerKind
@@ -35,11 +35,11 @@ func (i Number[V]) Type() ObjectType {
 func NewNumberOfKind(kind ObjectKind) Object {
 	switch kind {
 	case IntegerKind:
-		return Number[int64]{}
+		return &Number[int64]{}
 	case Float32Kind:
-		return Number[float32]{}
+		return &Number[float32]{}
 	case Float64Kind:
-		return Number[float64]{}
+		return &Number[float64]{}
 	}
 	return &Error{Message: fmt.Sprintf("%s is not a number", kind)}
 }

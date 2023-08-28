@@ -48,7 +48,11 @@ func evalInfixExpression(node *ast.InfixExpression, env *object.Environment) obj
 		return assignment(left, right, env)
 	}
 
-	operatorFnSignature := OperatorFnSignature{Operator: operator, LType: left.Type().Signature(), RType: right.Type().Signature()}
+	operatorFnSignature := OperatorFnSignature{
+		Operator: operator,
+		LType:    object.UnwrapReferenceType(left.Type()).Signature(),
+		RType:    object.UnwrapReferenceType(right.Type()).Signature(),
+	}
 	evalFn := infixEvalFns[operatorFnSignature]
 
 	if evalFn == nil && object.IsNumber(left) && object.IsNumber(right) {
@@ -98,56 +102,56 @@ func evalNumberInfixExpression(left object.Object, right object.Object, operator
 	}
 }
 
-func add[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
-	return object.Number[T]{Value: a.(object.Number[T]).Value + b.(object.Number[T]).Value}
+func add[T int64 | float32 | float64](a object.Object, b object.Object) *object.Number[T] {
+	return &object.Number[T]{Value: a.(*object.Number[T]).Value + b.(*object.Number[T]).Value}
 }
 
-func subtract[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
-	return object.Number[T]{Value: a.(object.Number[T]).Value - b.(object.Number[T]).Value}
+func subtract[T int64 | float32 | float64](a object.Object, b object.Object) *object.Number[T] {
+	return &object.Number[T]{Value: a.(*object.Number[T]).Value - b.(*object.Number[T]).Value}
 }
 
-func multiply[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
-	return object.Number[T]{Value: a.(object.Number[T]).Value * b.(object.Number[T]).Value}
+func multiply[T int64 | float32 | float64](a object.Object, b object.Object) *object.Number[T] {
+	return &object.Number[T]{Value: a.(*object.Number[T]).Value * b.(*object.Number[T]).Value}
 }
 
-func divide[T int64 | float32 | float64](a object.Object, b object.Object) object.Number[T] {
-	return object.Number[T]{Value: a.(object.Number[T]).Value / b.(object.Number[T]).Value}
+func divide[T int64 | float32 | float64](a object.Object, b object.Object) *object.Number[T] {
+	return &object.Number[T]{Value: a.(*object.Number[T]).Value / b.(*object.Number[T]).Value}
 }
 
 func lessThan[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
-	return nativeBoolToBooleanObject(a.(object.Number[T]).Value < b.(object.Number[T]).Value)
+	return nativeBoolToBooleanObject(a.(*object.Number[T]).Value < b.(*object.Number[T]).Value)
 }
 
 func greaterThan[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
-	return nativeBoolToBooleanObject(a.(object.Number[T]).Value > b.(object.Number[T]).Value)
+	return nativeBoolToBooleanObject(a.(*object.Number[T]).Value > b.(*object.Number[T]).Value)
 }
 
 func equals[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
-	return nativeBoolToBooleanObject(a.(object.Number[T]).Value == b.(object.Number[T]).Value)
+	return nativeBoolToBooleanObject(a.(*object.Number[T]).Value == b.(*object.Number[T]).Value)
 }
 
 func notEquals[T int64 | float32 | float64](a object.Object, b object.Object) *object.Boolean {
-	return nativeBoolToBooleanObject(a.(object.Number[T]).Value != b.(object.Number[T]).Value)
+	return nativeBoolToBooleanObject(a.(*object.Number[T]).Value != b.(*object.Number[T]).Value)
 }
 
 func integerBitwiseAnd(a object.Object, b object.Object, env *object.Environment) object.Object {
-	return object.Number[int64]{Value: a.(object.Number[int64]).Value & b.(object.Number[int64]).Value}
+	return &object.Number[int64]{Value: a.(*object.Number[int64]).Value & b.(*object.Number[int64]).Value}
 }
 
 func integerBitwiseOr(a object.Object, b object.Object, env *object.Environment) object.Object {
-	return object.Number[int64]{Value: a.(object.Number[int64]).Value | b.(object.Number[int64]).Value}
+	return &object.Number[int64]{Value: a.(*object.Number[int64]).Value | b.(*object.Number[int64]).Value}
 }
 
 func integerBitwiseXor(a object.Object, b object.Object, env *object.Environment) object.Object {
-	return object.Number[int64]{Value: a.(object.Number[int64]).Value ^ b.(object.Number[int64]).Value}
+	return &object.Number[int64]{Value: a.(*object.Number[int64]).Value ^ b.(*object.Number[int64]).Value}
 }
 
 func integerBitwiseShiftLeft(a object.Object, b object.Object, env *object.Environment) object.Object {
-	return object.Number[int64]{Value: a.(object.Number[int64]).Value << b.(object.Number[int64]).Value}
+	return &object.Number[int64]{Value: a.(*object.Number[int64]).Value << b.(*object.Number[int64]).Value}
 }
 
 func integerBitwiseShiftRight(a object.Object, b object.Object, env *object.Environment) object.Object {
-	return object.Number[int64]{Value: a.(object.Number[int64]).Value >> b.(object.Number[int64]).Value}
+	return &object.Number[int64]{Value: a.(*object.Number[int64]).Value >> b.(*object.Number[int64]).Value}
 }
 
 func numberAddition(left object.Object, right object.Object, env *object.Environment) object.Object {
@@ -295,17 +299,23 @@ func numberDivideEquals(left object.Object, right object.Object, env *object.Env
 }
 
 func assignment(left object.Object, right object.Object, env *object.Environment) object.Object {
-	lvalue, ok := left.(*object.ObjectReference)
+	lvalue, ok := left.(object.ObjectReference)
+	rvalue := object.UnwrapReferenceObject(right)
 	if !ok {
 		return newError("Invalid lvalue %s", left.Inspect())
 	}
-
-	newReference := env.Set(lvalue.Identifier, object.UnwrapReferenceObject(right))
-	if newReference == nil {
+	if lvalue.Type().IsConstant() {
 		return newError("Cannot assign to const variable")
 	}
+	if lvalue.GetValue().Type().Signature() != rvalue.Type().Signature() {
+		return newError("Cannot assign %s to %s", lvalue.Type().Signature(), right.Type().Signature())
+	}
 
-	return newReference
+	_, err := lvalue.UpdateValue(rvalue)
+	if err != nil {
+		return newError(err.Error())
+	}
+	return lvalue
 }
 
 func booleanEquals(left object.Object, right object.Object, env *object.Environment) object.Object {
