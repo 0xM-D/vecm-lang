@@ -30,6 +30,7 @@ func (f FunctionObjectType) Signature() string {
 
 func (f FunctionObjectType) Kind() ObjectKind              { return FunctionKind }
 func (f FunctionObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
+func (f FunctionObjectType) IsConstant() bool              { return true }
 
 type Function struct {
 	FunctionObjectType

@@ -15,8 +15,10 @@ func TestTypeBuiltins(t *testing.T) {
 		{`"bleh".length()`, 4},
 		{"1.toString()", "1"},
 		{"(123*456).toString()", "56088"},
-		{"let arr = [1, 2, 3]; arr.push(4); arr.size()", 4},
+		{"let arr = [1, 2, 3]; arr.push(4).size()", 4},
 		{"[].push(1).size();", 1},
+		{"[1, 2, 3].delete(1, 5).size();", 1},
+		{`["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].delete(1, 3);`, []string{"1", "5", "6", "7", "8", "9", "10"}},
 	}
 	for _, tt := range tests {
 		switch expected := tt.expected.(type) {
@@ -24,6 +26,8 @@ func TestTypeBuiltins(t *testing.T) {
 			testIntegerObject(t, testEval(tt.input), int64(expected))
 		case string:
 			testStringObject(t, testEval(tt.input), expected)
+		case []string:
+			testArrayObject(t, testEval(tt.input), expected)
 		default:
 			t.Errorf("Test doesn't support %T expected type", expected)
 		}

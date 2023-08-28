@@ -12,6 +12,7 @@ type ArrayObjectType struct {
 func (a *ArrayObjectType) Signature() string             { return a.ElementType.Signature() + "[]" }
 func (a *ArrayObjectType) Kind() ObjectKind              { return ArrayKind }
 func (a *ArrayObjectType) Builtins() *FunctionRepository { return ArrayKind.Builtins() }
+func (a *ArrayObjectType) IsConstant() bool              { return false }
 
 type Array struct {
 	ArrayObjectType

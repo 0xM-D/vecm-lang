@@ -37,11 +37,11 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	switch right.Type() {
 	case object.IntegerKind:
-		return object.Number[int64]{Value: -right.(object.Number[int64]).Value}
+		return &object.Number[int64]{Value: -right.(*object.Number[int64]).Value}
 	case object.Float32Kind:
-		return object.Number[float32]{Value: -right.(object.Number[float32]).Value}
+		return &object.Number[float32]{Value: -right.(*object.Number[float32]).Value}
 	case object.Float64Kind:
-		return object.Number[float64]{Value: -right.(object.Number[float64]).Value}
+		return &object.Number[float64]{Value: -right.(*object.Number[float64]).Value}
 	default:
 		return newError("unknown operator: -%s", right.Type().Signature())
 
@@ -51,7 +51,7 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 func evalTildePrefixOperatorExpression(right object.Object) object.Object {
 	switch right.Type() {
 	case object.IntegerKind:
-		return object.Number[int64]{Value: ^right.(object.Number[int64]).Value}
+		return &object.Number[int64]{Value: ^right.(*object.Number[int64]).Value}
 	default:
 		return newError("unknown operator: -%s", right.Type().Signature())
 
@@ -96,11 +96,11 @@ func evalIdentifier(
 	node *ast.Identifier,
 	env *object.Environment,
 ) object.Object {
-	obj := env.Get(node.Value)
-	if obj == nil {
+	reference := env.GetReference(node.Value)
+	if reference == nil {
 		return newError("identifier not found: " + node.Value)
 	}
-	return obj
+	return reference
 }
 
 func evalExpressions(
@@ -123,8 +123,9 @@ func evalExpressions(
 
 func evalAccessExpression(left object.Object, right string, env *object.Environment) object.Object {
 	member := left.Type().Builtins().Get(right)
+
 	if member == nil {
-		return &object.Null{}
+		return newError("Member %s does not exist on %s", right, left.Type().Signature())
 	}
 
 	if object.IsBuiltinFunction(member) {
@@ -147,14 +148,14 @@ func evalIndexExpression(left, index object.Object) object.Object {
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 
-	idx := index.(object.Number[int64]).Value
+	idx := index.(*object.Number[int64]).Value
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {
 		return NULL
 	}
 
-	return arrayObject.Elements[idx]
+	return &object.ArrayElementReference{Array: arrayObject, Index: idx}
 }
 
 func evalHashLiteral(
@@ -194,12 +195,12 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 		return newError("unusable as hash key: %s", index.Type().Signature())
 	}
 
-	pair, ok := hashObject.Pairs[key.HashKey()]
-	if !ok {
+	_, exists := hashObject.Pairs[key.HashKey()]
+	if !exists {
 		return NULL
 	}
 
-	return pair.Value
+	return &object.HashElementReference{Hash: hashObject, Key: index}
 }
 
 func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *object.Environment) object.Object {
@@ -288,7 +289,7 @@ func declareVariable(declNode *ast.DeclarationStatement, expectedType object.Obj
 		return newError("Identifier with name %s already exists.", declNode.Name.Value)
 	}
 
-	return nil
+	return newObject
 }
 
 func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) object.Object {
