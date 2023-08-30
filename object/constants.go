@@ -61,6 +61,7 @@ func initArrayBuiltins() *FunctionRepository {
 
 	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, arraySize)
 	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: ArrayKind}, arrayPush)
+	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
 	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayDelete)
 	return &repo
 }
@@ -90,8 +91,8 @@ func arrayPush(params ...Object) Object {
 
 func arrayDelete(params ...Object) Object {
 	arr := params[0].(*Array)
-	startIndex := params[1].(*Number[int64]).Value
-	count := params[2].(*Number[int64]).Value
+	startIndex := UnwrapReferenceObject(params[1]).(*Number[int64]).Value
+	count := UnwrapReferenceObject(params[2]).(*Number[int64]).Value
 	arrLen := int64(len(arr.Elements))
 
 	if startIndex+count >= arrLen {
@@ -103,6 +104,21 @@ func arrayDelete(params ...Object) Object {
 	} else {
 		arr.Elements = append(arr.Elements[:startIndex], arr.Elements[startIndex+count:]...)
 	}
+
+	return arr
+}
+
+func arrayPushMultiple(params ...Object) Object {
+	arr := params[0].(*Array)
+	element := UnwrapReferenceObject(params[1])
+	size := int(UnwrapReferenceObject(params[2]).(*Number[int64]).Value)
+
+	newElements := make([]Object, 0, size)
+	for i := 0; i != size; i++ {
+		newElements = append(newElements, element)
+	}
+
+	arr.Elements = append(arr.Elements, newElements...)
 
 	return arr
 }
