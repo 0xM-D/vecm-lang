@@ -1,16 +1,11 @@
-int[] fibArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+const int fibSize = 50;
+int[] fibArray = [0, 1].pushMultiple(-1, fibSize)
 
 fib := fn(i: int)->int {
-    if(i == 0) {
-        return 0
+    if(fibArray[i] < 0) {
+        fibArray[i] = fib(i-1) + fib(i-2)
     }
-    if(i == 1) {
-        return 1
-    }
-    if(fibArray[i] != 0) {
-        return fibArray[i]
-    }
-    return fibArray[i] = (fib(i-1) + fib(i-2))
+    return fibArray[i]
 }
 
-fib(10)
+fib(fibSize)

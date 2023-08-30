@@ -7,6 +7,7 @@ import (
 const (
 	_ int = iota
 	LOWEST
+	ASSIGN        // a = b
 	BITWISE_OR    // |, ^
 	BITWISE_AND   // &
 	BOOLEAN_OR    // ||
@@ -18,9 +19,8 @@ const (
 	PRODUCT       // *
 	PREFIX        // -X or !X or ~X
 	CALL          // myFunction(X)
-	ACCESS        // type.member or type.memberFn()
 	INDEX         // array[index]
-	ASSIGN        // a = b
+	ACCESS        // type.member or type.memberFn()
 )
 
 var precedences = map[token.TokenType]int{

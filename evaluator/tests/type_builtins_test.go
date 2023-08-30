@@ -19,6 +19,8 @@ func TestTypeBuiltins(t *testing.T) {
 		{"[].push(1).size();", 1},
 		{"[1, 2, 3].delete(1, 5).size();", 1},
 		{`["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].delete(1, 3);`, []string{"1", "5", "6", "7", "8", "9", "10"}},
+		{`[].pushMultiple("0", 10)`, []string{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"}},
+		{`[1, 2, 3].pushMultiple(0, 10).size()`, 13},
 	}
 	for _, tt := range tests {
 		switch expected := tt.expected.(type) {
