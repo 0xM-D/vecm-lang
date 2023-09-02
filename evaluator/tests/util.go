@@ -175,3 +175,36 @@ func testFunctionType(t *testing.T, objectType object.ObjectType, expected objec
 
 	return true
 }
+
+func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
+	if !object.IsBoolean(obj) {
+		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	result := object.UnwrapReferenceObject(obj).(*object.Boolean)
+
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%t, want=%t",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
+
+func testLiteralObject(t *testing.T, obj object.Object, expected interface{}) {
+	switch expected := expected.(type) {
+	case int:
+		testIntegerObject(t, obj, int64(expected))
+	case int64:
+		testIntegerObject(t, obj, expected)
+	case string:
+		testStringObject(t, obj, expected)
+	case bool:
+		testBooleanObject(t, obj, expected)
+	case []string:
+		testArrayObject(t, obj, expected)
+	case ExpectedFunction:
+		testFunctionObject(t, obj, expected)
+	}
+}

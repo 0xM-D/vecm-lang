@@ -45,6 +45,10 @@ foo >> bar
 .1
 123.1
 123
+for(;;){}
+for(int i = 0; i < 10; i+=1){
+	const x = i * i;
+}
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -185,7 +189,39 @@ foo >> bar
 		{token.FLOAT64, ".1"},
 		{token.FLOAT64, "123.1"},
 		{token.INT, "123"},
-		{token.EOF, ""}}
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.SEMICOLON, ";"},
+		{token.SEMICOLON, ";"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RBRACE, "}"},
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.IDENT, "int"},
+		{token.IDENT, "i"},
+		{token.ASSIGN, "="},
+		{token.INT, "0"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "i"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "i"},
+		{token.PLUS_ASSIGN, "+="},
+		{token.INT, "1"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.CONST, "const"},
+		{token.IDENT, "x"},
+		{token.ASSIGN, "="},
+		{token.IDENT, "i"},
+		{token.ASTERISK, "*"},
+		{token.IDENT, "i"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.EOF, ""},
+	}
 
 	l := New(input)
 

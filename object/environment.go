@@ -31,7 +31,7 @@ func NewEnvironment() *Environment {
 func (e *Environment) GetReference(name string) Object {
 	entry, ok := e.store[name]
 	if !ok && e.outer != nil {
-		return e.outer.Get(name)
+		return e.outer.GetReference(name)
 	}
 	if !ok {
 		return nil
@@ -41,6 +41,7 @@ func (e *Environment) GetReference(name string) Object {
 
 func (e *Environment) Get(name string) Object {
 	entry, ok := e.store[name]
+
 	if !ok && e.outer != nil {
 		return e.outer.Get(name)
 	}
