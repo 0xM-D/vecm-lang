@@ -2,8 +2,6 @@ package evaluator_tests
 
 import (
 	"testing"
-
-	"github.com/0xM-D/interpreter/object"
 )
 
 func TestEvalBooleanExpression(t *testing.T) {
@@ -43,19 +41,4 @@ func TestEvalBooleanExpression(t *testing.T) {
 		evaluated := testEval(tt.input)
 		testBooleanObject(t, evaluated, tt.expected)
 	}
-}
-func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
-	if !object.IsBoolean(obj) {
-		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
-		return false
-	}
-
-	result := object.UnwrapReferenceObject(obj).(*object.Boolean)
-
-	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%t, want=%t",
-			result.Value, expected)
-		return false
-	}
-	return true
 }

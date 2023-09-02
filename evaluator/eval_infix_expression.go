@@ -85,9 +85,9 @@ func evalNumberInfixExpression(left object.Object, right object.Object, operator
 	case string(token.LT):
 		return numberLessThan(left, right, env)
 	case string(token.LTE):
-		return numberGreaterThan(left, right, env)
+		return numberLessThanEqual(left, right, env)
 	case string(token.GTE):
-		return numberLessThan(left, right, env)
+		return numberGreaterThanEqual(left, right, env)
 	case string(token.PLUS_ASSIGN):
 		return numberPlusEquals(left, right, env)
 	case string(token.MINUS_ASSIGN):
@@ -216,7 +216,6 @@ func numberDivision(left object.Object, right object.Object, env *object.Environ
 
 func numberLessThan(left object.Object, right object.Object, env *object.Environment) object.Object {
 	leftNum, rightNum, kind := castToLargerNumberType(left, right)
-
 	switch kind {
 	case object.IntegerKind:
 		return lessThan[int64](leftNum, rightNum)

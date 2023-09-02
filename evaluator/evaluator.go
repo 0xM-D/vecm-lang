@@ -101,6 +101,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if error != nil {
 			return error
 		}
+	case *ast.ForStatement:
+		error := evalForStatement(node, env)
+		if error != nil {
+			return error
+		}
 	}
 
 	return nil

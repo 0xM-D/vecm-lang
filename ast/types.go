@@ -180,3 +180,11 @@ type FunctionType struct {
 	ParameterTypes []Type
 	ReturnType     Type
 }
+
+type ForStatement struct {
+	Token          token.Token
+	Initialization Statement
+	Condition      Statement
+	AfterThought   Statement
+	Body           *BlockStatement
+}
