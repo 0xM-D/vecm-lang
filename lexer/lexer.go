@@ -9,6 +9,8 @@ type Lexer struct {
 	position     int
 	readPosition int
 	ch           byte
+	linen        int
+	coln         int
 }
 
 func New(input string) *Lexer {
@@ -26,17 +28,17 @@ func (l *Lexer) NextToken() token.Token {
 	case '=':
 		tok = l.getTokenWithPeek(token.ASSIGN, TokenMapping{'=', token.EQ})
 	case ';':
-		tok = newToken(token.SEMICOLON, l.ch)
+		tok = l.newToken(token.SEMICOLON, string(l.ch))
 	case '(':
-		tok = newToken(token.LPAREN, l.ch)
+		tok = l.newToken(token.LPAREN, string(l.ch))
 	case ')':
-		tok = newToken(token.RPAREN, l.ch)
+		tok = l.newToken(token.RPAREN, string(l.ch))
 	case ',':
-		tok = newToken(token.COMMA, l.ch)
+		tok = l.newToken(token.COMMA, string(l.ch))
 	case '+':
 		tok = l.getTokenWithPeek(token.PLUS, TokenMapping{'=', token.PLUS_ASSIGN})
 	case '-':
-		tok = newToken(token.PLUS, l.ch)
+		tok = l.newToken(token.PLUS, string(l.ch))
 		switch l.peekChar() {
 		case '=':
 			ch := l.ch
@@ -47,7 +49,7 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			tok = token.Token{Type: token.DASH_ARROW, Literal: string(ch) + string(l.ch)}
 		default:
-			tok = newToken(token.MINUS, l.ch)
+			tok = l.newToken(token.MINUS, string(l.ch))
 		}
 	case '!':
 		tok = l.getTokenWithPeek(token.BANG, TokenMapping{'=', token.NOT_EQ})
@@ -60,21 +62,21 @@ func (l *Lexer) NextToken() token.Token {
 	case '>':
 		tok = l.getTokenWithPeek(token.GT, TokenMapping{'=', token.GTE}, TokenMapping{'>', token.B_SHIFT_R})
 	case '{':
-		tok = newToken(token.LBRACE, l.ch)
+		tok = l.newToken(token.LBRACE, string(l.ch))
 	case '}':
-		tok = newToken(token.RBRACE, l.ch)
+		tok = l.newToken(token.RBRACE, string(l.ch))
 	case '"':
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
 	case '[':
 		tok = l.getTokenWithPeek(token.LBRACKET, TokenMapping{']', token.ARRAY_TYPE})
 	case ']':
-		tok = newToken(token.RBRACKET, l.ch)
+		tok = l.newToken(token.RBRACKET, string(l.ch))
 	case '.':
 		if isDigit(l.peekChar()) {
 			tok.Type, tok.Literal = l.readNumber()
 		} else {
-			tok = newToken(token.ACCESS, l.ch)
+			tok = l.newToken(token.ACCESS, string(l.ch))
 		}
 	case ':':
 		tok = l.getTokenWithPeek(token.COLON, TokenMapping{'=', token.DECL_ASSIGN})
@@ -83,9 +85,9 @@ func (l *Lexer) NextToken() token.Token {
 	case '|':
 		tok = l.getTokenWithPeek(token.B_OR, TokenMapping{'|', token.OR})
 	case '^':
-		tok = newToken(token.B_XOR, l.ch)
+		tok = l.newToken(token.B_XOR, string(l.ch))
 	case '~':
-		tok = newToken(token.B_INV, l.ch)
+		tok = l.newToken(token.B_INV, string(l.ch))
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
@@ -95,7 +97,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type, tok.Literal = l.readNumber()
 			return tok
 		} else {
-			tok = newToken(token.ILLEGAL, l.ch)
+			tok = l.newToken(token.ILLEGAL, string(l.ch))
 		}
 	case 0:
 		tok.Literal = ""

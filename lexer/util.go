@@ -6,6 +6,7 @@ func (l *Lexer) readChar() {
 	l.ch = l.peekChar()
 	l.position = l.readPosition
 	l.readPosition++
+	l.coln++
 }
 
 func (l *Lexer) peekChar() byte {
@@ -19,11 +20,15 @@ func (l *Lexer) peekChar() byte {
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
+		if l.ch == '\n' {
+			l.linen++
+			l.coln = 0
+		}
 	}
 }
 
-func newToken(tokenType token.TokenType, ch byte) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch)}
+func (l *Lexer) newToken(tokenType token.TokenType, literal string) token.Token {
+	return token.Token{Type: tokenType, Literal: literal, Linen: l.linen, Coln: l.coln}
 }
 
 func (l *Lexer) readIdentifier() string {
@@ -91,5 +96,5 @@ func (l *Lexer) getTokenWithPeek(defaultToken token.TokenType, tokenMappings ...
 		}
 	}
 
-	return newToken(defaultToken, l.ch)
+	return l.newToken(defaultToken, string(l.ch))
 }
