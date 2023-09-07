@@ -1,11 +1,18 @@
 package lexer
 
-import "github.com/0xM-D/interpreter/token"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+
+	"github.com/0xM-D/interpreter/token"
+)
 
 func (l *Lexer) readChar() {
 	l.ch = l.peekChar()
 	l.position = l.readPosition
 	l.readPosition++
+	l.coln++
 }
 
 func (l *Lexer) peekChar() byte {
@@ -19,11 +26,15 @@ func (l *Lexer) peekChar() byte {
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
+		if l.ch == '\n' {
+			l.linen++
+			l.coln = 0
+		}
 	}
 }
 
-func newToken(tokenType token.TokenType, ch byte) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch)}
+func (l *Lexer) newToken(tokenType token.TokenType, literal string) token.Token {
+	return token.Token{Type: tokenType, Literal: literal, Linen: l.linen, Coln: l.coln}
 }
 
 func (l *Lexer) readIdentifier() string {
@@ -77,6 +88,14 @@ func (l *Lexer) readString() string {
 	return l.input[position:l.position]
 }
 
+func (l *Lexer) GetLocation() (int, int) {
+	return l.linen, l.coln
+}
+
+func (l *Lexer) GetLine(linen int) string {
+	return strings.Split(l.input, "\n")[linen]
+}
+
 type TokenMapping struct {
 	byte
 	token.TokenType
@@ -91,5 +110,28 @@ func (l *Lexer) getTokenWithPeek(defaultToken token.TokenType, tokenMappings ...
 		}
 	}
 
-	return newToken(defaultToken, l.ch)
+	return l.newToken(defaultToken, string(l.ch))
+}
+
+func NewError(linen int, coln int, line string, format string, a ...interface{}) string {
+	var out bytes.Buffer
+
+	out.WriteString(fmt.Sprintf("Parser error at line %d, column %d:\n", linen, coln))
+	out.WriteString(line)
+	out.WriteByte('\n')
+	out.WriteString(getAsciiArrow(line, coln))
+	out.WriteString(fmt.Sprintf(format, a...))
+	out.WriteByte('\n')
+
+	return out.String()
+}
+
+func getAsciiArrow(line string, coln int) string {
+	var out bytes.Buffer
+	for i := 0; i < coln-1; i++ {
+		out.WriteByte(' ')
+	}
+	out.WriteByte('^')
+	out.WriteByte('\n')
+	return out.String()
 }

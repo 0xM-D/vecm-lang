@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/token"
 )
@@ -16,7 +14,7 @@ func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
 
 	if p.peekToken.Type != token.ASSIGN {
-		p.invalidTokenInTypedDeclarationStatement(p.peekToken)
+		p.newError(stmt, "invalid token in typed declaration statement. expected=%q got=%q", "=", p.peekToken.Literal)
 		return nil
 	}
 
@@ -30,9 +28,4 @@ func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement
 	}
 
 	return &ast.TypedDeclarationStatement{DeclarationStatement: *stmt}
-}
-
-func (p *Parser) invalidTokenInTypedDeclarationStatement(token token.Token) {
-	msg := fmt.Sprintf("invalid token in typed declaration statement. expected=%q got=%q", "=", p.peekToken.Literal)
-	p.errors = append(p.errors, msg)
 }

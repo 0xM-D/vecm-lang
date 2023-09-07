@@ -96,6 +96,18 @@ func (p *Parser) Errors() []string {
 	return p.errors
 }
 
+func (p *Parser) newError(node ast.Node, format string, a ...interface{}) {
+	var linen, coln int
+	if node == nil {
+		linen, coln = p.l.GetLocation()
+	} else {
+		linen = node.TokenValue().Linen
+		coln = node.TokenValue().Coln
+	}
+
+	p.errors = append(p.errors, lexer.NewError(linen, coln, p.getLine(linen), format, a...))
+}
+
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }

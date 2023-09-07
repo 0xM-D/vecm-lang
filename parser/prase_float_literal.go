@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -13,8 +12,7 @@ func (p *Parser) parseFloat32Literal() ast.Expression {
 
 	value, err := strconv.ParseFloat(strings.TrimSuffix(p.curToken.Literal, "f"), 32)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float32", p.curToken.Literal)
-		p.errors = append(p.errors, msg)
+		p.newError(lit, "could not parse %q as float32", p.curToken.Literal)
 		return nil
 	}
 
@@ -28,8 +26,7 @@ func (p *Parser) parseFloat64Literal() ast.Expression {
 
 	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float64", p.curToken.Literal)
-		p.errors = append(p.errors, msg)
+		p.newError(lit, "could not parse %q as float64", p.curToken.Literal)
 		return nil
 	}
 

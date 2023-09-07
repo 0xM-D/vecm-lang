@@ -3,13 +3,19 @@ package ast
 import (
 	"bytes"
 	"strings"
+
+	"github.com/0xM-D/interpreter/token"
 )
 
 func (p *Program) TokenLiteral() string {
+	return p.TokenValue().Literal
+}
+
+func (p *Program) TokenValue() token.Token {
 	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
+		return p.Statements[0].TokenValue()
 	} else {
-		return ""
+		return token.Token{Type: token.EOF, Literal: "", Linen: 0, Coln: 0}
 	}
 }
 
@@ -23,8 +29,9 @@ func (p *Program) String() string {
 	return out.String()
 }
 
-func (ls *LetStatement) statementNode()       {}
-func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+func (ls *LetStatement) statementNode()          {}
+func (ls *LetStatement) TokenLiteral() string    { return ls.Token.Literal }
+func (ls *LetStatement) TokenValue() token.Token { return ls.Token }
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
@@ -41,12 +48,14 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-func (i *Identifier) String() string       { return i.Value }
+func (i *Identifier) expressionNode()         {}
+func (i *Identifier) TokenLiteral() string    { return i.Token.Literal }
+func (i *Identifier) TokenValue() token.Token { return i.Token }
+func (i *Identifier) String() string          { return i.Value }
 
-func (rs *ReturnStatement) statementNode()       {}
-func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReturnStatement) statementNode()          {}
+func (rs *ReturnStatement) TokenLiteral() string    { return rs.Token.Literal }
+func (rs *ReturnStatement) TokenValue() token.Token { return rs.Token }
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
 
@@ -60,8 +69,9 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
-func (es *ExpressionStatement) statementNode()       {}
-func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+func (es *ExpressionStatement) statementNode()          {}
+func (es *ExpressionStatement) TokenLiteral() string    { return es.Token.Literal }
+func (es *ExpressionStatement) TokenValue() token.Token { return es.Token }
 func (es *ExpressionStatement) String() string {
 	if es.Expression != nil {
 		return es.Expression.String()
@@ -69,26 +79,30 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
-func (il *IntegerLiteral) expressionNode()      {}
-func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+func (il *IntegerLiteral) expressionNode()         {}
+func (il *IntegerLiteral) TokenLiteral() string    { return il.Token.Literal }
+func (il *IntegerLiteral) TokenValue() token.Token { return il.Token }
 func (il *IntegerLiteral) String() string {
 	return il.Token.Literal
 }
 
-func (fp *Float64Literal) expressionNode()      {}
-func (fp *Float64Literal) TokenLiteral() string { return fp.Token.Literal }
+func (fp *Float64Literal) expressionNode()         {}
+func (fp *Float64Literal) TokenLiteral() string    { return fp.Token.Literal }
+func (fp *Float64Literal) TokenValue() token.Token { return fp.Token }
 func (fp *Float64Literal) String() string {
 	return fp.Token.Literal
 }
 
-func (fp *Float32Literal) expressionNode()      {}
-func (fp *Float32Literal) TokenLiteral() string { return fp.Token.Literal }
+func (fp *Float32Literal) expressionNode()         {}
+func (fp *Float32Literal) TokenLiteral() string    { return fp.Token.Literal }
+func (fp *Float32Literal) TokenValue() token.Token { return fp.Token }
 func (fp *Float32Literal) String() string {
 	return fp.Token.Literal
 }
 
-func (pe *PrefixExpression) expressionNode()      {}
-func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) expressionNode()         {}
+func (pe *PrefixExpression) TokenLiteral() string    { return pe.Token.Literal }
+func (pe *PrefixExpression) TokenValue() token.Token { return pe.Token }
 func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
 
@@ -100,26 +114,29 @@ func (pe *PrefixExpression) String() string {
 	return out.String()
 }
 
-func (oe *InfixExpression) expressionNode()      {}
-func (oe *InfixExpression) TokenLiteral() string { return oe.Token.Literal }
-func (oe *InfixExpression) String() string {
+func (ie *InfixExpression) expressionNode()         {}
+func (ie *InfixExpression) TokenLiteral() string    { return ie.Token.Literal }
+func (ie *InfixExpression) TokenValue() token.Token { return ie.Token }
+func (ie *InfixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
-	out.WriteString(oe.Left.String() + " ")
-	out.WriteString(oe.Operator + " ")
-	out.WriteString(oe.Right.String())
+	out.WriteString(ie.Left.String() + " ")
+	out.WriteString(ie.Operator + " ")
+	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 
 	return out.String()
 }
 
-func (b *Boolean) expressionNode()      {}
-func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
-func (b *Boolean) String() string       { return b.Token.Literal }
+func (b *Boolean) expressionNode()         {}
+func (b *Boolean) TokenLiteral() string    { return b.Token.Literal }
+func (b *Boolean) TokenValue() token.Token { return b.Token }
+func (b *Boolean) String() string          { return b.Token.Literal }
 
-func (ie *IfExpression) expressionNode()      {}
-func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *IfExpression) expressionNode()         {}
+func (ie *IfExpression) TokenLiteral() string    { return ie.Token.Literal }
+func (ie *IfExpression) TokenValue() token.Token { return ie.Token }
 func (ie *IfExpression) String() string {
 	var out bytes.Buffer
 
@@ -137,8 +154,9 @@ func (ie *IfExpression) String() string {
 
 }
 
-func (bs *BlockStatement) statementNode()       {}
-func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) statementNode()          {}
+func (bs *BlockStatement) TokenLiteral() string    { return bs.Token.Literal }
+func (bs *BlockStatement) TokenValue() token.Token { return bs.Token }
 func (bs *BlockStatement) String() string {
 	var out bytes.Buffer
 	for _, s := range bs.Statements {
@@ -147,8 +165,9 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
-func (fl *FunctionLiteral) expressionNode()      {}
-func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *FunctionLiteral) expressionNode()         {}
+func (fl *FunctionLiteral) TokenLiteral() string    { return fl.Token.Literal }
+func (fl *FunctionLiteral) TokenValue() token.Token { return fl.Token }
 func (fl *FunctionLiteral) String() string {
 	var out bytes.Buffer
 
@@ -169,8 +188,9 @@ func (fl *FunctionLiteral) String() string {
 	return out.String()
 }
 
-func (ce *CallExpression) expressionNode()      {}
-func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+func (ce *CallExpression) expressionNode()         {}
+func (ce *CallExpression) TokenLiteral() string    { return ce.Token.Literal }
+func (ce *CallExpression) TokenValue() token.Token { return ce.Token }
 func (ce *CallExpression) String() string {
 	var out bytes.Buffer
 	args := []string{}
@@ -184,12 +204,14 @@ func (ce *CallExpression) String() string {
 	return out.String()
 }
 
-func (sl *StringLiteral) expressionNode()      {}
-func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
-func (sl *StringLiteral) String() string       { return sl.Token.Literal }
+func (sl *StringLiteral) expressionNode()         {}
+func (sl *StringLiteral) TokenLiteral() string    { return sl.Token.Literal }
+func (sl *StringLiteral) TokenValue() token.Token { return sl.Token }
+func (sl *StringLiteral) String() string          { return sl.Token.Literal }
 
-func (al *ArrayLiteral) expressionNode()      {}
-func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
+func (al *ArrayLiteral) expressionNode()         {}
+func (al *ArrayLiteral) TokenLiteral() string    { return al.Token.Literal }
+func (al *ArrayLiteral) TokenValue() token.Token { return al.Token }
 func (al *ArrayLiteral) String() string {
 	var out bytes.Buffer
 	elements := []string{}
@@ -205,8 +227,9 @@ func (al *ArrayLiteral) String() string {
 	return out.String()
 }
 
-func (ie *IndexExpression) expressionNode()      {}
-func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *IndexExpression) expressionNode()         {}
+func (ie *IndexExpression) TokenLiteral() string    { return ie.Token.Literal }
+func (ie *IndexExpression) TokenValue() token.Token { return ie.Token }
 func (ie *IndexExpression) String() string {
 	var out bytes.Buffer
 
@@ -220,8 +243,9 @@ func (ie *IndexExpression) String() string {
 	return out.String()
 }
 
-func (ae *AccessExpression) expressionNode()      {}
-func (ae *AccessExpression) TokenLiteral() string { return ae.Token.Literal }
+func (ae *AccessExpression) expressionNode()         {}
+func (ae *AccessExpression) TokenLiteral() string    { return ae.Token.Literal }
+func (ae *AccessExpression) TokenValue() token.Token { return ae.Token }
 func (ae *AccessExpression) String() string {
 	var out bytes.Buffer
 
@@ -232,8 +256,9 @@ func (ae *AccessExpression) String() string {
 	return out.String()
 }
 
-func (hl *HashLiteral) expressionNode()      {}
-func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
+func (hl *HashLiteral) expressionNode()         {}
+func (hl *HashLiteral) TokenLiteral() string    { return hl.Token.Literal }
+func (hl *HashLiteral) TokenValue() token.Token { return hl.Token }
 func (hl *HashLiteral) String() string {
 	var out bytes.Buffer
 
@@ -249,8 +274,30 @@ func (hl *HashLiteral) String() string {
 	return out.String()
 }
 
-func (td *TypedDeclarationStatement) statementNode()       {}
-func (td *TypedDeclarationStatement) TokenLiteral() string { return td.Token.Literal }
+func (ds *DeclarationStatement) statementNode()          {}
+func (ds *DeclarationStatement) TokenLiteral() string    { return ds.Token.Literal }
+func (ds *DeclarationStatement) TokenValue() token.Token { return ds.Token }
+func (ds *DeclarationStatement) String() string {
+	var out bytes.Buffer
+
+	if ds.IsConstant {
+		out.WriteString("const ")
+	}
+	if ds.Type != nil {
+		out.WriteString(ds.Type.String())
+		out.WriteString(" ")
+	}
+	out.WriteString(ds.Name.String())
+	out.WriteString(" = ")
+	out.WriteString(ds.Value.String())
+	out.WriteString(";")
+
+	return out.String()
+}
+
+func (td *TypedDeclarationStatement) statementNode()          {}
+func (td *TypedDeclarationStatement) TokenLiteral() string    { return td.Token.Literal }
+func (td *TypedDeclarationStatement) TokenValue() token.Token { return td.Token }
 func (td *TypedDeclarationStatement) String() string {
 	var out bytes.Buffer
 
@@ -264,8 +311,9 @@ func (td *TypedDeclarationStatement) String() string {
 	return out.String()
 }
 
-func (ad *AssignmentDeclarationStatement) statementNode()       {}
-func (ad *AssignmentDeclarationStatement) TokenLiteral() string { return ad.Token.Literal }
+func (ad *AssignmentDeclarationStatement) statementNode()          {}
+func (ad *AssignmentDeclarationStatement) TokenLiteral() string    { return ad.Token.Literal }
+func (ad *AssignmentDeclarationStatement) TokenValue() token.Token { return ad.Token }
 func (ad *AssignmentDeclarationStatement) String() string {
 	var out bytes.Buffer
 
@@ -277,8 +325,9 @@ func (ad *AssignmentDeclarationStatement) String() string {
 	return out.String()
 }
 
-func (vu *VariableUpdateStatement) statementNode()       {}
-func (vu *VariableUpdateStatement) TokenLiteral() string { return vu.Token.Literal }
+func (vu *VariableUpdateStatement) statementNode()          {}
+func (vu *VariableUpdateStatement) TokenLiteral() string    { return vu.Token.Literal }
+func (vu *VariableUpdateStatement) TokenValue() token.Token { return vu.Token }
 func (vu *VariableUpdateStatement) String() string {
 	var out bytes.Buffer
 
@@ -291,8 +340,9 @@ func (vu *VariableUpdateStatement) String() string {
 	return out.String()
 }
 
-func (ht HashType) typeNode()            {}
-func (ht HashType) TokenLiteral() string { return ht.Token.Literal }
+func (ht HashType) typeNode()               {}
+func (ht HashType) TokenLiteral() string    { return ht.Token.Literal }
+func (ht HashType) TokenValue() token.Token { return ht.Token }
 func (ht HashType) String() string {
 	var out bytes.Buffer
 	out.WriteString("map{ ")
@@ -304,16 +354,20 @@ func (ht HashType) String() string {
 	return out.String()
 }
 
-func (at ArrayType) typeNode()            {}
-func (at ArrayType) TokenLiteral() string { return at.Token.Literal }
-func (at ArrayType) String() string       { return at.ElementType.String() + "[]" }
+func (at ArrayType) typeNode()               {}
+func (at ArrayType) TokenLiteral() string    { return at.Token.Literal }
+func (at ArrayType) TokenValue() token.Token { return at.Token }
 
-func (it NamedType) typeNode()            {}
-func (it NamedType) TokenLiteral() string { return it.Token.Literal }
-func (it NamedType) String() string       { return it.TypeName.String() }
+func (at ArrayType) String() string { return at.ElementType.String() + "[]" }
 
-func (ft FunctionType) typeNode()            {}
-func (ft FunctionType) TokenLiteral() string { return ft.Token.Literal }
+func (nt NamedType) typeNode()               {}
+func (nt NamedType) TokenLiteral() string    { return nt.Token.Literal }
+func (nt NamedType) TokenValue() token.Token { return nt.Token }
+func (nt NamedType) String() string          { return nt.TypeName.String() }
+
+func (ft FunctionType) typeNode()               {}
+func (ft FunctionType) TokenLiteral() string    { return ft.Token.Literal }
+func (ft FunctionType) TokenValue() token.Token { return ft.Token }
 func (ft FunctionType) String() string {
 	var out bytes.Buffer
 
@@ -330,8 +384,9 @@ func (ft FunctionType) String() string {
 	return out.String()
 }
 
-func (fs *ForStatement) statementNode()       {}
-func (fs *ForStatement) TokenLiteral() string { return fs.Token.Literal }
+func (fs *ForStatement) statementNode()          {}
+func (fs *ForStatement) TokenLiteral() string    { return fs.Token.Literal }
+func (fs *ForStatement) TokenValue() token.Token { return fs.Token }
 func (fs *ForStatement) String() string {
 	var out bytes.Buffer
 

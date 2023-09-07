@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/token"
 )
@@ -23,7 +21,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.curToken.Type]
 
 	if prefix == nil {
-		p.noPrefixParseFnError(p.curToken.Type)
+		p.newError(&ast.ExpressionStatement{Token: p.curToken}, "no prefix parse function for %s found", p.curToken.Literal)
 		return nil
 	}
 	leftExp := prefix()
@@ -42,9 +40,4 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 
 	return leftExp
-}
-
-func (p *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s found", t)
-	p.errors = append(p.errors, msg)
 }
