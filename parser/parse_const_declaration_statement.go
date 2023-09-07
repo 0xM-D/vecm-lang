@@ -15,7 +15,7 @@ func (p *Parser) parseConstDeclarationStatement() ast.Statement {
 	case *ast.AssignmentDeclarationStatement:
 		declStmt.IsConstant = true
 	default:
-		p.newError("const cannot be applied to statement of type %T", declStmt)
+		p.newError(stmt, "const cannot be applied to statement of type %T", declStmt)
 	}
 
 	return stmt

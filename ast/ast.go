@@ -274,6 +274,27 @@ func (hl *HashLiteral) String() string {
 	return out.String()
 }
 
+func (ds *DeclarationStatement) statementNode()          {}
+func (ds *DeclarationStatement) TokenLiteral() string    { return ds.Token.Literal }
+func (ds *DeclarationStatement) TokenValue() token.Token { return ds.Token }
+func (ds *DeclarationStatement) String() string {
+	var out bytes.Buffer
+
+	if ds.IsConstant {
+		out.WriteString("const ")
+	}
+	if ds.Type != nil {
+		out.WriteString(ds.Type.String())
+		out.WriteString(" ")
+	}
+	out.WriteString(ds.Name.String())
+	out.WriteString(" = ")
+	out.WriteString(ds.Value.String())
+	out.WriteString(";")
+
+	return out.String()
+}
+
 func (td *TypedDeclarationStatement) statementNode()          {}
 func (td *TypedDeclarationStatement) TokenLiteral() string    { return td.Token.Literal }
 func (td *TypedDeclarationStatement) TokenValue() token.Token { return td.Token }

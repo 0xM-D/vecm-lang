@@ -20,7 +20,7 @@ func (p *Parser) parseForStatement() ast.Statement {
 	if p.curTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	} else {
-		p.errors = append(p.errors, "Expected ;")
+		p.newError(stmt, "Expected ;")
 		return nil
 	}
 
@@ -34,7 +34,7 @@ func (p *Parser) parseForStatement() ast.Statement {
 		if p.curTokenIs(token.SEMICOLON) {
 			p.nextToken()
 		} else {
-			p.errors = append(p.errors, "Expected ;")
+			p.newError(stmt, "Expected ;")
 			return nil
 		}
 		stmt.AfterThought = p.parseStatement()
