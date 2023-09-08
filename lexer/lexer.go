@@ -22,7 +22,7 @@ func New(input string) *Lexer {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhitespace()
+	l.skipWhitespaceAndComments()
 
 	switch l.ch {
 	case '=':

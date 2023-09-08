@@ -9,10 +9,15 @@ import (
 )
 
 func (l *Lexer) readChar() {
+	if l.ch == '\n' {
+		l.linen++
+		l.coln = 0
+	} else {
+		l.coln++
+	}
 	l.ch = l.peekChar()
 	l.position = l.readPosition
 	l.readPosition++
-	l.coln++
 }
 
 func (l *Lexer) peekChar() byte {
@@ -23,14 +28,64 @@ func (l *Lexer) peekChar() byte {
 	}
 }
 
-func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readChar()
-		if l.ch == '\n' {
-			l.linen++
-			l.coln = 0
+func (l *Lexer) skipWhitespaceAndComments() {
+	for l.ch != 0 {
+		if l.whiteSpaceAhead() {
+			l.skipWhitespace()
+		} else if l.commentAhead() {
+			l.skipComments()
+		} else {
+			break
 		}
 	}
+}
+
+func (l *Lexer) skipWhitespace() {
+	for l.whiteSpaceAhead() {
+		l.readChar()
+	}
+}
+
+func (l *Lexer) skipComments() {
+	if !l.commentAhead() {
+		return
+	}
+	switch l.peekChar() {
+	case '/':
+		l.skipLineComment()
+	case '*':
+		l.skipBlockComment()
+	}
+}
+
+func (l *Lexer) skipLineComment() {
+	for l.ch != '\n' && l.ch != 0 {
+		l.readChar()
+	}
+	l.readChar()
+}
+
+func (l *Lexer) skipBlockComment() {
+	// skip "/*"
+	l.readChar()
+	l.readChar()
+
+	for (l.ch != '*' || l.peekChar() != '/') && l.ch != 0 {
+		l.readChar()
+	}
+
+	// skip "*/"
+	l.readChar()
+	l.readChar()
+}
+
+func (l *Lexer) whiteSpaceAhead() bool {
+	return l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r'
+}
+
+func (l *Lexer) commentAhead() bool {
+	peekTwo := string(l.ch) + string(l.peekChar())
+	return peekTwo == "//" || peekTwo == "/*"
 }
 
 func (l *Lexer) newToken(tokenType token.TokenType, literal string) token.Token {
@@ -116,7 +171,7 @@ func (l *Lexer) getTokenWithPeek(defaultToken token.TokenType, tokenMappings ...
 func NewError(linen int, coln int, line string, format string, a ...interface{}) string {
 	var out bytes.Buffer
 
-	out.WriteString(fmt.Sprintf("Parser error at line %d, column %d:\n", linen, coln))
+	out.WriteString(fmt.Sprintf("Parser error at line %d, column %d:\n", linen+1, coln+1))
 	out.WriteString(line)
 	out.WriteByte('\n')
 	out.WriteString(getAsciiArrow(line, coln))
@@ -128,7 +183,7 @@ func NewError(linen int, coln int, line string, format string, a ...interface{})
 
 func getAsciiArrow(line string, coln int) string {
 	var out bytes.Buffer
-	for i := 0; i < coln-1; i++ {
+	for i := 0; i < coln; i++ {
 		out.WriteByte(' ')
 	}
 	out.WriteByte('^')
