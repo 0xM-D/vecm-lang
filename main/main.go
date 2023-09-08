@@ -37,7 +37,26 @@ func runFile(filePath string) {
 	p := parser.New(l)
 	program := p.ParseProgram()
 	env := object.NewEnvironment()
+	if checkParserErrors(p) {
+		return
+	}
+
 	println(evaluator.Eval(program, env).Inspect())
+}
+
+func checkParserErrors(p *parser.Parser) bool {
+	errors := p.Errors()
+
+	if len(errors) == 0 {
+		return false
+	}
+
+	fmt.Printf("parser has %d errors\n", len(errors))
+	for _, msg := range errors {
+		fmt.Printf("parser error: %s", msg)
+	}
+
+	return true
 }
 
 func runRepl() {

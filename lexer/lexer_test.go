@@ -13,7 +13,7 @@ let add = fn(x, y) {
 x + y;
 };
 let result = add(five, ten);
-!-/*5;
+!-/ *5;
 5 < 10 > 5;
 
 if (5 < 10) {
@@ -49,6 +49,15 @@ for(;;){}
 for(int i = 0; i < 10; i+=1){
 	const x = i * i;
 }
+// test
+// test test
+123 // test
+for(//////
+x + /* test */ y
+/*
+	multi
+line
+  comment */
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -220,6 +229,12 @@ for(int i = 0; i < 10; i+=1){
 		{token.IDENT, "i"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
+		{token.INT, "123"},
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.IDENT, "x"},
+		{token.PLUS, "+"},
+		{token.IDENT, "y"},
 		{token.EOF, ""},
 	}
 

@@ -4,4 +4,4 @@ const function(int, int)->int sum = fn(a: int, b: int) -> int {
 
 c := sum(1, 2)
 
-c
+c // printily printy
