@@ -203,15 +203,20 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	return &object.HashElementReference{Hash: hashObject, Key: index}
 }
 
-func evalTypedDeclarationStatement(node *ast.TypedDeclarationStatement, env *object.Environment) object.Object {
-	objectType, err := evalType(node.Type, env)
-	if err != nil {
-		return newError(err.Error())
+func evalDeclarationStatement(node *ast.DeclarationStatement, env *object.Environment) object.Object {
+	var objectType object.ObjectType
+	var err error
+
+	if node.Type != nil {
+		objectType, err = evalType(node.Type, env)
+		if err != nil {
+			return newError(err.Error())
+		}
 	}
 
-	error := declareVariable(&(*node).DeclarationStatement, objectType, env)
-	if error != nil {
-		return error
+	declared := declareVariable(node, objectType, env)
+	if declared != nil {
+		return declared
 	}
 
 	return nil

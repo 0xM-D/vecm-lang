@@ -12,7 +12,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	case token.CONST:
-		return p.parseConstDeclarationStatement()
+		return p.parseTypedDeclarationStatement()
 	case token.MAP_TYPE:
 		return p.parseTypedDeclarationStatement()
 	case token.FUNCTION_TYPE:
