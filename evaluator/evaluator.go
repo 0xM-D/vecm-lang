@@ -92,12 +92,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
-		error := evalTypedDeclarationStatement(node, env)
+		error := evalDeclarationStatement(&(*node).DeclarationStatement, env)
 		if error != nil {
 			return error
 		}
 	case *ast.AssignmentDeclarationStatement:
-		error := declareVariable(&(*node).DeclarationStatement, nil, env)
+		error := evalDeclarationStatement(&(*node).DeclarationStatement, env)
 		if error != nil {
 			return error
 		}

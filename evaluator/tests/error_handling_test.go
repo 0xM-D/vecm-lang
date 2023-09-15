@@ -71,7 +71,7 @@ func TestErrorHandling(t *testing.T) {
 			"Identifier with name a already exists.",
 		},
 		{
-			`const abcc := "fasdf"; abcc = "fasdfsd";`,
+			`const abcc = "fasdf"; abcc = "fasdfsd";`,
 			"Cannot assign to const variable",
 		},
 		{

@@ -8,12 +8,19 @@ import (
 func (p *Parser) parseTypedDeclarationStatement() *ast.TypedDeclarationStatement {
 	stmt := &ast.DeclarationStatement{Token: p.curToken}
 
-	stmt.Type = p.parseType()
-	p.nextToken()
+	if p.curTokenIs(token.CONST) {
+		stmt.IsConstant = true
+		p.nextToken()
+	}
+
+	if !p.peekTokenIs(token.ASSIGN) {
+		stmt.Type = p.parseType()
+		p.nextToken()
+	}
 
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
 
-	if p.peekToken.Type != token.ASSIGN {
+	if !p.peekTokenIs(token.ASSIGN) {
 		p.newError(stmt, "invalid token in typed declaration statement. expected=%q got=%q", "=", p.peekToken.Literal)
 		return nil
 	}
