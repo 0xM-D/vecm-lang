@@ -58,6 +58,7 @@ x + /* test */ y
 	multi
 line
   comment */
+condition ? true : false
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -235,6 +236,11 @@ line
 		{token.IDENT, "x"},
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
+		{token.IDENT, "condition"},
+		{token.TERNARY_IF, "?"},
+		{token.TRUE, "true"},
+		{token.COLON, ":"},
+		{token.FALSE, "false"},
 		{token.EOF, ""},
 	}
 

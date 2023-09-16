@@ -70,6 +70,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.ASTERISK_ASSIGN, p.parseInfixExpression)
 	p.registerInfix(token.SLASH_ASSIGN, p.parseInfixExpression)
 	p.registerInfix(token.ACCESS, p.parseAccessExpression)
+	p.registerInfix(token.TERNARY_IF, p.parseTernaryExpression)
+	p.registerInfix(token.COLON, p.parseColonExpression)
 
 	p.nextToken()
 	p.nextToken()

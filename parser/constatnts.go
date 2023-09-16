@@ -8,6 +8,8 @@ const (
 	_ int = iota
 	LOWEST
 	ASSIGN        // a = b
+	COLON         // a ? b : c
+	TERNARY_IF    // a ? b : c
 	BITWISE_OR    // |, ^
 	BITWISE_AND   // &
 	BOOLEAN_OR    // ||
@@ -51,4 +53,6 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK_ASSIGN: ASSIGN,
 	token.SLASH_ASSIGN:    ASSIGN,
 	token.ACCESS:          ACCESS,
+	token.TERNARY_IF:      TERNARY_IF,
+	token.COLON:           COLON,
 }
