@@ -63,6 +63,7 @@ func initArrayBuiltins() *FunctionRepository {
 	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: ArrayKind}, arrayPush)
 	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
 	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayDelete)
+	repo.register("slice", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arraySlice)
 	return &repo
 }
 
@@ -121,4 +122,28 @@ func arrayPushMultiple(params ...Object) Object {
 	arr.Elements = append(arr.Elements, newElements...)
 
 	return arr
+}
+
+func arraySlice(params ...Object) Object {
+	arr := params[0].(*Array)
+	startIndex := int(UnwrapReferenceObject(params[1]).(*Number[int64]).Value)
+	count := int(UnwrapReferenceObject(params[2]).(*Number[int64]).Value)
+
+	startIndex = boundArrayIndex(arr, startIndex)
+	endIndex := boundArrayIndex(arr, startIndex+count-1)
+
+	return &Array{ArrayObjectType: arr.ArrayObjectType, Elements: arr.Elements[startIndex : endIndex+1]}
+}
+
+func boundArrayIndex(arr *Array, index int) int {
+	if index < 0 {
+		index = 0
+	}
+
+	if index >= len(arr.Elements) {
+		index = len(arr.Elements) - 1
+	}
+
+	return index
+
 }
