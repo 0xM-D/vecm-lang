@@ -56,6 +56,9 @@ const (
 	B_SHIFT_L = "<<"
 	B_SHIFT_R = ">>"
 
+	// Ternary operator
+	TERNARY_IF = "?"
+
 	// Delimiters
 	COMMA     TokenType = ","
 	SEMICOLON TokenType = ";"

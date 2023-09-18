@@ -148,6 +148,14 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"a >> b && 3",
 			"((a >> b) && 3)",
 		},
+		{
+			"true && false ? true & false : 1 + 2",
+			"((true && false) ? (true & false) : (1 + 2))",
+		},
+		{
+			"false ? false ? 1 : 2 : true ? 3 : 4",
+			"(false ? (false ? 1 : 2) : (true ? 3 : 4))",
+		},
 	}
 	for _, tt := range tests {
 		l := lexer.New(tt.input)

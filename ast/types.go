@@ -189,3 +189,10 @@ type ForStatement struct {
 	AfterThought   Statement
 	Body           *BlockStatement
 }
+
+type TernaryExpression struct {
+	Token        token.Token
+	Condition    Expression
+	ValueIfTrue  Expression
+	ValueIfFalse Expression
+}

@@ -402,3 +402,20 @@ func (fs *ForStatement) String() string {
 
 	return out.String()
 }
+
+func (te *TernaryExpression) expressionNode()         {}
+func (te *TernaryExpression) TokenLiteral() string    { return te.Token.Literal }
+func (te *TernaryExpression) TokenValue() token.Token { return te.Token }
+func (te *TernaryExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(te.Condition.String())
+	out.WriteString(" ? ")
+	out.WriteString(te.ValueIfTrue.String())
+	out.WriteString(" : ")
+	out.WriteString(te.ValueIfFalse.String())
+	out.WriteString(")")
+
+	return out.String()
+}

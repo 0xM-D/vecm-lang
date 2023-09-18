@@ -88,6 +88,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.B_XOR, string(l.ch))
 	case '~':
 		tok = l.newToken(token.B_INV, string(l.ch))
+	case '?':
+		tok = l.newToken(token.TERNARY_IF, string(l.ch))
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
