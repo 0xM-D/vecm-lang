@@ -45,18 +45,12 @@ func TestTernaryOperator(t *testing.T) {
 			t.Fatalf("Ternary expression condition is different than expected. want=%s got=%s", ternaryExpression.Condition.String(), tt.condition)
 		}
 
-		ternaryElseExpression, ok := ternaryExpression.TernaryValueExpression.(*ast.ColonExpression)
-
-		if !ok {
-			t.Fatalf("ternaryExpression.TernaryValueExpression is not TernaryValueExpression. got=%T", ternaryExpression.TernaryValueExpression)
+		if !testLiteralExpression(t, ternaryExpression.ValueIfTrue, tt.valueIfTrue) {
+			t.Fatalf("Ternary expression valueIfTrue is different than expected. want=%s got=%s", ternaryExpression.ValueIfTrue.String(), tt.valueIfTrue)
 		}
 
-		if !testLiteralExpression(t, ternaryElseExpression.Left, tt.valueIfTrue) {
-			t.Fatalf("Ternary expression valueIfTrue is different than expected. want=%s got=%s", ternaryElseExpression.Left.String(), tt.valueIfTrue)
-		}
-
-		if !testLiteralExpression(t, ternaryElseExpression.Right, tt.valueIfFalse) {
-			t.Fatalf("Ternary expression falueIfFalse is different than expected. want=%s got=%s", ternaryElseExpression.Right.String(), tt.valueIfFalse)
+		if !testLiteralExpression(t, ternaryExpression.ValueIfFalse, tt.valueIfFalse) {
+			t.Fatalf("Ternary expression falueIfFalse is different than expected. want=%s got=%s", ternaryExpression.ValueIfFalse.String(), tt.valueIfFalse)
 		}
 
 	}

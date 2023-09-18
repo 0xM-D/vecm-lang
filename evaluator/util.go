@@ -364,9 +364,9 @@ func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment)
 
 	var expressionToEvaluate ast.Node
 	if isTruthy(conditionResult) {
-		expressionToEvaluate = node.TernaryValueExpression.(*ast.ColonExpression).Left
+		expressionToEvaluate = node.ValueIfTrue
 	} else {
-		expressionToEvaluate = node.TernaryValueExpression.(*ast.ColonExpression).Right
+		expressionToEvaluate = node.ValueIfFalse
 	}
 
 	result := Eval(expressionToEvaluate, env)

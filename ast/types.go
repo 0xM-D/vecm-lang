@@ -191,13 +191,8 @@ type ForStatement struct {
 }
 
 type TernaryExpression struct {
-	Token                  token.Token
-	Condition              Expression
-	TernaryValueExpression Expression
-}
-
-type ColonExpression struct {
-	Token token.Token
-	Left  Expression
-	Right Expression
+	Token        token.Token
+	Condition    Expression
+	ValueIfTrue  Expression
+	ValueIfFalse Expression
 }

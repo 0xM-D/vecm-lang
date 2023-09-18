@@ -12,20 +12,17 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 	for !p.peekTokenIs(token.RBRACE) {
 		p.nextToken()
 
-		expr := p.parseExpression(LOWEST)
-
-		if expr == nil {
+		key := p.parseExpression(LOWEST)
+		if !p.expectPeek(token.COLON) {
 			return nil
 		}
 
-		colonExpression, ok := expr.(*ast.ColonExpression)
+		p.nextToken()
 
-		if !ok {
-			p.newError(colonExpression, "Expected colon expression. got=%T", expr)
-			return nil
-		}
+		value := p.parseExpression(LOWEST)
 
-		hash.Pairs[colonExpression.Left] = colonExpression.Right
+		hash.Pairs[key] = value
+
 		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
 			return nil
 		}

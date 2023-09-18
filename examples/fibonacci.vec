@@ -6,10 +6,7 @@ int[] fibArray = [0, 1].pushMultiple(-1, fibSize)
     This time we're implementing fibonacci recursively with memoization
 */
 fib := fn(i: int)->int {
-    if(fibArray[i] < 0) {
-        fibArray[i] = fib(i-1) + fib(i-2)
-    }
-    return fibArray[i]
+    return fibArray[i] < 0 ? fibArray[i] = fib(i-1) + fib(i-2) : fibArray[i]
 }
 
 fib(fibSize)

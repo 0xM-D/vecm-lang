@@ -409,22 +409,13 @@ func (te *TernaryExpression) TokenValue() token.Token { return te.Token }
 func (te *TernaryExpression) String() string {
 	var out bytes.Buffer
 
+	out.WriteString("(")
 	out.WriteString(te.Condition.String())
 	out.WriteString(" ? ")
-	out.WriteString(te.TernaryValueExpression.String())
-
-	return out.String()
-}
-
-func (tv *ColonExpression) expressionNode()         {}
-func (tv *ColonExpression) TokenLiteral() string    { return tv.Token.Literal }
-func (tv *ColonExpression) TokenValue() token.Token { return tv.Token }
-func (tv *ColonExpression) String() string {
-	var out bytes.Buffer
-
-	out.WriteString(tv.Left.String())
+	out.WriteString(te.ValueIfTrue.String())
 	out.WriteString(" : ")
-	out.WriteString(tv.Right.String())
+	out.WriteString(te.ValueIfFalse.String())
+	out.WriteString(")")
 
 	return out.String()
 }
