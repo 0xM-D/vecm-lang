@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -27,10 +28,10 @@ func TestParsingHashLiteralsStringKeys(t *testing.T) {
 		t.Errorf("hash.Pairs has wrong length. got=%d", len(hash.Pairs))
 	}
 
-	expected := map[string]int64{
-		"one":   1,
-		"two":   2,
-		"three": 3,
+	expected := map[string]*big.Int{
+		"one":   big.NewInt(1),
+		"two":   big.NewInt(2),
+		"three": big.NewInt(3),
 	}
 
 	for key, value := range hash.Pairs {
@@ -87,13 +88,13 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 
 	tests := map[string]func(ast.Expression){
 		"one": func(e ast.Expression) {
-			testInfixExpression(t, e, 0, "+", 1)
+			testInfixExpression(t, e, big.NewInt(0), "+", big.NewInt(1))
 		},
 		"two": func(e ast.Expression) {
-			testInfixExpression(t, e, 10, "-", 8)
+			testInfixExpression(t, e, big.NewInt(10), "-", big.NewInt(8))
 		},
 		"three": func(e ast.Expression) {
-			testInfixExpression(t, e, 15, "/", 5)
+			testInfixExpression(t, e, big.NewInt(15), "/", big.NewInt(5))
 		},
 	}
 

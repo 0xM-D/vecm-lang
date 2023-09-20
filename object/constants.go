@@ -15,7 +15,14 @@ func (o ObjectKind) IsConstant() bool              { return true }
 
 const (
 	Invalid             ObjectKind = "invalid"
-	IntegerKind         ObjectKind = "int"
+	Int8Kind            ObjectKind = "int8"
+	Int16Kind           ObjectKind = "int16"
+	Int32Kind           ObjectKind = "int32"
+	Int64Kind           ObjectKind = "int64"
+	UInt8Kind           ObjectKind = "uint8"
+	UInt16Kind          ObjectKind = "uint16"
+	UInt32Kind          ObjectKind = "uint32"
+	UInt64Kind          ObjectKind = "uint64"
 	Float32Kind         ObjectKind = "float32"
 	Float64Kind         ObjectKind = "float64"
 	BooleanKind         ObjectKind = "bool"
@@ -33,7 +40,7 @@ const (
 func initIntrinsicTypeBuiltins() map[ObjectKind]*FunctionRepository {
 	repos := map[ObjectKind]*FunctionRepository{}
 
-	repos[IntegerKind] = initIntegerBuiltins()
+	repos[Int64Kind] = initIntegerBuiltins()
 	repos[ArrayKind] = initArrayBuiltins()
 	repos[StringKind] = initStringBuiltins()
 
@@ -51,7 +58,7 @@ func initIntegerBuiltins() *FunctionRepository {
 func initStringBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("length", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, stringLength)
+	repo.register("length", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, stringLength)
 
 	return &repo
 }
@@ -59,11 +66,11 @@ func initStringBuiltins() *FunctionRepository {
 func initArrayBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: IntegerKind}, arraySize)
-	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind}, ReturnValueType: ArrayKind}, arrayPush)
-	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
-	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arrayDelete)
-	repo.register("slice", FunctionObjectType{ParameterTypes: []ObjectType{IntegerKind, IntegerKind}, ReturnValueType: ArrayKind}, arraySlice)
+	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, arraySize)
+	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind}, ReturnValueType: ArrayKind}, arrayPush)
+	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, Int64Kind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
+	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arrayDelete)
+	repo.register("slice", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arraySlice)
 	return &repo
 }
 

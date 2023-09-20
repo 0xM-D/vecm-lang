@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -40,14 +41,14 @@ func TestForStatement(t *testing.T) {
 		t.Fatalf("stmt.Condition is not ast.ExpressionStatement. got=%T", stmt.Condition)
 	}
 
-	testInfixExpression(t, condition.Expression, TestIdentifier{"i"}, "<", 10)
+	testInfixExpression(t, condition.Expression, TestIdentifier{"i"}, "<", big.NewInt(10))
 
 	afterThought, ok := stmt.AfterThought.(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("stmt.AfterThoguht is not ast.ExpressionStatement. got=%T", stmt.AfterThought)
 	}
 
-	testInfixExpression(t, afterThought.Expression, TestIdentifier{"i"}, "+=", 1)
+	testInfixExpression(t, afterThought.Expression, TestIdentifier{"i"}, "+=", big.NewInt(1))
 
 	if len(stmt.Body.Statements) != 1 {
 		t.Fatalf("for loop body is not 1 statements. got=%d\n",

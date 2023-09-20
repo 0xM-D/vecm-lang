@@ -1,6 +1,9 @@
 package evaluator_tests
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 func TestAssignmentDeclaration(t *testing.T) {
 	tests := []struct {
@@ -13,6 +16,6 @@ func TestAssignmentDeclaration(t *testing.T) {
 		{"a := 5; let b = a; let c = a + b + 5; c;", 15},
 	}
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+		testIntegerObject(t, testEval(tt.input), big.NewInt(tt.expected))
 	}
 }

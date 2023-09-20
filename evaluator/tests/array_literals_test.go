@@ -1,6 +1,7 @@
 package evaluator_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/object"
@@ -21,8 +22,8 @@ func TestArrayLiterals(t *testing.T) {
 			len(result.Elements))
 	}
 
-	testIntegerObject(t, result.Elements[0], 1)
-	testIntegerObject(t, result.Elements[1], 4)
-	testIntegerObject(t, result.Elements[2], 6)
+	testIntegerObject(t, result.Elements[0], big.NewInt(1))
+	testIntegerObject(t, result.Elements[1], big.NewInt(4))
+	testIntegerObject(t, result.Elements[2], big.NewInt(6))
 
 }

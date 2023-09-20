@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -34,7 +35,7 @@ func TestCallExpressionParsing(t *testing.T) {
 	if len(exp.Arguments) != 3 {
 		t.Fatalf("wrong length of arguments. got=%d", len(exp.Arguments))
 	}
-	testLiteralExpression(t, exp.Arguments[0], 1)
-	testInfixExpression(t, exp.Arguments[1], 2, "*", 3)
-	testInfixExpression(t, exp.Arguments[2], 4, "+", 5)
+	testLiteralExpression(t, exp.Arguments[0], big.NewInt(1))
+	testInfixExpression(t, exp.Arguments[1], big.NewInt(2), "*", big.NewInt(3))
+	testInfixExpression(t, exp.Arguments[2], big.NewInt(4), "+", big.NewInt(5))
 }

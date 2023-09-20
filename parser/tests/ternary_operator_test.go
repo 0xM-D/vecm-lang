@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -15,7 +16,7 @@ func TestTernaryOperator(t *testing.T) {
 		valueIfTrue  interface{}
 		valueIfFalse interface{}
 	}{
-		{" true ? 1 : 2", true, 1, 2},
+		{" true ? 1 : 2", true, big.NewInt(1), big.NewInt(2)},
 		{" false ? foo : bar", false, TestIdentifier{"foo"}, TestIdentifier{"bar"}},
 	}
 

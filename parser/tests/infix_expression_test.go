@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -15,14 +16,14 @@ func TestParsingInfixExpressions(t *testing.T) {
 		operator   string
 		rightValue interface{}
 	}{
-		{"5 + 5;", 5, "+", 5},
-		{"5 - 5;", 5, "-", 5},
-		{"5 * 5;", 5, "*", 5},
-		{"5 / 5;", 5, "/", 5},
-		{"5 > 5;", 5, ">", 5},
-		{"5 < 5;", 5, "<", 5},
-		{"5 == 5;", 5, "==", 5},
-		{"5 != 5;", 5, "!=", 5},
+		{"5 + 5;", big.NewInt(5), "+", big.NewInt(5)},
+		{"5 - 5;", big.NewInt(5), "-", big.NewInt(5)},
+		{"5 * 5;", big.NewInt(5), "*", big.NewInt(5)},
+		{"5 / 5;", big.NewInt(5), "/", big.NewInt(5)},
+		{"5 > 5;", big.NewInt(5), ">", big.NewInt(5)},
+		{"5 < 5;", big.NewInt(5), "<", big.NewInt(5)},
+		{"5 == 5;", big.NewInt(5), "==", big.NewInt(5)},
+		{"5 != 5;", big.NewInt(5), "!=", big.NewInt(5)},
 		{"foobar + barfoo;", TestIdentifier{"foobar"}, "+", TestIdentifier{"barfoo"}},
 		{"foobar - barfoo;", TestIdentifier{"foobar"}, "-", TestIdentifier{"barfoo"}},
 		{"foobar * barfoo;", TestIdentifier{"foobar"}, "*", TestIdentifier{"barfoo"}},

@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"math/big"
+
 	"github.com/0xM-D/interpreter/token"
 )
 
@@ -58,7 +60,7 @@ type Identifier struct {
 
 type IntegerLiteral struct {
 	Token token.Token
-	Value int64
+	Value big.Int
 }
 
 type Float32Literal struct {

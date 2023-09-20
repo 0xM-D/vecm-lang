@@ -12,7 +12,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
 	case *ast.IntegerLiteral:
-		return &object.Number[int64]{Value: node.Value}
+		return evalIntegerLiteral(node, env)
 	case *ast.Float32Literal:
 		return &object.Number[float32]{Value: node.Value}
 	case *ast.Float64Literal:
@@ -38,10 +38,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return &object.ReturnValue{Value: val, ReturnValueObjectType: object.ReturnValueObjectType{ReturnType: val.Type()}}
 	case *ast.LetStatement:
-		error := declareVariable(&(*node).DeclarationStatement, nil, env)
-		if error != nil {
-			return error
-		}
+		return evalDeclarationStatement(&(*node).DeclarationStatement, env)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -59,15 +56,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
 	case *ast.ArrayLiteral:
-		elements := evalExpressions(node.Elements, env)
-		var elementType object.ObjectType = object.AnyKind
-		if len(elements) == 1 && object.IsError(elements[0]) {
-			return elements[0]
-		}
-		if len(elements) > 0 {
-			elementType = elements[0].Type()
-		}
-		return &object.Array{Elements: elements, ArrayObjectType: object.ArrayObjectType{ElementType: elementType}}
+		return evalArrayLiteral(node, env)
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if object.IsError(left) {
@@ -92,27 +81,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
-		error := evalDeclarationStatement(&(*node).DeclarationStatement, env)
-		if error != nil {
-			return error
-		}
+		return evalDeclarationStatement(&(*node).DeclarationStatement, env)
 	case *ast.AssignmentDeclarationStatement:
-		error := evalDeclarationStatement(&(*node).DeclarationStatement, env)
-		if error != nil {
-			return error
-		}
+		return evalDeclarationStatement(&(*node).DeclarationStatement, env)
 	case *ast.ForStatement:
-		error := evalForStatement(node, env)
-		if error != nil {
-			return error
-		}
+		return evalForStatement(node, env)
 	case *ast.TernaryExpression:
-		{
-			result := evalTernaryExpression(node, env)
-			if result != nil {
-				return result
-			}
-		}
+		return evalTernaryExpression(node, env)
 	}
 
 	return nil

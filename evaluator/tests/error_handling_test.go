@@ -13,11 +13,11 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + true;",
-			"operator + not defined on types int and bool",
+			"operator + not defined on types int8 and bool",
 		},
 		{
 			"5 + true; 5;",
-			"operator + not defined on types int and bool",
+			"operator + not defined on types int8 and bool",
 		},
 		{
 			"-true",
@@ -59,8 +59,8 @@ func TestErrorHandling(t *testing.T) {
 			"unusable as hash key: function(string) -> string",
 		},
 		{
-			`int a = "fasdf"`,
-			"Expression of type string cannot be assigned to int",
+			`int64 a = "fasdf"`,
+			"Expression of type string cannot be assigned to int64",
 		},
 		{
 			`a := "fasdf"; bool c = a;`,
@@ -75,7 +75,7 @@ func TestErrorHandling(t *testing.T) {
 			"Cannot assign to const variable",
 		},
 		{
-			`const int a = 3; a = 5*6;`,
+			`const int32 a = 3; a = 5*6;`,
 			"Cannot assign to const variable",
 		},
 		{
@@ -84,14 +84,14 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			`a := 3; a += "test"`,
-			"operator += not defined on types int and string",
+			"operator += not defined on types int64 and string",
 		},
 		{
 			`bool a = true; a += true`,
 			"operator += not defined on types bool and bool",
 		},
 		{
-			`const int a = 3; a += 1`,
+			`const int64 a = 3; a += 1`,
 			"Cannot assign to const variable",
 		},
 		{
@@ -99,12 +99,12 @@ func TestErrorHandling(t *testing.T) {
 			"Incorrect parameter count for function() -> void fun. expected=0, got=1",
 		},
 		{
-			`fun := fn(a: int, b: int)->int { return a + b; }; fun()`,
-			"Incorrect parameter count for function(int, int) -> int fun. expected=2, got=0",
+			`fun := fn(a: int64, b: int64)->int64 { return a + b; }; fun()`,
+			"Incorrect parameter count for function(int64, int64) -> int64 fun. expected=2, got=0",
 		},
 		{
 			`[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].deleteee(1, 3)`,
-			"Member deleteee does not exist on int[]",
+			"Member deleteee does not exist on int8[]",
 		},
 	}
 	for _, tt := range tests {
