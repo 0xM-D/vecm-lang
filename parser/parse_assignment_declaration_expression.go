@@ -6,17 +6,9 @@ import (
 )
 
 func (p *Parser) parseAssignmentDeclarationStatement() *ast.AssignmentDeclarationStatement {
-	stmt := &ast.DeclarationStatement{Token: p.curToken}
-
-	stmt.Name = p.parseIdentifier().(*ast.Identifier)
-	p.nextToken()
-	p.nextToken()
-
-	stmt.Value = p.parseExpression(LOWEST)
-
-	if p.peekTokenIs(token.SEMICOLON) {
-		p.nextToken()
+	declStmt := p.parseDeclarationStatement(token.DECL_ASSIGN)
+	if declStmt == nil {
+		return nil
 	}
-
-	return &ast.AssignmentDeclarationStatement{DeclarationStatement: *stmt}
+	return &ast.AssignmentDeclarationStatement{DeclarationStatement: *declStmt}
 }

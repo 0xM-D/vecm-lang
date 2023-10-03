@@ -8,7 +8,7 @@ import (
 )
 
 func TestArrayLiterals(t *testing.T) {
-	input := "[1, 2 * 2, 3 + 3]"
+	input := "[]int{1, 2 * 2, 3 + 3}"
 
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Array)

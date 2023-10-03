@@ -6,17 +6,47 @@ import (
 )
 
 func (p *Parser) parseStatement() ast.Statement {
+
+	if p.curToken.Type == token.ARRAY_TYPE {
+		startToken := p.curToken
+		arrayType := p.parseType()
+		if arrayType == nil {
+			return nil
+		}
+		if p.peekTokenIs(token.LBRACE) {
+			arrayLiteral := p.parseArrayLiteralRest(&ast.ArrayLiteral{Token: startToken, Type: arrayType})
+			if arrayLiteral == nil {
+				return nil
+			}
+			expr := p.parseExpressionRest(LOWEST, arrayLiteral)
+			if expr == nil {
+				return nil
+			}
+			exprStmt := &ast.ExpressionStatement{
+				Token:      p.curToken,
+				Expression: expr,
+			}
+			if p.peekTokenIs(token.SEMICOLON) {
+				p.nextToken()
+			}
+			return exprStmt
+		} else {
+			p.nextToken()
+			return p.parseTypedDeclarationStatement(arrayType)
+		}
+	}
+
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
 	case token.CONST:
-		return p.parseTypedDeclarationStatement()
+		return p.parseTypedDeclarationStatement(nil)
 	case token.MAP_TYPE:
-		return p.parseTypedDeclarationStatement()
+		return p.parseTypedDeclarationStatement(nil)
 	case token.FUNCTION_TYPE:
-		return p.parseTypedDeclarationStatement()
+		return p.parseTypedDeclarationStatement(nil)
 	case token.FOR:
 		return p.parseForStatement()
 	case token.IDENT:
@@ -28,7 +58,7 @@ func (p *Parser) parseStatement() ast.Statement {
 		case token.ARRAY_TYPE:
 			fallthrough
 		case token.LBRACE:
-			return p.parseTypedDeclarationStatement()
+			return p.parseTypedDeclarationStatement(nil)
 		}
 		fallthrough
 	default:

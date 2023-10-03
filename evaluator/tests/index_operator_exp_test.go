@@ -11,47 +11,47 @@ func TestArrayIndexExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{
-			"[1, 2, 3][0]",
+			"[]int{1, 2, 3}[0]",
 			big.NewInt(1),
 		},
 		{
-			"[1, 2, 3][1]",
+			"[]int{1, 2, 3}[1]",
 			big.NewInt(2),
 		},
 		{
-			"[1, 2, 3][2]",
+			"[]int{1, 2, 3}[2]",
 			big.NewInt(3),
 		},
 		{
-			"let i = 0; [1][i];",
+			"let i = 0; []int{1}[i];",
 			big.NewInt(1),
 		},
 		{
-			"[1, 2, 3][1 + 1];",
+			"[]int{1, 2, 3}[1 + 1];",
 			big.NewInt(3),
 		},
 		{
-			"let myArray = [1, 2, 3]; myArray[2];",
+			"let myArray = []int{1, 2, 3}; myArray[2];",
 			big.NewInt(3),
 		},
 		{
-			"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+			"let myArray = []int{1, 2, 3}; myArray[0] + myArray[1] + myArray[2];",
 			big.NewInt(6),
 		},
 		{
-			"let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
+			"let myArray = []int{1, 2, 3}; let i = myArray[0]; myArray[i]",
 			big.NewInt(2),
 		},
 		{
-			"[1, 2, 3][3]",
+			"[]int{1, 2, 3}[3]",
 			nil,
 		},
 		{
-			"[1, 2, 3][-1]",
+			"[]int{1, 2, 3}[-1]",
 			nil,
 		},
 		{
-			"let a = [1]; a[0] = 2; a[0]",
+			"let a = []int{1}; a[0] = 2; a[0]",
 			big.NewInt(2),
 		},
 	}

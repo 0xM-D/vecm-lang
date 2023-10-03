@@ -103,8 +103,8 @@ func TestErrorHandling(t *testing.T) {
 			"Incorrect parameter count for function(int64, int64) -> int64 fun. expected=2, got=0",
 		},
 		{
-			`[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].deleteee(1, 3)`,
-			"Member deleteee does not exist on int8[]",
+			`[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.deleteee(1, 3)`,
+			"Member deleteee does not exist on []int8",
 		},
 	}
 	for _, tt := range tests {
