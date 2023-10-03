@@ -200,3 +200,9 @@ type TernaryExpression struct {
 	ValueIfTrue  Expression
 	ValueIfFalse Expression
 }
+
+type TypeCastExpression struct {
+	Token token.Token
+	Left  Expression
+	Type  Type
+}

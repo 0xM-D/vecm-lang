@@ -88,6 +88,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalForStatement(node, env)
 	case *ast.TernaryExpression:
 		return evalTernaryExpression(node, env)
+	case *ast.TypeCastExpression:
+		return evalExplicitTypeCast(node, env)
 	}
 
 	return nil

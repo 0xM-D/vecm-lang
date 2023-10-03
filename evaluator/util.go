@@ -455,3 +455,22 @@ func evalIntegerLiteral(node *ast.IntegerLiteral, env *object.Environment) objec
 		return newError("Integer out of max range")
 	}
 }
+
+func evalExplicitTypeCast(node *ast.TypeCastExpression, env *object.Environment) object.Object {
+	left := Eval(node.Left, env)
+	if object.IsError(left) {
+		return left
+	}
+
+	castToType, error := evalType(node.Type, env)
+	if error != nil {
+		return newError(error.Error())
+	}
+
+	casted := typeCast(left, castToType, EXPLICIT_CAST)
+	if object.IsError(casted) {
+		return casted
+	}
+
+	return casted
+}
