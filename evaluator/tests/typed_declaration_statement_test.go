@@ -13,7 +13,7 @@ func TestTypedDeclarationStatement(t *testing.T) {
 	}{
 		{"int a = 5; a;", 5},
 		{"string a = \"testmmm\"; a;", "testmmm"},
-		{"const int[] a = [1, 2, 3, 4]; let b = a; b;", []string{"1", "2", "3", "4"}},
+		{"const []int a = []int{1, 2, 3, 4}; let b = a; b;", []string{"1", "2", "3", "4"}},
 		{"bool a = true; let b = !a; b;", false},
 		{"const function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }; sum", ExpectedFunction{
 			"fn(a, b) {" + "\n" +

@@ -18,11 +18,11 @@ func TestConstDeclaration(t *testing.T) {
 		{"const bool a = true;", "a", "true"},
 		{"const c = fn(b: int)->int { return b * 2 };", "c", "fn(b:int)->int{return (b * 2);}"},
 		{"const a = {1: 2, 2: 3};", "a", "{1:2, 2:3}"},
-		{"const array e = [1, 2, 3, 4, 5];", "e", "[1, 2, 3, 4, 5]"},
+		{"const array e = []int{1, 2, 3, 4, 5};", "e", "[]int{1, 2, 3, 4, 5}"},
 		{`const string f = "string value";`, "f", "string value"},
 		{`const f = "string value";`, "f", "string value"},
 		{`const a = 10;`, "a", "10"},
-		{`const arr = [1, 2, 3, 4, 5];`, "arr", "[1, 2, 3, 4, 5]"},
+		{`const arr = []int{1, 2, 3, 4, 5};`, "arr", "[]int{1, 2, 3, 4, 5}"},
 	}
 
 	for _, tt := range tests {

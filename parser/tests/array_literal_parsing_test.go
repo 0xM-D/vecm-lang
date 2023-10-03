@@ -13,8 +13,8 @@ func TestParsingArrayLiterals(t *testing.T) {
 		input            string
 		expectedElements []string
 	}{
-		{"[1, 2 * 2, 3 + 3]", []string{"1", "(2 * 2)", "(3 + 3)"}},
-		{"[]", []string{}},
+		{"[]int{1, 2 * 2, 3 + 3}", []string{"1", "(2 * 2)", "(3 + 3)"}},
+		{"[]int{}", []string{}},
 	}
 
 	for _, tt := range tests {
