@@ -22,6 +22,7 @@ const (
 	CALL          // myFunction(X)
 	INDEX         // array[index]
 	ACCESS        // type.member or type.memberFn()
+	TYPECAST      // 3 as uint8
 )
 
 var precedences = map[token.TokenType]int{
@@ -54,4 +55,5 @@ var precedences = map[token.TokenType]int{
 	token.ACCESS:          ACCESS,
 	token.TERNARY_IF:      TERNARY_IF,
 	token.COLON:           LOWEST,
+	token.AS:              TYPECAST,
 }
