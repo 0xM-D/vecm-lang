@@ -7,10 +7,19 @@ import (
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := &ast.ArrayLiteral{Token: p.curToken}
-	array.Elements = p.parseExpressionList(token.RBRACKET)
-	return array
+
+	array.Type = p.parseType()
+	if array.Type == nil {
+		return nil
+	}
+
+	return p.parseArrayLiteralRest(array)
 }
 
-func (p *Parser) parseEmptyArray() ast.Expression {
-	return &ast.ArrayLiteral{Token: p.curToken, Elements: []ast.Expression{}}
+func (p *Parser) parseArrayLiteralRest(array *ast.ArrayLiteral) ast.Expression {
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	array.Elements = p.parseExpressionList(token.RBRACE)
+	return array
 }

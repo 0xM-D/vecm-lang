@@ -20,10 +20,10 @@ func TestTypedDeclaration(t *testing.T) {
 		{"function(int) -> int c = fn(b:int)->int { return b * 2 };", "c", "function(int)->int", "fn(b:int)->int{return (b * 2);}"},
 		{"function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }", "sum", "function(int, int)->int", "fn(a:int,b:int)->int{return (a + b);}"},
 		{"map{ int -> int } d = {1: 2, 2: 3};", "d", "map{ int -> int }", "{1:2, 2:3}"},
-		{"int[] e = [1, 2, 3, 4, 5];", "e", "int[]", "[1, 2, 3, 4, 5]"},
-		{"int[][] e = [[1, 2, 3, 4, 5]];", "e", "int[][]", "[[1, 2, 3, 4, 5]]"},
-		{`map{ string -> int }[] d = [{"foo": 2, "bar": 3}];`, "d", "map{ string -> int }[]", `[{foo:2, bar:3}]`},
-		{`map{ string -> int[] }[] d = [{"foo": [1, 2], "bar": [3, 4]}];`, "d", "map{ string -> int[] }[]", `[{foo:[1, 2], bar:[3, 4]}]`},
+		{"[]int e = []int{1, 2, 3, 4, 5};", "e", "[]int", "[]int{1, 2, 3, 4, 5}"},
+		{"[][]int e = [][]int{[]int{1, 2, 3, 4, 5}};", "e", "[][]int", "[][]int{[]int{1, 2, 3, 4, 5}}"},
+		{`[]map{ string -> int } d = []map{ string -> int }{{"foo": 2, "bar": 3}};`, "d", "[]map{ string -> int }", `[]map{ string -> int }{{foo:2, bar:3}}`},
+		{`[]map{ string -> []int } d = []map{ string -> []int }{{"foo": []int{1, 2}, "bar": []int{3, 4}}};`, "d", "[]map{ string -> []int }", `[]map{ string -> []int }{{foo:[]int{1, 2}, bar:[]int{3, 4}}}`},
 		{`string f = "string value";`, "f", "string", "string value"},
 	}
 

@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"sort"
 	"strings"
 
 	"github.com/0xM-D/interpreter/token"
@@ -219,10 +220,10 @@ func (al *ArrayLiteral) String() string {
 	for _, a := range al.Elements {
 		elements = append(elements, a.String())
 	}
-
-	out.WriteString("[")
+	out.WriteString(al.Type.String())
+	out.WriteString("{")
 	out.WriteString(strings.Join(elements, ", "))
-	out.WriteString("]")
+	out.WriteString("}")
 
 	return out.String()
 }
@@ -262,9 +263,18 @@ func (hl *HashLiteral) TokenValue() token.Token { return hl.Token }
 func (hl *HashLiteral) String() string {
 	var out bytes.Buffer
 
+	keys := make([]Expression, 0, len(hl.Pairs))
+	for k := range hl.Pairs {
+		keys = append(keys, k)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		return hl.Pairs[keys[i]].String() < hl.Pairs[keys[j]].String()
+	})
+
 	pairs := []string{}
-	for key, value := range hl.Pairs {
-		pairs = append(pairs, key.String()+":"+value.String())
+	for _, key := range keys {
+		pairs = append(pairs, key.String()+":"+hl.Pairs[key].String())
 	}
 
 	out.WriteString("{")
@@ -358,7 +368,7 @@ func (at ArrayType) typeNode()               {}
 func (at ArrayType) TokenLiteral() string    { return at.Token.Literal }
 func (at ArrayType) TokenValue() token.Token { return at.Token }
 
-func (at ArrayType) String() string { return at.ElementType.String() + "[]" }
+func (at ArrayType) String() string { return "[]" + at.ElementType.String() }
 
 func (nt NamedType) typeNode()               {}
 func (nt NamedType) TokenLiteral() string    { return nt.Token.Literal }

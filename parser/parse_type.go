@@ -9,6 +9,15 @@ func (p *Parser) parseType() ast.Type {
 
 	var result ast.Type
 
+	for p.curToken.Type == token.ARRAY_TYPE {
+		p.nextToken()
+		elementType := p.parseType()
+		if elementType == nil {
+			return nil
+		}
+		return ast.ArrayType{Token: p.curToken, ElementType: elementType}
+	}
+
 	switch p.curToken.Type {
 	case token.MAP_TYPE:
 		result = p.parseMapType()
@@ -17,17 +26,9 @@ func (p *Parser) parseType() ast.Type {
 	case token.IDENT:
 		typeIdentifier := p.parseIdentifier().(*ast.Identifier)
 		result = ast.NamedType{Token: p.curToken, TypeName: *typeIdentifier}
-	}
-
-	if result == nil {
+	default:
 		return nil
 	}
-
-	for p.peekToken.Type == token.ARRAY_TYPE {
-		p.nextToken()
-		result = ast.ArrayType{Token: p.curToken, ElementType: result}
-	}
-
 	return result
 }
 

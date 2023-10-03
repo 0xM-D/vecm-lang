@@ -122,6 +122,7 @@ type StringLiteral struct {
 type ArrayLiteral struct {
 	Token    token.Token
 	Elements []Expression
+	Type
 }
 
 type IndexExpression struct {
@@ -142,6 +143,7 @@ type HashLiteral struct {
 }
 
 type TypedDeclarationStatement struct {
+	Token token.Token
 	DeclarationStatement
 }
 
