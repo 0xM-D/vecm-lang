@@ -429,3 +429,18 @@ func (te *TernaryExpression) String() string {
 
 	return out.String()
 }
+
+func (tc *TypeCastExpression) expressionNode()         {}
+func (tc *TypeCastExpression) TokenLiteral() string    { return tc.Token.Literal }
+func (tc *TypeCastExpression) TokenValue() token.Token { return tc.Token }
+func (tc *TypeCastExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(tc.Left.String())
+	out.WriteString(" as ")
+	out.WriteString(tc.Type.String())
+	out.WriteString(")")
+
+	return out.String()
+}

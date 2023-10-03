@@ -107,12 +107,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return error
 		}
 	case *ast.TernaryExpression:
-		{
-			result := evalTernaryExpression(node, env)
-			if result != nil {
-				return result
-			}
-		}
+		return evalTernaryExpression(node, env)
+	case *ast.TypeCastExpression:
+		return evalExplicitTypeCast(node, env)
 	}
 
 	return nil

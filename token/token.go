@@ -81,6 +81,7 @@ const (
 	RETURN   TokenType = "RETURN"
 	CONST    TokenType = "CONST"
 	FOR      TokenType = "FOR"
+	AS       TokenType = "AS"
 
 	// Type tokens
 	DASH_ARROW    TokenType = "->"
@@ -102,6 +103,7 @@ var keywords = map[string]TokenType{
 	"map":      MAP_TYPE,
 	"function": FUNCTION_TYPE,
 	"for":      FOR,
+	"as":       AS,
 }
 
 func LookupIdent(ident string) TokenType {
