@@ -109,7 +109,7 @@ func TestHashIndexExpressions(t *testing.T) {
 			big.NewInt(3),
 		},
 		{
-			"let a = {1: 2}; b := 1; a[b] = b; a[1]",
+			"let a = map{ uint64 -> uint64 }{1: 2}; b := 1; a[b] = b; a[1]",
 			big.NewInt(1),
 		},
 	}

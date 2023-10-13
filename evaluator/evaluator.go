@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"math"
+
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/object"
 )
@@ -14,9 +16,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IntegerLiteral:
 		return evalIntegerLiteral(node, env)
 	case *ast.Float32Literal:
-		return &object.Number[float32]{Value: node.Value}
+		return &object.Number{Value: uint64(math.Float32bits(node.Value)), Kind: object.Float32Kind}
 	case *ast.Float64Literal:
-		return &object.Number[float64]{Value: node.Value}
+		return &object.Number{Value: math.Float64bits(node.Value), Kind: object.Float64Kind}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
 	case *ast.PrefixExpression:

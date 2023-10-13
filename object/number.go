@@ -2,57 +2,86 @@ package object
 
 import (
 	"fmt"
+	"math"
+	"unsafe"
 )
 
-type Number[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | float32 | float64] struct {
-	Value V
+type Number struct {
+	Value uint64
+	Kind  ObjectKind
 }
 
-func (i *Number[V]) Inspect() string {
-	switch val := any(i.Value).(type) {
-	case float32:
-		return fmt.Sprintf("%gf", val)
-	case float64:
-		return fmt.Sprintf("%g", val)
-	default:
-		return fmt.Sprintf("%d", val)
+func (n *Number) Inspect() string {
+	if IsFloat32(n) {
+		return fmt.Sprintf("%gf", n.GetFloat32())
 	}
+	if IsFloat64(n) {
+		return fmt.Sprintf("%g", n.GetFloat64())
+	}
+	if n.IsSigned() {
+		return fmt.Sprintf("%d", n.GetInt64())
+	}
+	return fmt.Sprintf("%d", n.GetUInt64())
 }
 
-func (i *Number[V]) Type() ObjectType {
-	switch any(i.Value).(type) {
-	case int8:
-		return Int8Kind
-	case int16:
-		return Int16Kind
-	case int32:
-		return Int32Kind
-	case int64:
-		return Int64Kind
-	case uint8:
-		return UInt8Kind
-	case uint16:
-		return UInt16Kind
-	case uint32:
-		return UInt32Kind
-	case uint64:
-		return UInt64Kind
-	case float32:
-		return Float32Kind
-	case float64:
-		return Float64Kind
-	}
-	return ErrorKind
+func (n *Number) Type() ObjectType {
+	return n.Kind
 }
 
-func NewNumberOfKind(kind ObjectKind) Object {
-	switch kind {
-	case Int64Kind:
-		return &Number[int64]{}
-	case Float32Kind:
-		return &Number[float32]{}
-	case Float64Kind:
-		return &Number[float64]{}
-	}
-	return &Error{Message: fmt.Sprintf("%s is not a number", kind)}
+func (n *Number) GetUInt64() uint64 {
+	return n.Value
+}
+
+func (n *Number) GetInt64() int64 {
+	return Int64FromBits(n.Value)
+}
+
+func (n *Number) GetFloat32() float32 {
+	return math.Float32frombits(uint32(n.Value))
+}
+
+func (n *Number) GetFloat64() float64 {
+	return math.Float64frombits(n.Value)
+}
+
+var IS_SIGNED = map[ObjectKind]bool{
+	Int8Kind:    true,
+	Int16Kind:   true,
+	Int32Kind:   true,
+	Int64Kind:   true,
+	Float32Kind: true,
+	Float64Kind: true,
+	UInt8Kind:   false,
+	UInt16Kind:  false,
+	UInt32Kind:  false,
+	UInt64Kind:  false,
+}
+
+func (n *Number) IsSigned() bool {
+	return IS_SIGNED[n.Kind]
+}
+
+func (n *Number) IsUnsigned() bool {
+	return !IS_SIGNED[n.Kind]
+}
+
+func Int64Bits(x int64) uint64 {
+	return *(*uint64)(unsafe.Pointer(&x))
+}
+
+func Int64FromBits(x uint64) int64 {
+	return *(*int64)(unsafe.Pointer(&x))
+}
+
+var NumberTypes = []ObjectKind{
+	Int8Kind,
+	Int16Kind,
+	Int32Kind,
+	Int64Kind,
+	UInt8Kind,
+	UInt16Kind,
+	UInt32Kind,
+	UInt64Kind,
+	Float32Kind,
+	Float64Kind,
 }

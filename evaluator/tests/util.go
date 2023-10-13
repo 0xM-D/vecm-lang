@@ -48,11 +48,11 @@ func testFloat32Object(t *testing.T, obj object.Object, expected float32) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Number[float32])
+	result := object.UnwrapReferenceObject(obj).(*object.Number).GetFloat32()
 
-	if result.Value != expected {
+	if result != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
-			result.Value, expected)
+			result, expected)
 		return false
 	}
 	return true
@@ -64,11 +64,11 @@ func testFloat64Object(t *testing.T, obj object.Object, expected float64) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Number[float64])
+	result := object.UnwrapReferenceObject(obj).(*object.Number).GetFloat64()
 
-	if result.Value != expected {
+	if result != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
-			result.Value, expected)
+			result, expected)
 		return false
 	}
 	return true

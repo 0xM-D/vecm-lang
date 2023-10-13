@@ -13,15 +13,15 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + true;",
-			"operator + not defined on types int8 and bool",
+			"operator + not defined on types int64 and bool",
 		},
 		{
 			"5 + true; 5;",
-			"operator + not defined on types int8 and bool",
+			"operator + not defined on types int64 and bool",
 		},
 		{
 			"-true",
-			"unknown operator: -bool",
+			"Operator - not defined on type bool",
 		},
 		{
 			"true + false;",
@@ -104,7 +104,7 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			`[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.deleteee(1, 3)`,
-			"Member deleteee does not exist on []int8",
+			"Member deleteee does not exist on []int64",
 		},
 	}
 	for _, tt := range tests {

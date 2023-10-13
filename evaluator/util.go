@@ -37,55 +37,35 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
-	switch right.Type() {
-	case object.Int8Kind:
-		return &object.Number[int8]{Value: -right.(*object.Number[int8]).Value}
-	case object.Int16Kind:
-		return &object.Number[int16]{Value: -right.(*object.Number[int16]).Value}
-	case object.Int32Kind:
-		return &object.Number[int32]{Value: -right.(*object.Number[int32]).Value}
-	case object.Int64Kind:
-		return &object.Number[int64]{Value: -right.(*object.Number[int64]).Value}
-	case object.UInt8Kind:
-		return &object.Number[uint8]{Value: -right.(*object.Number[uint8]).Value}
-	case object.UInt16Kind:
-		return &object.Number[uint16]{Value: -right.(*object.Number[uint16]).Value}
-	case object.UInt32Kind:
-		return &object.Number[uint32]{Value: -right.(*object.Number[uint32]).Value}
-	case object.UInt64Kind:
-		return &object.Number[uint64]{Value: -right.(*object.Number[uint64]).Value}
-	case object.Float32Kind:
-		return &object.Number[float32]{Value: -right.(*object.Number[float32]).Value}
-	case object.Float64Kind:
-		return &object.Number[float64]{Value: -right.(*object.Number[float64]).Value}
-	default:
-		return newError("unknown operator: -%s", right.Type().Signature())
-
+	if !object.IsNumber(right) {
+		return newError("Operator - not defined on type %s", right.Type().Signature())
 	}
+
+	number := right.(*object.Number)
+
+	if object.IsInteger(number) && number.IsUnsigned() {
+		return newError("Operator - not defined on unsigned integer type %s", number.Kind.Signature())
+	}
+	if object.IsInteger(number) && number.IsSigned() {
+		return &object.Number{Value: object.Int64Bits(-number.GetInt64()), Kind: number.Kind}
+	}
+	if number.Kind == object.Float32Kind {
+		return &object.Number{Value: uint64(math.Float32bits(-number.GetFloat32())), Kind: number.Kind}
+	}
+	if number.Kind == object.Float64Kind {
+		return &object.Number{Value: math.Float64bits(-number.GetFloat64()), Kind: number.Kind}
+	}
+
+	return newError("Operator - not defined on number type %s", right.Type().Signature())
 }
 
 func evalTildePrefixOperatorExpression(right object.Object) object.Object {
-	switch right.Type() {
-	case object.Int8Kind:
-		return &object.Number[int8]{Value: ^right.(*object.Number[int8]).Value}
-	case object.Int16Kind:
-		return &object.Number[int16]{Value: ^right.(*object.Number[int16]).Value}
-	case object.Int32Kind:
-		return &object.Number[int32]{Value: ^right.(*object.Number[int32]).Value}
-	case object.Int64Kind:
-		return &object.Number[int64]{Value: ^right.(*object.Number[int64]).Value}
-	case object.UInt8Kind:
-		return &object.Number[uint8]{Value: ^right.(*object.Number[uint8]).Value}
-	case object.UInt16Kind:
-		return &object.Number[uint16]{Value: ^right.(*object.Number[uint16]).Value}
-	case object.UInt32Kind:
-		return &object.Number[uint32]{Value: ^right.(*object.Number[uint32]).Value}
-	case object.UInt64Kind:
-		return &object.Number[uint64]{Value: ^right.(*object.Number[uint64]).Value}
-	default:
-		return newError("unknown operator: -%s", right.Type().Signature())
-
+	if !object.IsNumber(right) {
+		return newError("Operator ~ not defined on type %s", right.Type().Signature())
 	}
+
+	number := right.(*object.Number)
+	return &object.Number{Value: ^number.Value, Kind: number.Kind}
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
@@ -152,8 +132,11 @@ func evalExpressions(
 }
 
 func evalAccessExpression(left object.Object, right string, env *object.Environment) object.Object {
-	member := left.Type().Builtins().Get(right)
-
+	repo := left.Type().Builtins()
+	var member *object.BuiltinFunction
+	if repo != nil {
+		member = left.Type().Builtins().Get(right)
+	}
 	if member == nil {
 		return newError("Member %s does not exist on %s", right, left.Type().Signature())
 	}
@@ -178,7 +161,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 
-	idx := typeCast(index, object.Int64Kind, true).(*object.Number[int64]).Value
+	idx := typeCast(index, object.Int64Kind, true).(*object.Number).GetInt64()
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {
@@ -190,28 +173,27 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 
 func evalArrayLiteral(node *ast.ArrayLiteral, env *object.Environment) object.Object {
 	elements := evalExpressions(node.Elements, env)
-	var elementType object.ObjectType = object.AnyKind
+	castedElements := []object.Object{}
+	elementType, err := evalType(node.Type.(ast.ArrayType).ElementType, env)
+	if err != nil {
+		return newError(err.Error())
+	}
 
 	if len(elements) == 1 && object.IsError(elements[0]) {
 		return elements[0]
 	}
 
 	if len(elements) > 0 {
-		elementType = elements[0].Type()
 
 		for _, element := range elements {
 
-			if object.IsNumber(element) && object.IsNumberKind(elementType.Kind()) {
-				continue
+			castedElement := typeCast(element, elementType, EXPLICIT_CAST)
+			if object.IsError(castedElement) {
+				return castedElement
 			}
 
-			if !object.TypesMatch(elementType, element.Type()) {
-				return newError("Array literal cannot contain mixed element types")
-			}
-		}
+			castedElements = append(castedElements, castedElement)
 
-		if object.IsNumberKind(elementType.Kind()) {
-			elements = castToLargerNumberType(elements...)
 		}
 
 	}
@@ -330,7 +312,7 @@ func evalDeclarationStatement(declNode *ast.DeclarationStatement, env *object.En
 	}
 
 	if expectedType != nil {
-		cast := typeCast(val, expectedType, IMPLICIT_CAST)
+		cast := typeCast(val, expectedType, EXPLICIT_CAST)
 		if !object.IsError(cast) {
 			val = cast
 		}
@@ -434,25 +416,38 @@ func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment)
 }
 
 func evalIntegerLiteral(node *ast.IntegerLiteral, env *object.Environment) object.Object {
+	kind, err := getMinimumIntegerType(&node.Value)
+	if err != nil {
+		return newError(err.Error())
+	}
+
+	if !object.IS_SIGNED[kind] {
+		return &object.Number{Value: node.Value.Uint64(), Kind: object.UInt64Kind}
+	}
+
+	return &object.Number{Value: object.Int64Bits(node.Value.Int64()), Kind: object.Int64Kind}
+}
+
+func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {
 	switch {
-	case node.Value.Cmp(big.NewInt(math.MaxInt8)) == -1:
-		return &object.Number[int8]{Value: int8(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxUint8)) == -1:
-		return &object.Number[uint8]{Value: uint8(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxInt16)) == -1:
-		return &object.Number[int16]{Value: int16(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxUint16)) == -1:
-		return &object.Number[uint16]{Value: uint16(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxInt32)) == -1:
-		return &object.Number[int32]{Value: int32(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxUint32)) == -1:
-		return &object.Number[uint32]{Value: uint32(node.Value.Int64())}
-	case node.Value.Cmp(big.NewInt(math.MaxInt64)) == -1:
-		return &object.Number[int64]{Value: int64(node.Value.Int64())}
-	case node.Value.Cmp(new(big.Int).SetUint64(math.MaxUint64)) == -1:
-		return &object.Number[uint64]{Value: uint64(node.Value.Uint64())}
+	case number.Cmp(big.NewInt(math.MaxInt8)) == -1:
+		return object.Int8Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint8)) == -1:
+		return object.UInt8Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt16)) == -1:
+		return object.Int16Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint16)) == -1:
+		return object.UInt16Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt32)) == -1:
+		return object.Int32Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint32)) == -1:
+		return object.UInt32Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt64)) == -1:
+		return object.Int64Kind, nil
+	case number.Cmp(new(big.Int).SetUint64(math.MaxUint64)) == -1:
+		return object.UInt64Kind, nil
 	default:
-		return newError("Integer out of max range")
+		return object.ErrorKind, fmt.Errorf("Integer ouside maximum range")
 	}
 }
 

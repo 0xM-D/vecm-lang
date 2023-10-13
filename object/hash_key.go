@@ -12,7 +12,7 @@ func (b *Boolean) HashKey() HashKey {
 	}
 }
 
-func (i Number[T]) HashKey() HashKey {
+func (i Number) HashKey() HashKey {
 	return HashKey(i.Value)
 }
 

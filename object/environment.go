@@ -15,6 +15,7 @@ type Environment struct {
 
 var GLOBAL_TYPES = map[ObjectKind]ObjectKind{
 	"char":      Int8Kind,
+	"int":       Int64Kind,
 	Int8Kind:    Int8Kind,
 	Int16Kind:   Int16Kind,
 	Int32Kind:   Int32Kind,

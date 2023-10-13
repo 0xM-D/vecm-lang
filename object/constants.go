@@ -1,9 +1,5 @@
 package object
 
-import (
-	"strconv"
-)
-
 type ObjectKind string
 
 var intrinsicTypeFunctionRepositories = initIntrinsicTypeBuiltins()
@@ -40,17 +36,20 @@ const (
 func initIntrinsicTypeBuiltins() map[ObjectKind]*FunctionRepository {
 	repos := map[ObjectKind]*FunctionRepository{}
 
-	repos[Int64Kind] = initIntegerBuiltins()
+	numberBuiltins := initNumberBuiltins()
+	for _, nt := range NumberTypes {
+		repos[nt] = numberBuiltins
+	}
 	repos[ArrayKind] = initArrayBuiltins()
 	repos[StringKind] = initStringBuiltins()
 
 	return repos
 }
 
-func initIntegerBuiltins() *FunctionRepository {
+func initNumberBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("toString", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: StringKind}, intToString)
+	repo.register("toString", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: StringKind}, numberToString)
 
 	return &repo
 }
@@ -74,19 +73,19 @@ func initArrayBuiltins() *FunctionRepository {
 	return &repo
 }
 
-func intToString(params ...Object) Object {
-	integer := params[0].(*Number[int64])
-	return &String{strconv.FormatInt(integer.Value, 10)}
+func numberToString(params ...Object) Object {
+	number := params[0].(*Number)
+	return &String{number.Inspect()}
 }
 
 func stringLength(params ...Object) Object {
 	str := params[0].(*String)
-	return &Number[int64]{int64(len(str.Value))}
+	return &Number{Value: uint64(len(str.Value)), Kind: UInt64Kind}
 }
 
 func arraySize(params ...Object) Object {
 	arr := params[0].(*Array)
-	return &Number[int64]{int64(len(arr.Elements))}
+	return &Number{Value: uint64(len(arr.Elements)), Kind: UInt64Kind}
 }
 
 func arrayPush(params ...Object) Object {
@@ -99,8 +98,8 @@ func arrayPush(params ...Object) Object {
 
 func arrayDelete(params ...Object) Object {
 	arr := params[0].(*Array)
-	startIndex := UnwrapReferenceObject(params[1]).(*Number[int64]).Value
-	count := UnwrapReferenceObject(params[2]).(*Number[int64]).Value
+	startIndex := UnwrapReferenceObject(params[1]).(*Number).GetInt64()
+	count := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 	arrLen := int64(len(arr.Elements))
 
 	if startIndex+count >= arrLen {
@@ -119,10 +118,10 @@ func arrayDelete(params ...Object) Object {
 func arrayPushMultiple(params ...Object) Object {
 	arr := params[0].(*Array)
 	element := UnwrapReferenceObject(params[1])
-	size := int(UnwrapReferenceObject(params[2]).(*Number[int64]).Value)
+	size := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 
 	newElements := make([]Object, 0, size)
-	for i := 0; i != size; i++ {
+	for i := int64(0); i != size; i++ {
 		newElements = append(newElements, element)
 	}
 
@@ -133,8 +132,8 @@ func arrayPushMultiple(params ...Object) Object {
 
 func arraySlice(params ...Object) Object {
 	arr := params[0].(*Array)
-	startIndex := int(UnwrapReferenceObject(params[1]).(*Number[int64]).Value)
-	count := int(UnwrapReferenceObject(params[2]).(*Number[int64]).Value)
+	startIndex := UnwrapReferenceObject(params[1]).(*Number).GetInt64()
+	count := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 
 	startIndex = boundArrayIndex(arr, startIndex)
 	endIndex := boundArrayIndex(arr, startIndex+count-1)
@@ -142,13 +141,13 @@ func arraySlice(params ...Object) Object {
 	return &Array{ArrayObjectType: arr.ArrayObjectType, Elements: arr.Elements[startIndex : endIndex+1]}
 }
 
-func boundArrayIndex(arr *Array, index int) int {
+func boundArrayIndex(arr *Array, index int64) int64 {
 	if index < 0 {
 		index = 0
 	}
 
-	if index >= len(arr.Elements) {
-		index = len(arr.Elements) - 1
+	if index >= int64(len(arr.Elements)) {
+		index = int64(len(arr.Elements)) - 1
 	}
 
 	return index
