@@ -8,29 +8,24 @@ import (
 func (p *Parser) parseIfExpression() ast.Expression {
 	expression := &ast.IfExpression{Token: p.curToken}
 
-	if !p.expectPeek(token.LPAREN) {
-		return nil
-	}
-
 	p.nextToken()
 	expression.Condition = p.parseExpression(LOWEST)
 
-	if !p.expectPeek(token.RPAREN) {
-		return nil
+	p.nextToken()
+	if p.curTokenIs(token.LBRACE) {
+		expression.Consequence = p.parseBlockStatement()
+	} else {
+		expression.Consequence = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
 	}
-
-	if !p.expectPeek(token.LBRACE) {
-		return nil
-	}
-
-	expression.Consequence = p.parseBlockStatement()
 
 	if p.peekTokenIs(token.ELSE) {
 		p.nextToken()
-		if !p.expectPeek(token.LBRACE) {
-			return nil
+		p.nextToken()
+		if p.curTokenIs(token.LBRACE) {
+			expression.Alternative = p.parseBlockStatement()
+		} else {
+			expression.Alternative = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
 		}
-		expression.Alternative = p.parseBlockStatement()
 	}
 
 	return expression

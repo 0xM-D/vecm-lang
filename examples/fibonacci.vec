@@ -1,12 +1,12 @@
 const int fibSize = 50; // Calculate first 50 fibonacci numbers
-int[] fibArray = [0, 1].pushMultiple(-1, fibSize)
+[]int fibArray = new []int{0, 1}.pushMultiple(-1, fibSize)
 
 /*  This is a function literal
     And this is also a demonstration of block comments
     This time we're implementing fibonacci recursively with memoization
 */
 fib := fn(i: int)->int {
-    return fibArray[i] < 0 ? fibArray[i] = fib(i-1) + fib(i-2) : fibArray[i]
+    return fibArray[i] < 0 ? (fibArray[i] = fib(i-1) + fib(i-2)) : fibArray[i]
 }
 
 fib(fibSize)
