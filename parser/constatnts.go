@@ -7,6 +7,7 @@ import (
 const (
 	_ int = iota
 	LOWEST
+	COLON         // a: b pair expressions or ternary else
 	ASSIGN        // a = b
 	TERNARY_IF    // a ? b : c
 	BITWISE_OR    // |, ^
@@ -54,6 +55,6 @@ var precedences = map[token.TokenType]int{
 	token.SLASH_ASSIGN:    ASSIGN,
 	token.ACCESS:          ACCESS,
 	token.TERNARY_IF:      TERNARY_IF,
-	token.COLON:           LOWEST,
+	token.COLON:           COLON,
 	token.AS:              TYPECAST,
 }

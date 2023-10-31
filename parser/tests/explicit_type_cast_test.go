@@ -16,8 +16,8 @@ func TestExplicitTypeCast(t *testing.T) {
 	}{
 		{"8 as uint64", "8", "uint64"},
 		{"(6.0f * 2) as float64", "(6.0f * 2)", "float64"},
-		{"[]int16{1, 2, 3} as []int64", "[]int16{1, 2, 3}", "[]int64"},
-		{`{ 1: "2", 3: "4"} as map{ string -> string }`, `{1:2, 3:4}`, "map{ string -> string }"},
+		{"new []int16{1, 2, 3} as []int64", "new []int16{1, 2, 3}", "[]int64"},
+		{`new map{ string -> string }{ 1: "2", 3: "4"} as map{ string -> string }`, `new map{ string -> string }{1: "2", 3: "4"}`, "map{ string -> string }"},
 	}
 
 	for _, tt := range tests {

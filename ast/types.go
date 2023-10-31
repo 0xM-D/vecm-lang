@@ -140,8 +140,9 @@ type AccessExpression struct {
 }
 
 type HashLiteral struct {
-	Token token.Token
-	Pairs map[Expression]Expression
+	Token    token.Token
+	Pairs    map[Expression]Expression
+	HashType HashType
 }
 
 type TypedDeclarationStatement struct {
@@ -205,4 +206,16 @@ type TypeCastExpression struct {
 	Token token.Token
 	Left  Expression
 	Type  Type
+}
+
+type NewExpression struct {
+	Token              token.Token
+	Type               Type
+	InitializationList []Expression
+}
+
+type PairExpression struct {
+	Token token.Token
+	Left  Expression
+	Right Expression
 }

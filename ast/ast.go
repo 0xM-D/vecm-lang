@@ -208,7 +208,7 @@ func (ce *CallExpression) String() string {
 func (sl *StringLiteral) expressionNode()         {}
 func (sl *StringLiteral) TokenLiteral() string    { return sl.Token.Literal }
 func (sl *StringLiteral) TokenValue() token.Token { return sl.Token }
-func (sl *StringLiteral) String() string          { return sl.Token.Literal }
+func (sl *StringLiteral) String() string          { return `"` + sl.Token.Literal + `"` }
 
 func (al *ArrayLiteral) expressionNode()         {}
 func (al *ArrayLiteral) TokenLiteral() string    { return al.Token.Literal }
@@ -277,6 +277,7 @@ func (hl *HashLiteral) String() string {
 		pairs = append(pairs, key.String()+":"+hl.Pairs[key].String())
 	}
 
+	out.WriteString(hl.HashType.String())
 	out.WriteString("{")
 	out.WriteString(strings.Join(pairs, ", "))
 	out.WriteString("}")
@@ -443,4 +444,33 @@ func (tc *TypeCastExpression) String() string {
 	out.WriteString(")")
 
 	return out.String()
+}
+
+func (ne *NewExpression) expressionNode()         {}
+func (ne *NewExpression) TokenLiteral() string    { return ne.Token.Literal }
+func (ne *NewExpression) TokenValue() token.Token { return ne.Token }
+func (ne *NewExpression) String() string {
+	var out bytes.Buffer
+
+	elems := []string{}
+	for _, p := range ne.InitializationList {
+		elems = append(elems, p.String())
+	}
+
+	out.WriteString("new ")
+
+	out.WriteString(ne.Type.String())
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(elems, ", "))
+	out.WriteString("}")
+
+	return out.String()
+}
+
+func (pe *PairExpression) expressionNode()         {}
+func (pe *PairExpression) TokenLiteral() string    { return pe.Token.Literal }
+func (pe *PairExpression) TokenValue() token.Token { return pe.Token }
+func (pe *PairExpression) String() string {
+	return pe.Left.String() + ": " + pe.Right.String()
 }
