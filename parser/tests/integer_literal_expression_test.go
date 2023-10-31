@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -26,5 +27,5 @@ func TestIntegerLiteral(t *testing.T) {
 		t.Fatalf("program.Statements[0] is not an *ast.ExpressionStatement. got=%T", program.Statements[0])
 	}
 
-	testIntegerLiteral(t, stmt.Expression, 5)
+	testIntegerLiteral(t, stmt.Expression, big.NewInt(5))
 }

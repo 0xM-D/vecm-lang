@@ -2,6 +2,8 @@ package evaluator
 
 import (
 	"fmt"
+	"math"
+	"math/big"
 
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/object"
@@ -35,27 +37,35 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
-	switch right.Type() {
-	case object.IntegerKind:
-		return &object.Number[int64]{Value: -right.(*object.Number[int64]).Value}
-	case object.Float32Kind:
-		return &object.Number[float32]{Value: -right.(*object.Number[float32]).Value}
-	case object.Float64Kind:
-		return &object.Number[float64]{Value: -right.(*object.Number[float64]).Value}
-	default:
-		return newError("unknown operator: -%s", right.Type().Signature())
-
+	if !object.IsNumber(right) {
+		return newError("Operator - not defined on type %s", right.Type().Signature())
 	}
+
+	number := right.(*object.Number)
+
+	if object.IsInteger(number) && number.IsUnsigned() {
+		return newError("Operator - not defined on unsigned integer type %s", number.Kind.Signature())
+	}
+	if object.IsInteger(number) && number.IsSigned() {
+		return &object.Number{Value: object.Int64Bits(-number.GetInt64()), Kind: number.Kind}
+	}
+	if number.Kind == object.Float32Kind {
+		return &object.Number{Value: uint64(math.Float32bits(-number.GetFloat32())), Kind: number.Kind}
+	}
+	if number.Kind == object.Float64Kind {
+		return &object.Number{Value: math.Float64bits(-number.GetFloat64()), Kind: number.Kind}
+	}
+
+	return newError("Operator - not defined on number type %s", right.Type().Signature())
 }
 
 func evalTildePrefixOperatorExpression(right object.Object) object.Object {
-	switch right.Type() {
-	case object.IntegerKind:
-		return &object.Number[int64]{Value: ^right.(*object.Number[int64]).Value}
-	default:
-		return newError("unknown operator: -%s", right.Type().Signature())
-
+	if !object.IsNumber(right) {
+		return newError("Operator ~ not defined on type %s", right.Type().Signature())
 	}
+
+	number := right.(*object.Number)
+	return &object.Number{Value: ^number.Value, Kind: number.Kind}
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
@@ -184,8 +194,11 @@ func evalNewHashExpression(exp *ast.NewExpression, env *object.Environment) obje
 }
 
 func evalAccessExpression(left object.Object, right string, env *object.Environment) object.Object {
-	member := left.Type().Builtins().Get(right)
-
+	repo := left.Type().Builtins()
+	var member *object.BuiltinFunction
+	if repo != nil {
+		member = left.Type().Builtins().Get(right)
+	}
 	if member == nil {
 		return newError("Member %s does not exist on %s", right, left.Type().Signature())
 	}
@@ -210,7 +223,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 
-	idx := index.(*object.Number[int64]).Value
+	idx := typeCast(index, object.Int64Kind, true).(*object.Number).GetInt64()
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {
@@ -234,25 +247,6 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	}
 
 	return &object.HashElementReference{Hash: hashObject, Key: index}
-}
-
-func evalDeclarationStatement(node *ast.DeclarationStatement, env *object.Environment) object.Object {
-	var objectType object.ObjectType
-	var err error
-
-	if node.Type != nil {
-		objectType, err = evalType(node.Type, env)
-		if err != nil {
-			return newError(err.Error())
-		}
-	}
-
-	declared := declareVariable(node, objectType, env)
-	if declared != nil {
-		return declared
-	}
-
-	return nil
 }
 
 func evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, error) {
@@ -299,15 +293,30 @@ func evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, er
 	return nil, fmt.Errorf("Unknown type: %s", typeNode.String())
 }
 
-func declareVariable(declNode *ast.DeclarationStatement, expectedType object.ObjectType, env *object.Environment) object.Object {
+func evalDeclarationStatement(declNode *ast.DeclarationStatement, env *object.Environment) object.Object {
 	val := object.UnwrapReferenceObject(Eval(declNode.Value, env))
+	var expectedType object.ObjectType
+
+	if declNode.Type != nil {
+		var err error
+		expectedType, err = evalType(declNode.Type, env)
+
+		if err != nil {
+			return newError(err.Error())
+		}
+
+	}
 
 	if object.IsError(val) {
 		return val
 	}
 
+	if object.IsNumber(val) && expectedType == nil {
+		expectedType = object.Int64Kind
+	}
+
 	if expectedType != nil {
-		cast := typeCast(val, expectedType, IMPLICIT_CAST)
+		cast := typeCast(val, expectedType, EXPLICIT_CAST)
 		if !object.IsError(cast) {
 			val = cast
 		}
@@ -408,6 +417,42 @@ func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment)
 	}
 
 	return result
+}
+
+func evalIntegerLiteral(node *ast.IntegerLiteral, env *object.Environment) object.Object {
+	kind, err := getMinimumIntegerType(&node.Value)
+	if err != nil {
+		return newError(err.Error())
+	}
+
+	if !object.IS_SIGNED[kind] {
+		return &object.Number{Value: node.Value.Uint64(), Kind: object.UInt64Kind}
+	}
+
+	return &object.Number{Value: object.Int64Bits(node.Value.Int64()), Kind: object.Int64Kind}
+}
+
+func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {
+	switch {
+	case number.Cmp(big.NewInt(math.MaxInt8)) == -1:
+		return object.Int8Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint8)) == -1:
+		return object.UInt8Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt16)) == -1:
+		return object.Int16Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint16)) == -1:
+		return object.UInt16Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt32)) == -1:
+		return object.Int32Kind, nil
+	case number.Cmp(big.NewInt(math.MaxUint32)) == -1:
+		return object.UInt32Kind, nil
+	case number.Cmp(big.NewInt(math.MaxInt64)) == -1:
+		return object.Int64Kind, nil
+	case number.Cmp(new(big.Int).SetUint64(math.MaxUint64)) == -1:
+		return object.UInt64Kind, nil
+	default:
+		return object.ErrorKind, fmt.Errorf("Integer ouside maximum range")
+	}
 }
 
 func evalExplicitTypeCast(node *ast.TypeCastExpression, env *object.Environment) object.Object {

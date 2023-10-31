@@ -2,6 +2,7 @@ package parser_tests
 
 import (
 	"fmt"
+	"math/big"
 	"reflect"
 	"testing"
 
@@ -23,15 +24,15 @@ func checkParserErrors(t *testing.T, p *parser.Parser) {
 	t.FailNow()
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
+func testIntegerLiteral(t *testing.T, il ast.Expression, value *big.Int) bool {
 	integ, ok := il.(*ast.IntegerLiteral)
 	if !ok {
 		t.Errorf("il not *ast.IntegerLiteral. got=%T", il)
 		return false
 	}
 
-	if integ.Value != value {
-		t.Errorf("integ.Value not %d. got=%d", value, integ.Value)
+	if integ.Value.Cmp(value) != 0 {
+		t.Errorf("integ.Value not %d. got=%s", value, integ.Value.String())
 		return false
 	}
 
@@ -153,9 +154,7 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 	}
 
 	switch v := expected.(type) {
-	case int:
-		return testIntegerLiteral(t, exp, int64(v))
-	case int64:
+	case *big.Int:
 		return testIntegerLiteral(t, exp, v)
 	case string:
 		return testStringLiteral(t, exp, v)

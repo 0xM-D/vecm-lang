@@ -1,6 +1,7 @@
 package evaluator_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/object"
@@ -36,6 +37,6 @@ func TestHashLiterals(t *testing.T) {
 			t.Errorf("no pair for given key in Pairs")
 		}
 
-		testIntegerObject(t, pair.Value, expectedValue)
+		testIntegerObject(t, pair.Value, big.NewInt(expectedValue))
 	}
 }

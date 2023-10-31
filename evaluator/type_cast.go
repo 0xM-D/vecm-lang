@@ -1,7 +1,8 @@
 package evaluator
 
 import (
-	"strconv"
+	"fmt"
+	"math"
 
 	"github.com/0xM-D/interpreter/object"
 )
@@ -11,96 +12,152 @@ const (
 	EXPLICIT_CAST = false
 )
 
-type CastRuleSignature struct {
-	from string
-	to   string
-}
-
-type CastRule struct {
-	allowImplicit bool
-	cast          func(object.Object) object.Object
-}
-
-var castRules = map[CastRuleSignature]CastRule{
-	{"int", "string"}:                         {true, intToString},
-	{"int", "float32"}:                        {true, numberCast[int64, float32]},
-	{"int", "float64"}:                        {true, numberCast[int64, float64]},
-	{"float32", "float64"}:                    {true, numberCast[float32, float64]},
-	{"{string -> string}", "{int -> string}"}: {true, castEmptyMap},
-	{"int[]", "string[]"}:                     {true, castEmptyArray},
-	{"any[]", "int[]"}:                        {true, castEmptyArray},
-}
-
-func typeCast(obj object.Object, targetType object.ObjectType, implicit bool) object.Object {
-	fromSignature := obj.Type().Signature()
-	toSignature := targetType.Signature()
-	castRuleSignature := CastRuleSignature{fromSignature, toSignature}
-
-	castRule, castRuleExists := castRules[castRuleSignature]
-	if !castRuleExists {
-		return newError("No rule to cast between %s and %s is defined", fromSignature, toSignature)
-	}
-
-	if implicit && !castRule.allowImplicit {
-		return newError("Implicit cast not allowed between %s and %s", fromSignature, toSignature)
-	}
-
-	return castRule.cast(obj)
-}
-
-func intToString(obj object.Object) object.Object {
-	integer := object.UnwrapReferenceObject(obj).(*object.Number[int64])
-	return &object.String{Value: strconv.FormatInt(integer.Value, 10)}
-}
-
-func numberCast[F int64 | float32 | float64, T int64 | float32 | float64](obj object.Object) object.Object {
-	val := object.UnwrapReferenceObject(obj).(*object.Number[F])
-	return &object.Number[T]{Value: T(val.Value)}
-}
-
-func castEmptyMap(obj object.Object) object.Object {
-	hash := object.UnwrapReferenceObject(obj).(*object.Hash)
-	if len(hash.Pairs) != 0 {
-		return newError("Can't cast non empty hash")
-	}
-	return &object.Hash{Pairs: hash.Pairs, HashObjectType: object.HashObjectType{KeyType: object.IntegerKind, ValueType: object.IntegerKind}}
-}
-
-func castEmptyArray(obj object.Object) object.Object {
-	array := object.UnwrapReferenceObject(obj).(*object.Array)
-	if len(array.Elements) != 0 {
-		return newError("Can't cast non empty array")
-	}
-	return &object.Array{Elements: array.Elements, ArrayObjectType: object.ArrayObjectType{ElementType: object.StringKind}}
-}
-
 const (
 	_ uint8 = iota
-	INT_WEIGHT
+	INT8_WEIGHT
+	UINT8_WEIGHT
+	INT16_WEIGHT
+	UINT16_WEIGHT
+	INT32_WEIGHT
+	UINT32_WEIGHT
+	INT64_WEIGHT
+	UINT64_WEIGHT
 	FLOAT32_WEIGHT
 	FLOAT64_WEIGHT
 )
 
 var numberCastWeight = map[object.ObjectKind]uint8{
-	object.IntegerKind: INT_WEIGHT,
+	object.Int8Kind:    INT8_WEIGHT,
+	object.Int16Kind:   INT16_WEIGHT,
+	object.Int32Kind:   INT32_WEIGHT,
+	object.Int64Kind:   INT64_WEIGHT,
+	object.UInt8Kind:   UINT8_WEIGHT,
+	object.UInt16Kind:  UINT16_WEIGHT,
+	object.UInt32Kind:  UINT32_WEIGHT,
+	object.UInt64Kind:  UINT64_WEIGHT,
 	object.Float32Kind: FLOAT32_WEIGHT,
 	object.Float64Kind: FLOAT64_WEIGHT,
 }
 
-func castToLargerNumberType(num1 object.Object, num2 object.Object) (object.Object, object.Object, object.ObjectKind) {
-	num1 = object.UnwrapReferenceObject(num1)
-	num2 = object.UnwrapReferenceObject(num2)
+var isIntegerKindUnsiged = map[object.ObjectKind]bool{
+	object.Int8Kind:   false,
+	object.Int16Kind:  false,
+	object.Int32Kind:  false,
+	object.Int64Kind:  false,
+	object.UInt8Kind:  true,
+	object.UInt16Kind: true,
+	object.UInt32Kind: true,
+	object.UInt64Kind: true,
+}
 
-	k1 := num1.Type().Kind()
-	k2 := num2.Type().Kind()
-	w1 := numberCastWeight[k1]
-	w2 := numberCastWeight[k2]
+func typeCast(obj object.Object, targetType object.ObjectType, castType bool) object.Object {
+	if obj.Type().Signature() == targetType.Signature() {
+		return obj
+	}
 
-	if w1 == w2 {
-		return num1, num2, k1
+	if object.IsNumber(obj) && object.IsNumberKind(targetType.Kind()) {
+		casted, err := numberCast(obj.(*object.Number), targetType.Kind(), castType)
+		if err != nil {
+			return newError(err.Error())
+		}
+		return casted
 	}
-	if w1 > w2 {
-		return num1, typeCast(num2, k1, IMPLICIT_CAST), k1
+
+	if object.IsNumber(obj) && targetType.Kind() == object.StringKind {
+		return &object.String{Value: obj.Inspect()}
 	}
-	return typeCast(num1, k2, IMPLICIT_CAST), num2, k2
+
+	return newError("Type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
+}
+
+func numberCast(number *object.Number, target object.ObjectKind, castType bool) (*object.Number, error) {
+
+	if number.Kind == target {
+		return number, nil
+	}
+
+	numberWeight := numberCastWeight[number.Type().Kind()]
+	targetWeight := numberCastWeight[target]
+
+	if numberWeight > targetWeight && castType == IMPLICIT_CAST {
+		return nil, fmt.Errorf("Cannot implicitly cast %s into %s", number.Type().Kind(), target.Kind())
+	}
+	var value uint64
+
+	if object.IsInteger(number) && !object.IsIntegerKind(target) { // Casting from int to float
+		if number.IsSigned() && target.Kind() == object.Float64Kind {
+			value = math.Float64bits(float64(number.GetInt64()))
+		} else if number.IsSigned() && target.Kind() == object.Float32Kind {
+			value = uint64(math.Float32bits(float32(number.GetInt64())))
+		} else if number.IsUnsigned() && target.Kind() == object.Float64Kind {
+			value = math.Float64bits(float64(number.GetUInt64()))
+		} else if number.IsUnsigned() && target.Kind() == object.Float32Kind {
+			value = uint64(math.Float32bits(float32(number.GetUInt64())))
+		}
+
+	} else if object.IsFloat(number) && object.IsIntegerKind(target) { // casting from float to int
+
+		if object.IS_SIGNED[target] && object.IsFloat32(number) {
+			value = uint64(int64(number.GetFloat32()))
+		} else if object.IS_SIGNED[target] && object.IsFloat64(number) {
+			value = uint64(int64(number.GetFloat64()))
+		} else if !object.IS_SIGNED[target] && object.IsFloat32(number) {
+			value = uint64(number.GetFloat32())
+		} else if !object.IS_SIGNED[target] && object.IsFloat64(number) {
+			value = uint64(number.GetFloat64())
+		}
+
+	} else if object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind) { // casting from float to float
+		if number.Type() == object.Float32Kind && target == object.Float64Kind {
+			value = math.Float64bits(float64(number.GetFloat32()))
+		} else if number.Type() == object.Float64Kind && target == object.Float32Kind {
+			value = uint64(math.Float32bits(float32(number.GetFloat64())))
+		}
+	} else { // casting from int to int
+		switch target {
+		case object.Int8Kind:
+			value = object.Int64Bits(int64(int8(number.GetInt64())))
+		case object.Int16Kind:
+			value = object.Int64Bits(int64(int16(number.GetInt64())))
+		case object.Int32Kind:
+			value = object.Int64Bits(int64(int32(number.GetInt64())))
+		case object.Int64Kind:
+			value = object.Int64Bits(number.GetInt64())
+		case object.UInt8Kind:
+			value = uint64(uint8(number.GetInt64()))
+		case object.UInt16Kind:
+			value = uint64(uint16(number.GetInt64()))
+		case object.UInt32Kind:
+			value = uint64(uint32(number.GetInt64()))
+		case object.UInt64Kind:
+			value = uint64(uint64(number.GetInt64()))
+		}
+
+	}
+
+	return &object.Number{Value: value, Kind: target}, nil
+}
+
+func arithmeticCast(first, second *object.Number) (*object.Number, *object.Number, error) {
+
+	if first.Type().Kind() == second.Type().Kind() {
+		return first, second, nil
+	}
+
+	firstWeight := numberCastWeight[first.Type().Kind()]
+	secondWeight := numberCastWeight[second.Type().Kind()]
+
+	if firstWeight < secondWeight {
+		castedFirst, err := numberCast(first, second.Kind, true)
+		if err != nil {
+			return nil, nil, err
+		}
+		return castedFirst, second, nil
+	} else {
+		castedSecond, err := numberCast(second, first.Kind, true)
+		if err != nil {
+			return nil, nil, err
+		}
+		return first, castedSecond, nil
+	}
 }

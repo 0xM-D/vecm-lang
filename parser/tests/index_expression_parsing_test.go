@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -27,7 +28,7 @@ func TestIndexExpressionParsing(t *testing.T) {
 		return
 	}
 
-	if !testInfixExpression(t, indexExp.Index, 1, "+", 1) {
+	if !testInfixExpression(t, indexExp.Index, big.NewInt(1), "+", big.NewInt(1)) {
 		return
 	}
 

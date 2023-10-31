@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -14,9 +15,9 @@ func TestAccessExpressions(t *testing.T) {
 		leftValue  interface{}
 		rightValue interface{}
 	}{
-		{"5.toString", 5, TestIdentifier{"toString"}},
+		{"5.toString", big.NewInt(5), TestIdentifier{"toString"}},
 		{"array.size", TestIdentifier{"array"}, TestIdentifier{"size"}},
-		{"new []int{1, 2, 3, 4}.size", []interface{}{1, 2, 3, 4}, TestIdentifier{"size"}},
+		{"new []int{1, 2, 3, 4}.size", []interface{}{big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)}, TestIdentifier{"size"}},
 		{"str.length", TestIdentifier{"str"}, TestIdentifier{"length"}},
 		{`"ABCDEFG".length`, "ABCDEFG", TestIdentifier{"length"}},
 	}

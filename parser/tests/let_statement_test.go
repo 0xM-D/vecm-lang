@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -14,7 +15,7 @@ func TestLetStatements(t *testing.T) {
 		expectedIdentifier TestIdentifier
 		expectedValue      interface{}
 	}{
-		{"let x = 5;", TestIdentifier{"x"}, 5},
+		{"let x = 5;", TestIdentifier{"x"}, big.NewInt(5)},
 		{"let y = true;", TestIdentifier{"y"}, true},
 		{"let foobar = y;", TestIdentifier{"foobar"}, TestIdentifier{"y"}},
 	}

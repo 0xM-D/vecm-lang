@@ -1,6 +1,7 @@
 package evaluator_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/object"
@@ -11,17 +12,17 @@ func TestTypedDeclarationStatement(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{"int a = 5; a;", 5},
+		{"int64 a = 5; a;", big.NewInt(5)},
 		{"string a = \"testmmm\"; a;", "testmmm"},
 		{"const []int a = new []int{1, 2, 3, 4}; let b = a; b;", []string{"1", "2", "3", "4"}},
 		{"bool a = true; let b = !a; b;", false},
-		{"const function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }; sum", ExpectedFunction{
+		{"const function(int64, int64)->int64 sum = fn(a: int64, b: int64) -> int64 { return a + b; }; sum", ExpectedFunction{
 			"fn(a, b) {" + "\n" +
 				"return (a + b);" + "\n" +
 				"}",
 			object.FunctionObjectType{
-				ParameterTypes:  []object.ObjectType{object.IntegerKind, object.IntegerKind},
-				ReturnValueType: object.IntegerKind,
+				ParameterTypes:  []object.ObjectType{object.Int64Kind, object.Int64Kind},
+				ReturnValueType: object.Int64Kind,
 			},
 		}},
 		{"function()->void sum = fn() -> void {}; sum", ExpectedFunction{
@@ -34,9 +35,7 @@ func TestTypedDeclarationStatement(t *testing.T) {
 	}
 	for _, tt := range tests {
 		switch expected := tt.expected.(type) {
-		case int:
-			testIntegerObject(t, testEval(tt.input), int64(expected))
-		case int64:
+		case *big.Int:
 			testIntegerObject(t, testEval(tt.input), expected)
 		case string:
 			testStringObject(t, testEval(tt.input), expected)

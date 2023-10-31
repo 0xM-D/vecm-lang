@@ -13,14 +13,23 @@ type Environment struct {
 	outer     *Environment
 }
 
-var GLOBAL_TYPES = map[ObjectKind]bool{
-	IntegerKind: true,
-	Float32Kind: true,
-	Float64Kind: true,
-	BooleanKind: true,
-	NullKind:    true,
-	StringKind:  true,
-	VoidKind:    true,
+var GLOBAL_TYPES = map[ObjectKind]ObjectKind{
+	"char":      Int8Kind,
+	"int":       Int64Kind,
+	Int8Kind:    Int8Kind,
+	Int16Kind:   Int16Kind,
+	Int32Kind:   Int32Kind,
+	Int64Kind:   Int64Kind,
+	UInt8Kind:   UInt8Kind,
+	UInt16Kind:  UInt16Kind,
+	UInt32Kind:  UInt32Kind,
+	UInt64Kind:  Int64Kind,
+	Float32Kind: Float32Kind,
+	Float64Kind: Float64Kind,
+	BooleanKind: BooleanKind,
+	NullKind:    NullKind,
+	StringKind:  StringKind,
+	VoidKind:    VoidKind,
 }
 
 func NewEnvironment() *Environment {
@@ -52,15 +61,15 @@ func (e *Environment) Get(name string) Object {
 }
 
 func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
-	_, exists := GLOBAL_TYPES[ObjectKind(name)]
-	if exists {
-		return ObjectKind(name), true
+	globalObjectType, globalObjectTypeExists := GLOBAL_TYPES[ObjectKind(name)]
+	if globalObjectTypeExists {
+		return globalObjectType, true
 	}
-	obj, ok := e.typeStore[name]
-	if !ok && e.outer != nil {
-		obj, ok = e.outer.GetObjectType(name)
+	objectType, objectTypeExists := e.typeStore[name]
+	if !objectTypeExists && e.outer != nil {
+		objectType, objectTypeExists = e.outer.GetObjectType(name)
 	}
-	return obj, ok
+	return objectType, objectTypeExists
 }
 
 func (e *Environment) Declare(name string, isConstant bool, val Object) ObjectReference {

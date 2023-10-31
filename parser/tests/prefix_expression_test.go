@@ -1,6 +1,7 @@
 package parser_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/ast"
@@ -14,11 +15,11 @@ func TestParsingPrefixExpressions(t *testing.T) {
 		operator string
 		value    interface{}
 	}{
-		{"!5", "!", 5},
-		{"-15", "-", 15},
+		{"!5", "!", big.NewInt(5)},
+		{"-15", "-", big.NewInt(15)},
 		{"!true;", "!", true},
 		{"!false;", "!", false},
-		{"~1;", "~", 1},
+		{"~1;", "~", big.NewInt(1)},
 	}
 
 	for _, tt := range prefixTests {

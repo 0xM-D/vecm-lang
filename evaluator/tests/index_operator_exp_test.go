@@ -1,6 +1,9 @@
 package evaluator_tests
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 func TestArrayIndexExpressions(t *testing.T) {
 	tests := []struct {
@@ -9,35 +12,35 @@ func TestArrayIndexExpressions(t *testing.T) {
 	}{
 		{
 			"new []int{1, 2, 3}[0]",
-			1,
+			big.NewInt(1),
 		},
 		{
 			"new []int{1, 2, 3}[1]",
-			2,
+			big.NewInt(2),
 		},
 		{
 			"new []int{1, 2, 3}[2]",
-			3,
+			big.NewInt(3),
 		},
 		{
 			"let i = 0; new []int{1}[i];",
-			1,
+			big.NewInt(1),
 		},
 		{
 			"new []int{1, 2, 3}[1 + 1];",
-			3,
+			big.NewInt(3),
 		},
 		{
 			"let myArray = new []int{1, 2, 3}; myArray[2];",
-			3,
+			big.NewInt(3),
 		},
 		{
 			"let myArray = new []int{1, 2, 3}; myArray[0] + myArray[1] + myArray[2];",
-			6,
+			big.NewInt(6),
 		},
 		{
 			"let myArray = new []int{1, 2, 3}; let i = myArray[0]; myArray[i]",
-			2,
+			big.NewInt(2),
 		},
 		{
 			"new []int{1, 2, 3}[3]",
@@ -49,15 +52,15 @@ func TestArrayIndexExpressions(t *testing.T) {
 		},
 		{
 			"let a = new []int{1}; a[0] = 2; a[0]",
-			2,
+			big.NewInt(2),
 		},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		integer, ok := tt.expected.(int)
+		integer, ok := tt.expected.(*big.Int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, evaluated, integer)
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -71,7 +74,7 @@ func TestHashIndexExpressions(t *testing.T) {
 	}{
 		{
 			`new map{string->int}{"foo": 5}["foo"]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			`new map{string->int}{"foo": 5}["bar"]`,
@@ -79,7 +82,7 @@ func TestHashIndexExpressions(t *testing.T) {
 		},
 		{
 			`let key = "foo"; new map{string->int}{"foo": 5}[key]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			`new map{string->int}{}["foo"]`,
@@ -87,36 +90,36 @@ func TestHashIndexExpressions(t *testing.T) {
 		},
 		{
 			`new map{int->int}{5: 5}[5]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			`new map{bool->int}{true: 5}[true]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			`new map{vool->int}{false: 5}[false]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			`new map{bool->int}{false: 5}[false]`,
-			5,
+			big.NewInt(5),
 		},
 		{
 			"let a = new map{string->int}{1: 2}; a[1] = 3; a[1]",
-			3,
+			big.NewInt(3),
 		},
 		{
 			"let a = new map{string->int}{1: 2}; b := 1; a[b] = b; a[1]",
-			1,
+			big.NewInt(1),
 		},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		integer, ok := tt.expected.(int)
+		integer, ok := tt.expected.(*big.Int)
 
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, evaluated, integer)
 		} else {
 			testNullObject(t, evaluated)
 		}

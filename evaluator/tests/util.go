@@ -1,6 +1,7 @@
 package evaluator_tests
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/0xM-D/interpreter/evaluator"
@@ -25,17 +26,17 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 	return true
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+func testIntegerObject(t *testing.T, obj object.Object, expected *big.Int) bool {
 	if !object.IsInteger(obj) {
 		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Number[int64])
+	resultString := obj.Inspect()
 
-	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%d, want=%d",
-			result.Value, expected)
+	if resultString != expected.String() {
+		t.Errorf("object has wrong value. got=%s, want=%s",
+			resultString, expected.String())
 		return false
 	}
 	return true
@@ -47,11 +48,11 @@ func testFloat32Object(t *testing.T, obj object.Object, expected float32) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Number[float32])
+	result := object.UnwrapReferenceObject(obj).(*object.Number).GetFloat32()
 
-	if result.Value != expected {
+	if result != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
-			result.Value, expected)
+			result, expected)
 		return false
 	}
 	return true
@@ -63,11 +64,11 @@ func testFloat64Object(t *testing.T, obj object.Object, expected float64) bool {
 		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Number[float64])
+	result := object.UnwrapReferenceObject(obj).(*object.Number).GetFloat64()
 
-	if result.Value != expected {
+	if result != expected {
 		t.Errorf("object has wrong value. got=%f, want=%f",
-			result.Value, expected)
+			result, expected)
 		return false
 	}
 	return true
@@ -75,9 +76,7 @@ func testFloat64Object(t *testing.T, obj object.Object, expected float64) bool {
 
 func testNumber(t *testing.T, obj object.Object, expected interface{}) bool {
 	switch v := expected.(type) {
-	case int:
-		return testIntegerObject(t, obj, int64(v))
-	case int64:
+	case *big.Int:
 		return testIntegerObject(t, obj, v)
 	case float32:
 		return testFloat32Object(t, obj, v)
@@ -193,9 +192,7 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 
 func testLiteralObject(t *testing.T, obj object.Object, expected interface{}) {
 	switch expected := expected.(type) {
-	case int:
-		testIntegerObject(t, obj, int64(expected))
-	case int64:
+	case *big.Int:
 		testIntegerObject(t, obj, expected)
 	case string:
 		testStringObject(t, obj, expected)

@@ -1,7 +1,18 @@
 package object
 
+var INTEGER_TYPES = map[ObjectKind]bool{
+	Int8Kind:   true,
+	Int16Kind:  true,
+	Int32Kind:  true,
+	Int64Kind:  true,
+	UInt8Kind:  true,
+	UInt16Kind: true,
+	UInt32Kind: true,
+	UInt64Kind: true,
+}
+
 func IsInteger(i Object) bool {
-	return i.Type().Kind() == IntegerKind
+	return IsIntegerKind(i.Type().Kind())
 }
 
 func IsFloat32(i Object) bool {
@@ -59,6 +70,15 @@ func IsReturnValue(i Object) bool {
 
 func TypesMatch(t1 ObjectType, t2 ObjectType) bool {
 	return t1.Signature() == t2.Signature()
+}
+
+func IsIntegerKind(k ObjectKind) bool {
+	_, isInteger := INTEGER_TYPES[k]
+	return isInteger
+}
+
+func IsNumberKind(k ObjectKind) bool {
+	return k == Float32Kind || k == Float64Kind || IsIntegerKind(k)
 }
 
 func UnwrapReferenceObject(or Object) Object {

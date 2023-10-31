@@ -7,7 +7,7 @@ import (
 )
 
 func TestFunctionObject(t *testing.T) {
-	input := "fn(x:int)->int { x + 2; };"
+	input := "fn(x:int64)->int64 { x + 2; };"
 
 	evaluated := testEval(input)
 	fn, ok := evaluated.(*object.Function)
