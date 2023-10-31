@@ -113,12 +113,12 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add((((a + b) + ((c * d) / f)) + g))",
 		},
 		{
-			"a * []int{1, 2, 3, 4}[b * c] * d",
-			"((a * ([]int{1, 2, 3, 4}[(b * c)])) * d)",
+			"a * new []int{1, 2, 3, 4}[b * c] * d",
+			"((a * (new []int{1, 2, 3, 4}[(b * c)])) * d)",
 		},
 		{
-			"add(a * b[2], b[1], 2 * []int{1, 2}[1])",
-			"add((a * (b[2])), (b[1]), (2 * ([]int{1, 2}[1])))",
+			"add(a * b[2], b[1], 2 * new []int{1, 2}[1])",
+			"add((a * (b[2])), (b[1]), (2 * (new []int{1, 2}[1])))",
 		},
 		{
 			"(a < b && a > c)",
@@ -153,7 +153,7 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"((true && false) ? (true & false) : (1 + 2))",
 		},
 		{
-			"false ? false ? 1 : 2 : true ? 3 : 4",
+			"false ? (false ? 1 : 2) : true ? 3 : 4",
 			"(false ? (false ? 1 : 2) : (true ? 3 : 4))",
 		},
 	}

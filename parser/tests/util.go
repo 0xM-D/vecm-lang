@@ -140,10 +140,10 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 	expectedKind := reflect.TypeOf(expected).Kind()
 	if expectedKind == reflect.Array || expectedKind == reflect.Slice {
 
-		arrayLiteral := exp.(*ast.ArrayLiteral)
+		arrayLiteral := exp.(*ast.NewExpression)
 		expectedElements := expected.([]interface{})
 
-		for i, exp := range arrayLiteral.Elements {
+		for i, exp := range arrayLiteral.InitializationList {
 			if !testLiteralExpression(t, exp, expectedElements[i]) {
 				return false
 			}

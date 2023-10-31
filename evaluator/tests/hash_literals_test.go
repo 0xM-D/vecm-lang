@@ -3,19 +3,15 @@ package evaluator_tests
 import (
 	"testing"
 
-	"github.com/0xM-D/interpreter/evaluator"
 	"github.com/0xM-D/interpreter/object"
 )
 
 func TestHashLiterals(t *testing.T) {
 	input := `let two = "two";
-	{
+	new map{string -> int }{
 	"one": 10 - 9,
 	two: 1 + 1,
-	"thr" + "ee": 6 / 2,
-	4: 4,
-	true: 5,
-	false: 6
+	"thr" + "ee": 6 / 2
 	}`
 
 	evaluated := testEval(input)
@@ -25,12 +21,9 @@ func TestHashLiterals(t *testing.T) {
 	}
 
 	expected := map[object.HashKey]int64{
-		(&object.String{Value: "one"}).HashKey():    1,
-		(&object.String{Value: "two"}).HashKey():    2,
-		(&object.String{Value: "three"}).HashKey():  3,
-		(&object.Number[int64]{Value: 4}).HashKey(): 4,
-		evaluator.TRUE.HashKey():                    5,
-		evaluator.FALSE.HashKey():                   6,
+		(&object.String{Value: "one"}).HashKey():   1,
+		(&object.String{Value: "two"}).HashKey():   2,
+		(&object.String{Value: "three"}).HashKey(): 3,
 	}
 
 	if len(result.Pairs) != len(expected) {

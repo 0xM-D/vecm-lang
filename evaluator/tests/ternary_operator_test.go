@@ -13,7 +13,7 @@ func TestTernaryOperator(t *testing.T) {
 		{"foo:= 64; bar := 88; false ? foo : bar", 88},
 		{` 1 < 2 && 3 <= 3 ? "brr" : "gzz" `, "brr"},
 		{` true ? 1 + 2 : 5`, 3},
-		{` false ? false ? 1 : 2 : true ? 3 : 4`, 3},
+		{` false ? (false ? 1 : 2) : true ? 3 : 4`, 3},
 	}
 
 	for _, tt := range tests {

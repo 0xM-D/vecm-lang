@@ -13,8 +13,8 @@ func TestParsingArrayLiterals(t *testing.T) {
 		input            string
 		expectedElements []string
 	}{
-		{"[]int{1, 2 * 2, 3 + 3}", []string{"1", "(2 * 2)", "(3 + 3)"}},
-		{"[]int{}", []string{}},
+		{"new []int{1, 2 * 2, 3 + 3}", []string{"1", "(2 * 2)", "(3 + 3)"}},
+		{"new []int{}", []string{}},
 	}
 
 	for _, tt := range tests {
@@ -24,18 +24,24 @@ func TestParsingArrayLiterals(t *testing.T) {
 		checkParserErrors(t, p)
 
 		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-		array, ok := stmt.Expression.(*ast.ArrayLiteral)
+		expr, ok := stmt.Expression.(*ast.NewExpression)
 
 		if !ok {
-			t.Fatalf("exp not ast.ArrayLiteral. got=%T", stmt.Expression)
+			t.Fatalf("exp not ast.NewExpression. got=%T", stmt.Expression)
 		}
 
-		if len(array.Elements) != len(tt.expectedElements) {
-			t.Fatalf("len(array.Elements) not %d. got=%d", len(array.Elements), len(tt.expectedElements))
+		_, ok = expr.Type.(ast.ArrayType)
+
+		if !ok {
+			t.Fatalf("expr.Type not ast.ArrayType. got=%T", expr.Type)
+		}
+
+		if len(expr.InitializationList) != len(tt.expectedElements) {
+			t.Fatalf("len(array.Elements) not %d. got=%d", len(expr.InitializationList), len(tt.expectedElements))
 		}
 
 		for index, expected := range tt.expectedElements {
-			got := array.Elements[index].String()
+			got := expr.InitializationList[index].String()
 			if got != expected {
 				t.Errorf("Array element doesn't match expected. expected=%s got=%s", expected, got)
 			}
