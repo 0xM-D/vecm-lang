@@ -44,11 +44,12 @@ func (p *Parser) parseForStatement() ast.Statement {
 		return nil
 	}
 
-	if !p.expectPeek(token.LBRACE) {
-		return nil
+	p.nextToken()
+	if p.curTokenIs(token.LBRACE) {
+		stmt.Body = p.parseBlockStatement()
+	} else {
+		stmt.Body = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
 	}
-
-	stmt.Body = p.parseBlockStatement()
 
 	return stmt
 }
