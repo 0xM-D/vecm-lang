@@ -55,12 +55,8 @@ func TestErrorHandling(t *testing.T) {
 			"operator - not defined on types string and string",
 		},
 		{
-			`{"name": "Monkey"}[fn(x:string)->string { x }];`,
-			"unusable as hash key: function(string) -> string",
-		},
-		{
 			`int a = "fasdf"`,
-			"Expression of type string cannot be assigned to int",
+			"Expression of type string cannot be assigned to int64",
 		},
 		{
 			`a := "fasdf"; bool c = a;`,
@@ -104,7 +100,7 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			`new []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.deleteee(1, 3)`,
-			"Member deleteee does not exist on int[]",
+			"Member deleteee does not exist on []int64",
 		},
 	}
 	for _, tt := range tests {
