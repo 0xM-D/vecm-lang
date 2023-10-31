@@ -10,7 +10,7 @@ func (p *Parser) parseTernaryExpression(left ast.Expression) ast.Expression {
 
 	p.nextToken() // Swallow ? token
 
-	expr.ValueIfTrue = p.parseExpression(LOWEST)
+	expr.ValueIfTrue = p.parseExpression(TERNARY_IF)
 
 	if expr.ValueIfTrue == nil {
 		return nil

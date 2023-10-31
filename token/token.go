@@ -86,6 +86,7 @@ const (
 	// Type tokens
 	DASH_ARROW    TokenType = "->"
 	EQUALS_ARROW  TokenType = "=>"
+	NEW           TokenType = "new"
 	MAP_TYPE      TokenType = "map"
 	ARRAY_TYPE    TokenType = "[]"
 	FUNCTION_TYPE TokenType = "function"
@@ -104,6 +105,7 @@ var keywords = map[string]TokenType{
 	"function": FUNCTION_TYPE,
 	"for":      FOR,
 	"as":       AS,
+	"new":      NEW,
 }
 
 func LookupIdent(ident string) TokenType {

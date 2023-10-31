@@ -16,7 +16,7 @@ func TestAccessExpressions(t *testing.T) {
 	}{
 		{"5.toString", 5, TestIdentifier{"toString"}},
 		{"array.size", TestIdentifier{"array"}, TestIdentifier{"size"}},
-		{"[]int{1, 2, 3, 4}.size", []interface{}{1, 2, 3, 4}, TestIdentifier{"size"}},
+		{"new []int{1, 2, 3, 4}.size", []interface{}{1, 2, 3, 4}, TestIdentifier{"size"}},
 		{"str.length", TestIdentifier{"str"}, TestIdentifier{"length"}},
 		{`"ABCDEFG".length`, "ABCDEFG", TestIdentifier{"length"}},
 	}

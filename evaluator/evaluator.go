@@ -58,16 +58,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return applyFunction(function, args)
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
-	case *ast.ArrayLiteral:
-		elements := evalExpressions(node.Elements, env)
-		var elementType object.ObjectType = object.AnyKind
-		if len(elements) == 1 && object.IsError(elements[0]) {
-			return elements[0]
-		}
-		if len(elements) > 0 {
-			elementType = elements[0].Type()
-		}
-		return &object.Array{Elements: elements, ArrayObjectType: object.ArrayObjectType{ElementType: elementType}}
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if object.IsError(left) {
@@ -88,9 +78,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return newError("Right side of access expression is not an identifier")
 		}
 		return evalAccessExpression(object.UnwrapReferenceObject(left), right.Value, env)
-
-	case *ast.HashLiteral:
-		return evalHashLiteral(node, env)
 	case *ast.TypedDeclarationStatement:
 		error := evalDeclarationStatement(&(*node).DeclarationStatement, env)
 		if error != nil {
@@ -110,6 +97,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalTernaryExpression(node, env)
 	case *ast.TypeCastExpression:
 		return evalExplicitTypeCast(node, env)
+	case *ast.NewExpression:
+		return evalNewExpression(node, env)
 	}
 
 	return nil
