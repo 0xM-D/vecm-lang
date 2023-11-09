@@ -312,15 +312,15 @@ func numberEquals(left *object.Number, right *object.Number, env *object.Environ
 }
 
 func numberLessThanEqual(left *object.Number, right *object.Number, env *object.Environment) object.Object {
-	return evalBangOperatorExpression(numberGreaterThan(left, right, env))
+	return evalBangPrefixOperatorExpression(numberGreaterThan(left, right, env))
 }
 
 func numberGreaterThanEqual(left *object.Number, right *object.Number, env *object.Environment) object.Object {
-	return evalBangOperatorExpression(numberLessThan(left, right, env))
+	return evalBangPrefixOperatorExpression(numberLessThan(left, right, env))
 }
 
 func numberNotEquals(left *object.Number, right *object.Number, env *object.Environment) object.Object {
-	return evalBangOperatorExpression(numberEquals(left, right, env))
+	return evalBangPrefixOperatorExpression(numberEquals(left, right, env))
 }
 
 func numberPlusEquals(left object.Object, right *object.Number, env *object.Environment) object.Object {
