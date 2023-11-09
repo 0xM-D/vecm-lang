@@ -18,3 +18,30 @@ func evalCallExpression(node *ast.CallExpression, env *object.Environment) objec
 
 	return applyFunction(function, args)
 }
+
+func applyFunction(fn object.Object, args []object.Object) object.Object {
+	switch {
+	case object.IsFunction(fn):
+		function := object.UnwrapReferenceObject(fn).(*object.Function)
+
+		if len(function.ParameterTypes) != len(args) {
+			return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.ParameterTypes), len(args))
+		}
+
+		extendedEnv := extendFunctionEnv(function, args)
+		evaluated := Eval(function.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
+	case object.IsBuiltinFunction(fn):
+		function := object.UnwrapReferenceObject(fn).(object.BuiltinFunction)
+
+		if len(function.ParameterTypes) != len(args) {
+			return newError("Incorrect parameter count for %s fun. expected=%d, got=%d", function.Type().Signature(), len(function.ParameterTypes), len(args))
+		}
+		params := []object.Object{}
+		params = append(params, function.BoundParams...)
+		params = append(params, args...)
+		return function.Function(params...)
+	default:
+		return newError("object is not a function: %s", fn.Inspect())
+	}
+}

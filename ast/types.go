@@ -86,7 +86,7 @@ type InfixExpression struct {
 	Right    Expression
 }
 
-type Boolean struct {
+type BooleanLiteral struct {
 	Token token.Token
 	Value bool
 }

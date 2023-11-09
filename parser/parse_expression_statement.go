@@ -25,10 +25,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	leftExp := prefix()
 
-	return p.parseExpressionRest(precedence, leftExp)
-}
-
-func (p *Parser) parseExpressionRest(precedence int, leftExp ast.Expression) ast.Expression {
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 

@@ -27,7 +27,7 @@ func evalIndexExpression(node *ast.IndexExpression, env *object.Environment) obj
 func evalArrayIndexExpression(array, index object.Object) object.Object {
 	arrayObject := array.(*object.Array)
 
-	idx := typeCast(index, object.Int64Kind, true).(*object.Number).GetInt64()
+	idx := typeCast(index, object.Int64Kind, EXPLICIT_CAST).(*object.Number).GetInt64()
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {

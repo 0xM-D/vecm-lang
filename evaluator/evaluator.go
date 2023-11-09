@@ -19,8 +19,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Number{Value: uint64(math.Float32bits(node.Value)), Kind: object.Float32Kind}
 	case *ast.Float64Literal:
 		return &object.Number{Value: math.Float64bits(node.Value), Kind: object.Float64Kind}
-	case *ast.Boolean:
-		return nativeBoolToBooleanObject(node.Value)
+	case *ast.BooleanLiteral:
+		return evalBooleanLiteral(node)
 	case *ast.PrefixExpression:
 		return evalPrefixExpression(node, env)
 	case *ast.InfixExpression:
@@ -40,7 +40,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.CallExpression:
 		return evalCallExpression(node, env)
 	case *ast.StringLiteral:
-		return &object.String{Value: node.Value}
+		return evalStringLiteral(node)
 	case *ast.IndexExpression:
 		return evalIndexExpression(node, env)
 	case *ast.AccessExpression:
