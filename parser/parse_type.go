@@ -9,7 +9,7 @@ func (p *Parser) parseType() ast.Type {
 
 	var result ast.Type
 
-	for p.curToken.Type == token.ARRAY_TYPE {
+	if p.curToken.Type == token.ARRAY_TYPE {
 		p.nextToken()
 		elementType := p.parseType()
 		if elementType == nil {
@@ -85,7 +85,7 @@ func (p *Parser) parseFunctionTypeParameters() []ast.Type {
 		return nil
 	}
 
-	for true {
+	for {
 		if p.peekTokenIs(token.RPAREN) {
 			break
 		}

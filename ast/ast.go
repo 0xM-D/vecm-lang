@@ -130,10 +130,10 @@ func (ie *InfixExpression) String() string {
 	return out.String()
 }
 
-func (b *Boolean) expressionNode()         {}
-func (b *Boolean) TokenLiteral() string    { return b.Token.Literal }
-func (b *Boolean) TokenValue() token.Token { return b.Token }
-func (b *Boolean) String() string          { return b.Token.Literal }
+func (b *BooleanLiteral) expressionNode()         {}
+func (b *BooleanLiteral) TokenLiteral() string    { return b.Token.Literal }
+func (b *BooleanLiteral) TokenValue() token.Token { return b.Token }
+func (b *BooleanLiteral) String() string          { return b.Token.Literal }
 
 func (ie *IfExpression) expressionNode()         {}
 func (ie *IfExpression) TokenLiteral() string    { return ie.Token.Literal }

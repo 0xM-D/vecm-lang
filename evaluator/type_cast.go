@@ -7,9 +7,12 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
+type CastType = int
+
 const (
-	IMPLICIT_CAST = true
-	EXPLICIT_CAST = false
+	_ int = iota
+	IMPLICIT_CAST
+	EXPLICIT_CAST
 )
 
 const (
@@ -39,18 +42,7 @@ var numberCastWeight = map[object.ObjectKind]uint8{
 	object.Float64Kind: FLOAT64_WEIGHT,
 }
 
-var isIntegerKindUnsiged = map[object.ObjectKind]bool{
-	object.Int8Kind:   false,
-	object.Int16Kind:  false,
-	object.Int32Kind:  false,
-	object.Int64Kind:  false,
-	object.UInt8Kind:  true,
-	object.UInt16Kind: true,
-	object.UInt32Kind: true,
-	object.UInt64Kind: true,
-}
-
-func typeCast(obj object.Object, targetType object.ObjectType, castType bool) object.Object {
+func typeCast(obj object.Object, targetType object.ObjectType, castType CastType) object.Object {
 	if obj.Type().Signature() == targetType.Signature() {
 		return obj
 	}
@@ -70,7 +62,7 @@ func typeCast(obj object.Object, targetType object.ObjectType, castType bool) ob
 	return newError("Type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
 }
 
-func numberCast(number *object.Number, target object.ObjectKind, castType bool) (*object.Number, error) {
+func numberCast(number *object.Number, target object.ObjectKind, castType CastType) (*object.Number, error) {
 
 	if number.Kind == target {
 		return number, nil
@@ -80,7 +72,7 @@ func numberCast(number *object.Number, target object.ObjectKind, castType bool) 
 	targetWeight := numberCastWeight[target]
 
 	if numberWeight > targetWeight && castType == IMPLICIT_CAST {
-		return nil, fmt.Errorf("Cannot implicitly cast %s into %s", number.Type().Kind(), target.Kind())
+		return nil, fmt.Errorf("cannot implicitly cast %s into %s", number.Type().Kind(), target.Kind())
 	}
 	var value uint64
 
@@ -148,13 +140,13 @@ func arithmeticCast(first, second *object.Number) (*object.Number, *object.Numbe
 	secondWeight := numberCastWeight[second.Type().Kind()]
 
 	if firstWeight < secondWeight {
-		castedFirst, err := numberCast(first, second.Kind, true)
+		castedFirst, err := numberCast(first, second.Kind, EXPLICIT_CAST)
 		if err != nil {
 			return nil, nil, err
 		}
 		return castedFirst, second, nil
 	} else {
-		castedSecond, err := numberCast(second, first.Kind, true)
+		castedSecond, err := numberCast(second, first.Kind, EXPLICIT_CAST)
 		if err != nil {
 			return nil, nil, err
 		}

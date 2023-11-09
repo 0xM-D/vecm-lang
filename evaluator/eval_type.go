@@ -28,7 +28,7 @@ func evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, er
 	case ast.NamedType:
 		namedType, found := env.GetObjectType(casted.TokenLiteral())
 		if !found {
-			return nil, fmt.Errorf("Unknown type %s in: %s", casted.TokenLiteral(), typeNode.String())
+			return nil, fmt.Errorf("unknown type %s in: %s", casted.TokenLiteral(), typeNode.String())
 		}
 		return namedType, nil
 	case ast.FunctionType:
@@ -48,5 +48,5 @@ func evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, er
 		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}, nil
 	}
 
-	return nil, fmt.Errorf("Unknown type: %s", typeNode.String())
+	return nil, fmt.Errorf("unknown type: %s", typeNode.String())
 }
