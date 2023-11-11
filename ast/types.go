@@ -229,5 +229,5 @@ type ImportStatement struct {
 
 type ExportStatement struct {
 	Token token.Token
-	Identifier
+	Statement
 }

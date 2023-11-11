@@ -73,14 +73,15 @@ func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
 	return objectType, objectTypeExists
 }
 
-func (e *Environment) Declare(name string, isConstant bool, val Object) ObjectReference {
+func (e *Environment) Declare(name string, isConstant bool, val Object) (ObjectReference, error) {
 	_, exists := e.store[name]
 	if exists {
-		return nil
+		return nil, fmt.Errorf("identifier with name %s already exists", name)
 	}
+
 	newReference := &VariableReference{e, name, ReferenceType{isConstant, val.Type()}}
 	e.store[name] = &EnvStoreEntry{val, isConstant, false}
-	return newReference
+	return newReference, nil
 }
 
 func (e *Environment) Set(name string, val Object) (Object, error) {
@@ -90,6 +91,10 @@ func (e *Environment) Set(name string, val Object) (Object, error) {
 	}
 	e.store[name] = &EnvStoreEntry{val, entry.IsConstant, false}
 	return e.store[name].Object, nil
+}
+
+func (e *Environment) GetStore() map[string]*EnvStoreEntry {
+	return e.store
 }
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {

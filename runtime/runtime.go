@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/0xM-D/interpreter/evaluator"
 	"github.com/0xM-D/interpreter/object"
 	"github.com/0xM-D/interpreter/parser"
 )
@@ -15,9 +14,17 @@ type Runtime struct {
 	EntryModule *Module
 }
 
-func New(entryModulePath string) (*Runtime, bool) {
+func NewRuntimeFromFile(entryModulePath string) (*Runtime, bool) {
 	runtime := &Runtime{Modules: map[string]*Module{}}
 	entryModule, failedToLoad := runtime.loadModuleFromFile(entryModulePath)
+
+	runtime.EntryModule = entryModule
+	return runtime, failedToLoad
+}
+
+func NewRuntimeFromCode(code string) (*Runtime, bool) {
+	runtime := &Runtime{Modules: map[string]*Module{}}
+	entryModule, failedToLoad := runtime.loadModule("__entryPoint__", code)
 
 	runtime.EntryModule = entryModule
 	return runtime, failedToLoad
@@ -30,7 +37,7 @@ func (r *Runtime) Run() error {
 		return fmt.Errorf("entry point main not exported from %s", r.EntryModule.ModuleKey)
 	}
 
-	_, runtimeError := evaluator.ApplyFunction(mainFunc, []object.Object{})
+	_, runtimeError := r.ApplyFunction(mainFunc, []object.Object{})
 	if runtimeError != nil {
 		return runtimeError
 	}
@@ -69,7 +76,7 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*Module, bool) {
 
 	r.Modules[moduleKey] = module
 
-	evaluator.Eval(module.Program, &module.RootEnvironment)
+	r.Eval(module.Program, &module.RootEnvironment)
 
 	return module, false
 }

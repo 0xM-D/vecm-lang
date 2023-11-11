@@ -3,5 +3,5 @@
 go test ./ast
 go test ./lexer
 go test ./parser
-go test ./evaluator
+go test ./runtime
 go test ./object
