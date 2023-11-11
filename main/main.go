@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 
 func runFile(filePath string) {
 
-	r, failedToLoad := runtime.New(filePath)
+	r, failedToLoad := runtime.NewRuntimeFromFile(filePath)
 	if failedToLoad {
 		return
 	}
