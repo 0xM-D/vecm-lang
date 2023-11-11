@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/object"
 )
@@ -8,10 +10,10 @@ import (
 func evalIdentifier(
 	node *ast.Identifier,
 	env *object.Environment,
-) object.Object {
+) (object.Object, error) {
 	reference := env.GetReference(node.Value)
 	if reference == nil {
-		return newError("identifier not found: " + node.Value)
+		return nil, fmt.Errorf("identifier not found: " + node.Value)
 	}
-	return reference
+	return reference, nil
 }

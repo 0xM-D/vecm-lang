@@ -5,6 +5,6 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalBooleanLiteral(node *ast.BooleanLiteral) object.Object {
-	return nativeBoolToBooleanObject(node.Value)
+func evalBooleanLiteral(node *ast.BooleanLiteral) (object.Object, error) {
+	return nativeBoolToBooleanObject(node.Value), nil
 }

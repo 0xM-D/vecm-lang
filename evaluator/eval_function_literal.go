@@ -5,10 +5,10 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) object.Object {
+func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) (object.Object, error) {
 	functionType, err := evalType(node.Type, env)
 	if err != nil {
-		return newError(err.Error())
+		return nil, err
 	}
 
 	function := &object.Function{
@@ -17,5 +17,6 @@ func evalFunctionLiteral(node *ast.FunctionLiteral, env *object.Environment) obj
 		Body:               node.Body,
 		FunctionObjectType: *functionType.(*object.FunctionObjectType),
 	}
-	return function
+
+	return function, nil
 }

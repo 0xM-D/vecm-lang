@@ -7,7 +7,7 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func Eval(node ast.Node, env *object.Environment) object.Object {
+func Eval(node ast.Node, env *object.Environment) (object.Object, error) {
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
@@ -16,9 +16,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IntegerLiteral:
 		return evalIntegerLiteral(node, env)
 	case *ast.Float32Literal:
-		return &object.Number{Value: uint64(math.Float32bits(node.Value)), Kind: object.Float32Kind}
+		return &object.Number{Value: uint64(math.Float32bits(node.Value)), Kind: object.Float32Kind}, nil
 	case *ast.Float64Literal:
-		return &object.Number{Value: math.Float64bits(node.Value), Kind: object.Float64Kind}
+		return &object.Number{Value: math.Float64bits(node.Value), Kind: object.Float64Kind}, nil
 	case *ast.BooleanLiteral:
 		return evalBooleanLiteral(node)
 	case *ast.PrefixExpression:
@@ -59,23 +59,21 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalNewExpression(node, env)
 	}
 
-	return nil
+	return nil, nil
 }
 
-func evalProgram(program *ast.Program, env *object.Environment) object.Object {
+func evalProgram(program *ast.Program, env *object.Environment) (object.Object, error) {
 	var result object.Object
-
+	var err error
 	for _, statement := range program.Statements {
-		result = Eval(statement, env)
+		result, err = Eval(statement, env)
 
-		if result != nil {
-			if object.IsError(result) {
-				return result
-			}
-			if object.IsReturnValue(result) {
-				return unwrapReturnValue(result)
-			}
+		if err != nil {
+			return nil, err
+		}
+		if result != nil && object.IsReturnValue(result) {
+			return unwrapReturnValue(result), nil
 		}
 	}
-	return result
+	return result, nil
 }

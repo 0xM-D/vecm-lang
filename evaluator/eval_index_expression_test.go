@@ -57,7 +57,10 @@ func TestArrayIndexExpressions(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		integer, ok := tt.expected.(*big.Int)
 		if ok {
 			testIntegerObject(t, evaluated, integer)
@@ -115,7 +118,10 @@ func TestHashIndexExpressions(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		integer, ok := tt.expected.(*big.Int)
 
 		if ok {

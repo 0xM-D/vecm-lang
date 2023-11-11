@@ -43,10 +43,6 @@ func IsString(i Object) bool {
 	return i.Type().Kind() == StringKind
 }
 
-func IsError(i Object) bool {
-	return i.Type().Kind() == ErrorKind
-}
-
 func IsArray(i Object) bool {
 	return i.Type().Kind() == ArrayKind
 }

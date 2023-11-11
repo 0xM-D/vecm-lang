@@ -32,25 +32,21 @@ func isTruthy(obj object.Object) bool {
 	return true
 }
 
-func newError(format string, a ...interface{}) *object.Error {
-	return &object.Error{Message: fmt.Sprintf(format, a...)}
-}
-
 func evalExpressionsArray(
 	exps []ast.Expression,
 	env *object.Environment,
-) []object.Object {
+) ([]object.Object, error) {
 	var result []object.Object
 
 	for _, e := range exps {
-		evaluated := Eval(e, env)
-		if object.IsError(evaluated) {
-			return []object.Object{evaluated}
+		evaluated, err := Eval(e, env)
+		if err != nil {
+			return nil, err
 		}
 
 		result = append(result, evaluated)
 	}
-	return result
+	return result, nil
 
 }
 
@@ -73,7 +69,7 @@ func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {
 	case number.Cmp(new(big.Int).SetUint64(math.MaxUint64)) == -1:
 		return object.UInt64Kind, nil
 	default:
-		return object.ErrorKind, fmt.Errorf("integer ouside maximum range")
+		return object.AnyKind, fmt.Errorf("integer ouside maximum range")
 	}
 }
 

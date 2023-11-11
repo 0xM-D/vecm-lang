@@ -5,16 +5,18 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
+func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) (object.Object, error) {
 	var result object.Object
-	for _, statement := range block.Statements {
-		result = Eval(statement, env)
+	var err error
 
-		if result != nil {
-			if object.IsError(result) || object.IsReturnValue(result) {
-				return result
-			}
+	for _, statement := range block.Statements {
+		result, err = Eval(statement, env)
+		if err != nil {
+			return nil, err
+		}
+		if result != nil && object.IsReturnValue(result) {
+			return result, nil
 		}
 	}
-	return result
+	return result, nil
 }

@@ -9,7 +9,10 @@ import (
 
 func TestStringConcatenation(t *testing.T) {
 	input := `"Hello" + " " + "World!"`
-	evaluated := testEval(input)
+	evaluated, err := testEval(input)
+	if err != nil {
+		t.Fatal(err)
+	}
 	str, ok := evaluated.(*object.String)
 	if !ok {
 		t.Fatalf("object is not String. got=%T (%+v)", evaluated, evaluated)
@@ -51,7 +54,10 @@ func TestBooleanInfixExpression(t *testing.T) {
 		{"(1 < 2) && (2 < 3)", true},
 	}
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }
@@ -82,7 +88,10 @@ func TestFloatInfixExpression(t *testing.T) {
 		{"(5.0f + 10 * 2 + 11f / 3) * 2 + -10", float32(47.333333333333336)},
 	}
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testNumber(t, evaluated, tt.expected)
 	}
 }

@@ -46,7 +46,10 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"~123", big.NewInt(^123)},
 	}
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testIntegerObject(t, evaluated, tt.expected)
 	}
 }

@@ -5,6 +5,6 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalStringLiteral(node *ast.StringLiteral) object.Object {
-	return &object.String{Value: node.Value}
+func evalStringLiteral(node *ast.StringLiteral) (object.Object, error) {
+	return &object.String{Value: node.Value}, nil
 }

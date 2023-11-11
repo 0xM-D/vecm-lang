@@ -5,10 +5,10 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment) object.Object {
-	conditionResult := Eval(node.Condition, env)
-	if object.IsError(conditionResult) {
-		return conditionResult
+func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment) (object.Object, error) {
+	conditionResult, err := Eval(node.Condition, env)
+	if err != nil {
+		return nil, err
 	}
 
 	var expressionToEvaluate ast.Node
@@ -18,10 +18,10 @@ func evalTernaryExpression(node *ast.TernaryExpression, env *object.Environment)
 		expressionToEvaluate = node.ValueIfFalse
 	}
 
-	result := Eval(expressionToEvaluate, env)
-	if object.IsError(result) {
-		return result
+	result, err := Eval(expressionToEvaluate, env)
+	if err != nil {
+		return nil, err
 	}
 
-	return result
+	return result, nil
 }

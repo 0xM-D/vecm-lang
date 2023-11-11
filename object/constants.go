@@ -29,7 +29,6 @@ const (
 	BuiltinFunctionKind ObjectKind = "builtinFunction"
 	NullKind            ObjectKind = "null"
 	VoidKind            ObjectKind = "void"
-	ErrorKind           ObjectKind = "error"
 	AnyKind             ObjectKind = "any"
 )
 

@@ -19,6 +19,10 @@ func TestFunctionApplication(t *testing.T) {
 		{"a := 3; b := 4; let add = fn(x: uint32, y: uint32) -> uint32 { x + y; }; add(a, b);", 7},
 	}
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), big.NewInt(tt.expected))
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		testIntegerObject(t, result, big.NewInt(tt.expected))
 	}
 }

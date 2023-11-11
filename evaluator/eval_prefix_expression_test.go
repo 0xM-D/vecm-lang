@@ -15,7 +15,10 @@ func TestBangOperator(t *testing.T) {
 		{"!!5", true},
 	}
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }

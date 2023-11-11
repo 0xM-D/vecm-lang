@@ -17,6 +17,10 @@ func TestTernaryOperator(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testLiteralObject(t, testEval(tt.input), tt.expectedValue)
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		testLiteralObject(t, result, tt.expectedValue)
 	}
 }

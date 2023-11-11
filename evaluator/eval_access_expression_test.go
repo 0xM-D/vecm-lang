@@ -32,13 +32,17 @@ func TestTypeBuiltins(t *testing.T) {
 		{`new []int{1, 2, 3}.slice(2, 0).size()`, big.NewInt(0)},
 	}
 	for _, tt := range tests {
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		switch expected := tt.expected.(type) {
 		case *big.Int:
-			testIntegerObject(t, testEval(tt.input), expected)
+			testIntegerObject(t, result, expected)
 		case string:
-			testStringObject(t, testEval(tt.input), expected)
+			testStringObject(t, result, expected)
 		case []string:
-			testArrayObject(t, testEval(tt.input), expected)
+			testArrayObject(t, result, expected)
 		default:
 			t.Errorf("Test doesn't support %T expected type", expected)
 		}

@@ -9,7 +9,7 @@ import (
 	"github.com/0xM-D/interpreter/parser"
 )
 
-func testEval(input string) object.Object {
+func testEval(input string) (object.Object, error) {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()

@@ -5,21 +5,21 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalExplicitTypeCast(node *ast.TypeCastExpression, env *object.Environment) object.Object {
-	left := Eval(node.Left, env)
-	if object.IsError(left) {
-		return left
+func evalExplicitTypeCast(node *ast.TypeCastExpression, env *object.Environment) (object.Object, error) {
+	left, err := Eval(node.Left, env)
+	if err != nil {
+		return nil, err
 	}
 
-	castToType, error := evalType(node.Type, env)
-	if error != nil {
-		return newError(error.Error())
+	castToType, err := evalType(node.Type, env)
+	if err != nil {
+		return nil, err
 	}
 
-	casted := typeCast(left, castToType, EXPLICIT_CAST)
-	if object.IsError(casted) {
-		return casted
+	casted, err := typeCast(left, castToType, EXPLICIT_CAST)
+	if err != nil {
+		return nil, err
 	}
 
-	return casted
+	return casted, nil
 }

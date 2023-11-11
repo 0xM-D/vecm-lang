@@ -22,7 +22,10 @@ func TestReturnStatements(t *testing.T) {
 			}`, big.NewInt(10)},
 	}
 	for _, tt := range tests {
-		evaluated := testEval(tt.input)
+		evaluated, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testIntegerObject(t, evaluated, tt.expected)
 	}
 }

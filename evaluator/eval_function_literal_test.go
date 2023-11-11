@@ -9,7 +9,11 @@ import (
 func TestFunctionLiteral(t *testing.T) {
 	input := "fn(x:int64)->int64 { x + 2; };"
 
-	evaluated := testEval(input)
+	evaluated, err := testEval(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	fn, ok := evaluated.(*object.Function)
 	if !ok {
 		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)

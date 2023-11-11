@@ -22,6 +22,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseTypedDeclarationStatement(nil)
 	case token.FOR:
 		return p.parseForStatement()
+	case token.IMPORT:
+		return p.parseImportStatement()
 	case token.IDENT:
 		switch p.peekToken.Type {
 		case token.DECL_ASSIGN:

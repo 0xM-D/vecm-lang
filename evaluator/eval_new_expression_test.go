@@ -10,7 +10,11 @@ import (
 func TestArrayLiterals(t *testing.T) {
 	input := "new []int{1, 2 * 2, 3 + 3}"
 
-	evaluated := testEval(input)
+	evaluated, err := testEval(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	result, ok := evaluated.(*object.Array)
 
 	if !ok {
@@ -36,7 +40,11 @@ func TestHashLiterals(t *testing.T) {
 	"thr" + "ee": 6 / 2
 	}`
 
-	evaluated := testEval(input)
+	evaluated, err := testEval(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	result, ok := evaluated.(*object.Hash)
 	if !ok {
 		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)

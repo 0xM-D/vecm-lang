@@ -13,6 +13,10 @@ func TestForStatement(t *testing.T) {
 		{"let i = 5; for(; i > 0 ;) { i-=1 } i", 0},
 	}
 	for _, tt := range tests {
-		testLiteralObject(t, testEval(tt.input), tt.expected)
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		testLiteralObject(t, result, tt.expected)
 	}
 }

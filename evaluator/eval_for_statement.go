@@ -5,22 +5,22 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func evalForStatement(node *ast.ForStatement, env *object.Environment) object.Object {
+func evalForStatement(node *ast.ForStatement, env *object.Environment) (object.Object, error) {
 	forEnv := object.NewEnclosedEnvironment(env)
 
 	if node.Initialization != nil {
-		initResult := Eval(node.Initialization, forEnv)
-		if object.IsError(initResult) {
-			return initResult
+		_, err := Eval(node.Initialization, forEnv)
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	for {
 		if node.Condition != nil {
-			conditionResult := Eval(node.Condition, forEnv)
+			conditionResult, err := Eval(node.Condition, forEnv)
 
-			if object.IsError(conditionResult) {
-				return conditionResult
+			if err != nil {
+				return nil, err
 			}
 
 			if !isTruthy(conditionResult) {
@@ -29,22 +29,22 @@ func evalForStatement(node *ast.ForStatement, env *object.Environment) object.Ob
 		}
 
 		if node.Body != nil {
-			bodyResult := Eval(node.Body, forEnv)
+			_, err := Eval(node.Body, forEnv)
 
-			if bodyResult != nil && object.IsError(bodyResult) {
-				return bodyResult
+			if err != nil {
+				return nil, err
 			}
 		}
 
 		if node.AfterThought != nil {
-			afterThoughtResult := Eval(node.AfterThought, forEnv)
+			_, err := Eval(node.AfterThought, forEnv)
 
-			if object.IsError(afterThoughtResult) {
-				return afterThoughtResult
+			if err != nil {
+				return nil, err
 			}
 		}
 
 	}
 
-	return nil
+	return nil, nil
 }

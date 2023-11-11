@@ -42,24 +42,28 @@ var numberCastWeight = map[object.ObjectKind]uint8{
 	object.Float64Kind: FLOAT64_WEIGHT,
 }
 
-func typeCast(obj object.Object, targetType object.ObjectType, castType CastType) object.Object {
+func typeCast(obj object.Object, targetType object.ObjectType, castType CastType) (object.Object, error) {
 	if obj.Type().Signature() == targetType.Signature() {
-		return obj
+		return obj, nil
+	}
+
+	if object.IsArray(obj) && targetType.Kind() == object.ArrayKind {
+		return arrayCast(obj.(*object.Array), targetType.(*object.ArrayObjectType), castType)
 	}
 
 	if object.IsNumber(obj) && object.IsNumberKind(targetType.Kind()) {
 		casted, err := numberCast(obj.(*object.Number), targetType.Kind(), castType)
 		if err != nil {
-			return newError(err.Error())
+			return nil, err
 		}
-		return casted
+		return casted, nil
 	}
 
 	if object.IsNumber(obj) && targetType.Kind() == object.StringKind {
-		return &object.String{Value: obj.Inspect()}
+		return &object.String{Value: obj.Inspect()}, nil
 	}
 
-	return newError("Type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
+	return nil, fmt.Errorf("type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
 }
 
 func numberCast(number *object.Number, target object.ObjectKind, castType CastType) (*object.Number, error) {
@@ -128,6 +132,26 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 	}
 
 	return &object.Number{Value: value, Kind: target}, nil
+}
+
+func arrayCast(array *object.Array, targetType *object.ArrayObjectType, castType CastType) (object.Object, error) {
+	targetElementKind := targetType.ElementType.Kind()
+
+	if object.IsNumberKind(array.ElementType.Kind()) && !object.IsNumberKind(targetElementKind) {
+		return nil, fmt.Errorf("type cast from %s to %s is not defined", array.Type().Signature(), targetType.Signature())
+	}
+
+	newArray := &object.Array{ArrayObjectType: *targetType, Elements: []object.Object{}}
+
+	for _, number := range array.Elements {
+		casted, err := typeCast(number, targetElementKind, castType)
+		if err != nil {
+			return nil, err
+		}
+		newArray.Elements = append(newArray.Elements, casted)
+	}
+
+	return newArray, nil
 }
 
 func arithmeticCast(first, second *object.Number) (*object.Number, *object.Number, error) {

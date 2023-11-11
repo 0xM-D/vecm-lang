@@ -17,8 +17,13 @@ func TestAssignmentDeclaration(t *testing.T) {
 		{"a := 5; let b = a; b;", 5},
 		{"a := 5; let b = a; let c = a + b + 5; c;", 15},
 	}
+
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), big.NewInt(tt.expected))
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		testIntegerObject(t, result, big.NewInt(tt.expected))
 	}
 }
 
@@ -36,15 +41,20 @@ func TestAsignmentExpression(t *testing.T) {
 		{`a := "a"; a += "bc"`, "abc"},
 	}
 	for _, tt := range tests {
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		switch expected := tt.expected.(type) {
 		case *big.Int:
-			testIntegerObject(t, testEval(tt.input), expected)
+			testIntegerObject(t, result, expected)
 		case string:
-			testStringObject(t, testEval(tt.input), expected)
+			testStringObject(t, result, expected)
 		case bool:
-			testBooleanObject(t, testEval(tt.input), expected)
+			testBooleanObject(t, result, expected)
 		case []string:
-			testArrayObject(t, testEval(tt.input), expected)
+			testArrayObject(t, result, expected)
 		}
 	}
 }
@@ -76,17 +86,22 @@ func TestTypedDeclarationStatement(t *testing.T) {
 		}},
 	}
 	for _, tt := range tests {
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		switch expected := tt.expected.(type) {
 		case *big.Int:
-			testIntegerObject(t, testEval(tt.input), expected)
+			testIntegerObject(t, result, expected)
 		case string:
-			testStringObject(t, testEval(tt.input), expected)
+			testStringObject(t, result, expected)
 		case bool:
-			testBooleanObject(t, testEval(tt.input), expected)
+			testBooleanObject(t, result, expected)
 		case []string:
-			testArrayObject(t, testEval(tt.input), expected)
+			testArrayObject(t, result, expected)
 		case ExpectedFunction:
-			testFunctionObject(t, testEval(tt.input), expected)
+			testFunctionObject(t, result, expected)
 		}
 	}
 }
@@ -102,6 +117,10 @@ func TestLetStatements(t *testing.T) {
 		{"let a = 5; let b = a; let c = a + b + 5; c;", big.NewInt(15)},
 	}
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+		result, err := testEval(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		testIntegerObject(t, result, tt.expected)
 	}
 }
