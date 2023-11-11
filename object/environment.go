@@ -5,6 +5,7 @@ import "fmt"
 type EnvStoreEntry struct {
 	Object
 	IsConstant bool
+	IsExported bool
 }
 
 type Environment struct {
@@ -72,23 +73,28 @@ func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
 	return objectType, objectTypeExists
 }
 
-func (e *Environment) Declare(name string, isConstant bool, val Object) ObjectReference {
+func (e *Environment) Declare(name string, isConstant bool, val Object) (ObjectReference, error) {
 	_, exists := e.store[name]
 	if exists {
-		return nil
+		return nil, fmt.Errorf("identifier with name %s already exists", name)
 	}
+
 	newReference := &VariableReference{e, name, ReferenceType{isConstant, val.Type()}}
-	e.store[name] = &EnvStoreEntry{val, isConstant}
-	return newReference
+	e.store[name] = &EnvStoreEntry{val, isConstant, false}
+	return newReference, nil
 }
 
 func (e *Environment) Set(name string, val Object) (Object, error) {
 	entry, exists := e.store[name]
 	if exists && entry.IsConstant {
-		return nil, fmt.Errorf("Cannot assign to const variable")
+		return nil, fmt.Errorf("cannot assign to const variable")
 	}
-	e.store[name] = &EnvStoreEntry{val, entry.IsConstant}
+	e.store[name] = &EnvStoreEntry{val, entry.IsConstant, false}
 	return e.store[name].Object, nil
+}
+
+func (e *Environment) GetStore() map[string]*EnvStoreEntry {
+	return e.store
 }
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {

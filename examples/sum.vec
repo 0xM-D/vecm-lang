@@ -2,6 +2,6 @@ const function(int, int)->int sum = fn(a: int, b: int) -> int {
     return a + b;
 }
 
-c := sum(1, 2)
-
-c // printily printy
+const main = fn() -> void {
+    c := sum(1, 2)
+}

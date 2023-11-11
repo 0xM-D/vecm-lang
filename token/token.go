@@ -90,6 +90,11 @@ const (
 	MAP_TYPE      TokenType = "map"
 	ARRAY_TYPE    TokenType = "[]"
 	FUNCTION_TYPE TokenType = "function"
+
+	// import / export
+	IMPORT TokenType = "import"
+	FROM   TokenType = "from"
+	EXPORT TokenType = "export"
 )
 
 var keywords = map[string]TokenType{
@@ -106,6 +111,9 @@ var keywords = map[string]TokenType{
 	"for":      FOR,
 	"as":       AS,
 	"new":      NEW,
+	"import":   IMPORT,
+	"from":     FROM,
+	"export":   EXPORT,
 }
 
 func LookupIdent(ident string) TokenType {

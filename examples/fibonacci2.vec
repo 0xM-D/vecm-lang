@@ -1,7 +1,7 @@
 []int fib = new []int{0, 1};
 int MAX_FIB = 50;
 
-for(int i = 2; i <= MAX_FIB; i+=1)
+main := fn() -> void {
+    for(int i = 2; i <= MAX_FIB; i+=1)
     fib.push(fib[i-1] + fib[i-2]);
-
-fib[MAX_FIB]
+}

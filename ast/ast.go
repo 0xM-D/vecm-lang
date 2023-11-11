@@ -474,3 +474,23 @@ func (pe *PairExpression) TokenValue() token.Token { return pe.Token }
 func (pe *PairExpression) String() string {
 	return pe.Left.String() + ": " + pe.Right.String()
 }
+
+func (is *ImportStatement) statementNode()          {}
+func (is *ImportStatement) TokenLiteral() string    { return is.Token.Literal }
+func (is *ImportStatement) TokenValue() token.Token { return is.Token }
+func (is *ImportStatement) String() string {
+	var out bytes.Buffer
+
+	elems := []string{}
+	for _, p := range is.ImportedIdentifiers {
+		elems = append(elems, p.Value)
+	}
+
+	out.WriteString("import ")
+	out.WriteString(strings.Join(elems, ", "))
+	out.WriteString(` from \"`)
+	out.WriteString(is.ImportPath)
+	out.WriteString(`";`)
+
+	return out.String()
+}
