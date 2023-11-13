@@ -26,6 +26,12 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseImportStatement()
 	case token.EXPORT:
 		return p.parseExportStatement()
+	case token.FUNCTION:
+		switch p.peekToken.Type {
+		case token.IDENT:
+			return p.parseFunctionDeclarationStatement()
+		}
+		fallthrough
 	case token.IDENT:
 		switch p.peekToken.Type {
 		case token.DECL_ASSIGN:
