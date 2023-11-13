@@ -231,3 +231,11 @@ type ExportStatement struct {
 	Token token.Token
 	Statement
 }
+
+type FunctionDeclarationStatement struct {
+	Token      token.Token
+	Name       *Identifier
+	Parameters []*Identifier
+	Body       *BlockStatement
+	Type       FunctionType
+}

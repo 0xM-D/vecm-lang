@@ -61,6 +61,8 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 		return r.evalImportStatement(node, env)
 	case *ast.ExportStatement:
 		return r.evalExportStatement(node, env)
+	case *ast.FunctionDeclarationStatement:
+		return r.evalFunctionDeclarationStatement(node, env)
 	}
 
 	return nil, nil

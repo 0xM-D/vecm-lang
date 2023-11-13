@@ -494,3 +494,27 @@ func (is *ImportStatement) String() string {
 
 	return out.String()
 }
+
+func (fd *FunctionDeclarationStatement) statementNode()          {}
+func (fd *FunctionDeclarationStatement) TokenLiteral() string    { return fd.Token.Literal }
+func (fd *FunctionDeclarationStatement) TokenValue() token.Token { return fd.Token }
+func (fd *FunctionDeclarationStatement) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range fd.Parameters {
+		params = append(params, p.String())
+	}
+
+	out.WriteString("fn ")
+	out.WriteString(fd.Name.String())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")->")
+	out.WriteString(fd.Type.ReturnType.String())
+	out.WriteString("{")
+	out.WriteString(fd.Body.String())
+	out.WriteString("}")
+
+	return out.String()
+}
