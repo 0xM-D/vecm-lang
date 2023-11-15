@@ -54,7 +54,7 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK_ASSIGN: ASSIGN,
 	token.SLASH_ASSIGN:    ASSIGN,
 	token.ACCESS:          ACCESS,
-	token.TERNARY_IF:      TERNARY_IF,
+	token.QUESTIONMARK:    TERNARY_IF,
 	token.COLON:           COLON,
 	token.AS:              TYPECAST,
 }

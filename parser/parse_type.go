@@ -78,8 +78,8 @@ func (p *Parser) parseFunctionType() ast.Type {
 	return functionType
 }
 
-func (p *Parser) parseFunctionTypeParameters() []ast.Type {
-	parameterTypes := []ast.Type{}
+func (p *Parser) parseFunctionTypeParameters() []*ast.FunctionParameterType {
+	parameterTypes := []*ast.FunctionParameterType{}
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
@@ -91,12 +91,19 @@ func (p *Parser) parseFunctionTypeParameters() []ast.Type {
 		}
 		p.nextToken()
 
-		nextType := p.parseType()
-		if nextType == nil {
+		param_type := &ast.FunctionParameterType{IsOptional: false}
+
+		param_type.Type = p.parseType()
+		if param_type.Type == nil {
 			return nil
 		}
 
-		parameterTypes = append(parameterTypes, nextType)
+		if p.peekTokenIs(token.QUESTIONMARK) {
+			param_type.IsOptional = true
+			p.nextToken()
+		}
+
+		parameterTypes = append(parameterTypes, param_type)
 
 		if !p.peekTokenIs(token.COMMA) {
 			break

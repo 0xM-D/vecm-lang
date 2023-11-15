@@ -31,13 +31,13 @@ func NewRuntimeFromCode(code string) (*Runtime, bool) {
 }
 
 func (r *Runtime) Run() error {
-	mainFunc := r.EntryModule.RootEnvironment.Get("main")
+	mainFunc := r.EntryModule.RootEnvironment.GetStore()["main"]
 
-	if mainFunc == nil || !object.IsFunction(mainFunc) {
+	if mainFunc == nil || !mainFunc.IsExported || !object.IsFunction(mainFunc.Object) {
 		return fmt.Errorf("entry point main not exported from %s", r.EntryModule.ModuleKey)
 	}
 
-	_, runtimeError := r.ApplyFunction(mainFunc, []object.Object{})
+	_, runtimeError := r.ApplyFunction(mainFunc.Object, []object.Object{})
 	if runtimeError != nil {
 		return runtimeError
 	}

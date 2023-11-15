@@ -48,7 +48,7 @@ func initIntrinsicTypeBuiltins() map[ObjectKind]*FunctionRepository {
 func initNumberBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("toString", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: StringKind}, numberToString)
+	repo.register("toString", FunctionObjectType{ParameterTypes: []FunctionParameterType{}, ReturnValueType: StringKind}, numberToString)
 
 	return &repo
 }
@@ -56,7 +56,7 @@ func initNumberBuiltins() *FunctionRepository {
 func initStringBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("length", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, stringLength)
+	repo.register("length", FunctionObjectType{ParameterTypes: []FunctionParameterType{}, ReturnValueType: Int64Kind}, stringLength)
 
 	return &repo
 }
@@ -64,11 +64,11 @@ func initStringBuiltins() *FunctionRepository {
 func initArrayBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, arraySize)
-	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind}, ReturnValueType: ArrayKind}, arrayPush)
-	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, Int64Kind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
-	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arrayDelete)
-	repo.register("slice", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arraySlice)
+	repo.register("size", FunctionObjectType{ParameterTypes: []FunctionParameterType{}, ReturnValueType: Int64Kind}, arraySize)
+	repo.register("push", FunctionObjectType{ParameterTypes: []FunctionParameterType{{AnyKind, false}}, ReturnValueType: ArrayKind}, arrayPush)
+	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []FunctionParameterType{{AnyKind, false}, {Int64Kind, false}}, ReturnValueType: ArrayKind}, arrayPushMultiple)
+	repo.register("delete", FunctionObjectType{ParameterTypes: []FunctionParameterType{{Int64Kind, false}, {Int64Kind, false}}, ReturnValueType: ArrayKind}, arrayDelete)
+	repo.register("slice", FunctionObjectType{ParameterTypes: []FunctionParameterType{{Int64Kind, false}, {Int64Kind, false}}, ReturnValueType: ArrayKind}, arraySlice)
 	return &repo
 }
 

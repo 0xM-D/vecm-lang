@@ -1,4 +1,4 @@
-const main = fn() -> void {
+export const main = fn() -> void {
     const int fibSize = 50; // Calculate first 50 fibonacci numbers
     []int fibArray = new []int{0, 1}.pushMultiple(-1, fibSize)
 

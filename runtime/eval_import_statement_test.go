@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"math/big"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,6 +24,10 @@ func TestImportStatement(t *testing.T) {
 
 		const function1 = fn(x: int)->int { return x * 2; }
 		export function1
+
+		export fn main()->int {
+			return 0;
+		}
 	`
 
 	importFile, err := os.Create(importedModuleFilePath)
@@ -47,14 +52,14 @@ func TestImportStatement(t *testing.T) {
 				import integer1 from %q
 				integer1
 			`, importedModuleFilePath),
-			1,
+			big.NewInt(1),
 		},
 		{
 			fmt.Sprintf(`
 				import integer1, integer2 from %q
 				integer1 + integer2
 			`, importedModuleFilePath),
-			3,
+			big.NewInt(3),
 		},
 		{
 			fmt.Sprintf(`
@@ -75,7 +80,14 @@ func TestImportStatement(t *testing.T) {
 				import function1 from %q
 				function1(13)
 			`, importedModuleFilePath),
-			26,
+			big.NewInt(26),
+		},
+		{
+			fmt.Sprintf(`
+				import main from %q
+				main()
+			`, importedModuleFilePath),
+			big.NewInt(0),
 		},
 	}
 

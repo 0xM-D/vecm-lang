@@ -181,9 +181,14 @@ type HashType struct {
 	ValueType Type
 }
 
+type FunctionParameterType struct {
+	Type
+	IsOptional bool
+}
+
 type FunctionType struct {
 	Token          token.Token
-	ParameterTypes []Type
+	ParameterTypes []*FunctionParameterType
 	ReturnType     Type
 }
 
