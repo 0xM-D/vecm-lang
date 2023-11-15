@@ -32,7 +32,7 @@ func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.O
 		}
 		return namedType, nil
 	case ast.FunctionType:
-		parameterTypes := []object.FunctionParameterType{}
+		parameterTypes := []object.ObjectType{}
 		returnType, err := r.evalType(casted.ReturnType, env)
 		if err != nil {
 			return nil, err
@@ -43,20 +43,9 @@ func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.O
 			if err != nil {
 				return nil, err
 			}
-			paramType, ok := parsedType.(object.FunctionParameterType)
-			if ok {
-				parameterTypes = append(parameterTypes, paramType)
-			} else {
-				parameterTypes = append(parameterTypes, object.FunctionParameterType{ObjectType: parsedType, IsOptional: false})
-			}
+			parameterTypes = append(parameterTypes, parsedType)
 		}
 		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}, nil
-	case *ast.FunctionParameterType:
-		paramType, err := r.evalType(casted.Type, env)
-		if err != nil {
-			return nil, err
-		}
-		return &object.FunctionParameterType{ObjectType: paramType, IsOptional: casted.IsOptional}, nil
 	}
 
 	return nil, fmt.Errorf("unknown type: %s", typeNode.String())

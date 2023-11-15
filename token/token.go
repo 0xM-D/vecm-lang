@@ -57,11 +57,10 @@ const (
 	B_SHIFT_R = ">>"
 
 	// Delimiters
-	COMMA              TokenType = ","
-	SEMICOLON          TokenType = ";"
-	COLON              TokenType = ":"
-	QUESTIONMARK_COLON TokenType = "?:"
-	QUESTIONMARK                 = "?"
+	COMMA        TokenType = ","
+	SEMICOLON    TokenType = ";"
+	COLON        TokenType = ":"
+	QUESTIONMARK TokenType = "?"
 
 	LPAREN   TokenType = "("
 	RPAREN   TokenType = ")"

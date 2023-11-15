@@ -89,7 +89,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '~':
 		tok = l.newToken(token.B_INV, string(l.ch))
 	case '?':
-		tok = l.getTokenWithPeek(token.QUESTIONMARK, TokenMapping{':', token.QUESTIONMARK_COLON})
+		tok = l.newToken(token.QUESTIONMARK, string(l.ch))
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF

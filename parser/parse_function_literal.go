@@ -36,9 +36,9 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	return lit
 }
 
-func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []*ast.FunctionParameterType) {
+func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 	identifiers := []*ast.Identifier{}
-	types := []*ast.FunctionParameterType{}
+	types := []ast.Type{}
 
 	if p.peekTokenIs(token.RPAREN) {
 		p.nextToken()
@@ -69,29 +69,7 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []*ast.FunctionPa
 	return identifiers, types
 }
 
-// func (p *Parser) parseFunctionParameter() (*ast.Identifier, *ast.FunctionParameterType) {
-// 	p.nextToken()
-// 	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
-// 	param_type := &ast.FunctionParameterType{}
-
-// 	if p.peekTokenIs(token.COLON) {
-// 		param_type.IsOptional = false
-// 		p.nextToken()
-// 	} else if p.peekTokenIs(token.QUESTIONMARK_COLON) {
-// 		param_type.IsOptional = true
-// 		p.nextToken()
-// 	} else {
-// 		p.newError(nil, "expected : or ?: token after function parameter identifier, got %s instead", p.peekToken.Literal)
-// 		return nil, nil
-// 	}
-// 	p.nextToken()
-
-// 	param_type.Type = p.parseType()
-
-// 	return ident, param_type
-// }
-
-func (p *Parser) parseFunctionParameter() (*ast.Identifier, *ast.FunctionParameterType) {
+func (p *Parser) parseFunctionParameter() (*ast.Identifier, ast.Type) {
 	p.nextToken()
 	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
@@ -102,5 +80,5 @@ func (p *Parser) parseFunctionParameter() (*ast.Identifier, *ast.FunctionParamet
 	p.nextToken()
 	param_type := p.parseType()
 
-	return ident, &ast.FunctionParameterType{Type: param_type, IsOptional: false}
+	return ident, param_type
 }

@@ -7,13 +7,8 @@ import (
 	"github.com/0xM-D/interpreter/ast"
 )
 
-type FunctionParameterType struct {
-	ObjectType
-	IsOptional bool
-}
-
 type FunctionObjectType struct {
-	ParameterTypes  []FunctionParameterType
+	ParameterTypes  []ObjectType
 	ReturnValueType ObjectType
 }
 
@@ -31,11 +26,6 @@ func (f FunctionObjectType) Signature() string {
 
 	return out.String()
 }
-
-func (p FunctionParameterType) Kind() ObjectKind              { return p.ObjectType.Kind() }
-func (p FunctionParameterType) Builtins() *FunctionRepository { return p.ObjectType.Builtins() }
-func (p FunctionParameterType) IsConstant() bool              { return true }
-func (p FunctionParameterType) Signature() string             { return p.ObjectType.Kind().Signature() }
 
 func (f FunctionObjectType) Kind() ObjectKind              { return FunctionKind }
 func (f FunctionObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
