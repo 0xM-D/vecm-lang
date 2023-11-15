@@ -237,7 +237,7 @@ condition ? true : false
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
 		{token.IDENT, "condition"},
-		{token.TERNARY_IF, "?"},
+		{token.QUESTIONMARK, "?"},
 		{token.TRUE, "true"},
 		{token.COLON, ":"},
 		{token.FALSE, "false"},

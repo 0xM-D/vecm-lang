@@ -13,6 +13,9 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	}
 
 	lit.Parameters, lit.Type.ParameterTypes = p.parseFunctionParameters()
+	if lit.Parameters == nil || lit.Type.ParameterTypes == nil {
+		return nil
+	}
 
 	if !p.expectPeek(token.DASH_ARROW) {
 		return nil
@@ -43,12 +46,18 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 	}
 
 	ident, param_type := p.parseFunctionParameter()
+	if ident == nil || param_type == nil {
+		return nil, nil
+	}
 	identifiers = append(identifiers, ident)
 	types = append(types, param_type)
 
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		ident, param_type := p.parseFunctionParameter()
+		if ident == nil || param_type == nil {
+			return nil, nil
+		}
 		identifiers = append(identifiers, ident)
 		types = append(types, param_type)
 	}

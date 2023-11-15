@@ -56,13 +56,11 @@ const (
 	B_SHIFT_L = "<<"
 	B_SHIFT_R = ">>"
 
-	// Ternary operator
-	TERNARY_IF = "?"
-
 	// Delimiters
-	COMMA     TokenType = ","
-	SEMICOLON TokenType = ";"
-	COLON     TokenType = ":"
+	COMMA        TokenType = ","
+	SEMICOLON    TokenType = ";"
+	COLON        TokenType = ":"
+	QUESTIONMARK TokenType = "?"
 
 	LPAREN   TokenType = "("
 	RPAREN   TokenType = ")"

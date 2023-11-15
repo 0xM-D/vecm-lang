@@ -102,7 +102,7 @@ func testStringObject(t *testing.T, obj object.Object, expected string) bool {
 	return true
 }
 
-func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
+func testArrayObject(t *testing.T, obj object.Object, expected []interface{}) bool {
 	if !object.IsArray(obj) {
 		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
 		return false
@@ -115,10 +115,7 @@ func testArrayObject(t *testing.T, obj object.Object, expected []string) bool {
 		return false
 	}
 	for i, el := range result.Elements {
-		if el.Inspect() != expected[i] {
-			t.Errorf("Array mismatch at index %d. expected=%s got=%s", i, el.Inspect(), expected[i])
-			return false
-		}
+		testLiteralObject(t, el, expected[i])
 	}
 	return true
 }
@@ -196,9 +193,11 @@ func testLiteralObject(t *testing.T, obj object.Object, expected interface{}) {
 		testStringObject(t, obj, expected)
 	case bool:
 		testBooleanObject(t, obj, expected)
-	case []string:
+	case []interface{}:
 		testArrayObject(t, obj, expected)
 	case ExpectedFunction:
 		testFunctionObject(t, obj, expected)
+	default:
+		t.Fatalf("unsupported expected type %T in test", expected)
 	}
 }

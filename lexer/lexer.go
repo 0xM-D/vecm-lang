@@ -89,7 +89,10 @@ func (l *Lexer) NextToken() token.Token {
 	case '~':
 		tok = l.newToken(token.B_INV, string(l.ch))
 	case '?':
-		tok = l.newToken(token.TERNARY_IF, string(l.ch))
+		tok = l.newToken(token.QUESTIONMARK, string(l.ch))
+	case 0:
+		tok.Literal = ""
+		tok.Type = token.EOF
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
@@ -101,9 +104,6 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = l.newToken(token.ILLEGAL, string(l.ch))
 		}
-	case 0:
-		tok.Literal = ""
-		tok.Type = token.EOF
 	}
 	l.readChar()
 	return tok

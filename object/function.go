@@ -14,7 +14,6 @@ type FunctionObjectType struct {
 
 func (f FunctionObjectType) Signature() string {
 	var out bytes.Buffer
-
 	paramTypes := []string{}
 	for _, p := range f.ParameterTypes {
 		paramTypes = append(paramTypes, p.Signature())

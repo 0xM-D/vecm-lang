@@ -39,11 +39,11 @@ func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.O
 		}
 
 		for _, p := range casted.ParameterTypes {
-			paramType, err := r.evalType(p, env)
+			parsedType, err := r.evalType(p, env)
 			if err != nil {
 				return nil, err
 			}
-			parameterTypes = append(parameterTypes, paramType)
+			parameterTypes = append(parameterTypes, parsedType)
 		}
 		return &object.FunctionObjectType{ParameterTypes: parameterTypes, ReturnValueType: returnType}, nil
 	}
