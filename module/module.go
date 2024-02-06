@@ -1,4 +1,4 @@
-package runtime
+package module
 
 import (
 	"github.com/0xM-D/interpreter/ast"
@@ -15,7 +15,7 @@ type Module struct {
 	Program         *ast.Program
 }
 
-func ImportModule(moduleKey, code string) *Module {
+func ParseModule(moduleKey, code string) *Module {
 	l := lexer.New(string(code))
 	p := parser.New(l)
 

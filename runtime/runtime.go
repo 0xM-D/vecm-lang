@@ -5,17 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/0xM-D/interpreter/module"
 	"github.com/0xM-D/interpreter/object"
 	"github.com/0xM-D/interpreter/parser"
 )
 
 type Runtime struct {
-	Modules     map[string]*Module
-	EntryModule *Module
+	Modules     map[string]*module.Module
+	EntryModule *module.Module
 }
 
 func NewRuntimeFromFile(entryModulePath string) (*Runtime, bool) {
-	runtime := &Runtime{Modules: map[string]*Module{}}
+	runtime := &Runtime{Modules: map[string]*module.Module{}}
 	entryModule, failedToLoad := runtime.loadModuleFromFile(entryModulePath)
 
 	runtime.EntryModule = entryModule
@@ -23,7 +24,7 @@ func NewRuntimeFromFile(entryModulePath string) (*Runtime, bool) {
 }
 
 func NewRuntimeFromCode(code string) (*Runtime, bool) {
-	runtime := &Runtime{Modules: map[string]*Module{}}
+	runtime := &Runtime{Modules: map[string]*module.Module{}}
 	entryModule, failedToLoad := runtime.loadModule("__entryPoint__", code)
 
 	runtime.EntryModule = entryModule
@@ -45,7 +46,7 @@ func (r *Runtime) Run() error {
 	return nil
 }
 
-func (r *Runtime) loadModuleFromFile(modulePath string) (*Module, bool) {
+func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 
 	absolutePath, err := filepath.Abs(modulePath)
 	if err != nil {
@@ -67,9 +68,9 @@ func (r *Runtime) loadModuleFromFile(modulePath string) (*Module, bool) {
 	return r.loadModule(absolutePath, string(code))
 }
 
-func (r *Runtime) loadModule(moduleKey string, code string) (*Module, bool) {
+func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, bool) {
 
-	module := ImportModule(moduleKey, code)
+	module := module.ParseModule(moduleKey, code)
 	if checkParserErrors(module.Parser) {
 		return nil, true
 	}
