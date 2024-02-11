@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/0xM-D/interpreter/compiler"
 	"github.com/0xM-D/interpreter/runtime"
 	"github.com/spf13/cobra"
 )
@@ -12,8 +13,11 @@ var rootCmd = &cobra.Command{
 	Use:   "vecm",
 	Short: "Vecm is a vector SIMD language interpreter",
 	Long:  "Vecm is a programming language that emphasizes vector SIMD instructions and operations.",
+	// Run: func(cmd *cobra.Command, args []string) {
+	// 	runFile(args[0])
+	// },
 	Run: func(cmd *cobra.Command, args []string) {
-		runFile(args[0])
+		compileFile(args[0])
 	},
 }
 
@@ -30,15 +34,16 @@ func runFile(filePath string) {
 	}
 }
 
-// func compileFile(filePath string) {
+func compileFile(filePath string) {
 
-// 	compiler, error := compiler.InitializeCompiler()
-// 	if error != nil {
-// 		fmt.Errorf(error.Error())
-// 		return;
-// 	}
+	compiler, error := compiler.InitializeCompiler()
+	if error != nil {
+		fmt.Errorf(error.Error())
+		return
+	}
 
-// }
+	compiler.LoadEntryModuleFromFile(filePath)
+}
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {

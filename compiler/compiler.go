@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/module"
 	"github.com/0xM-D/interpreter/util"
 )
@@ -14,7 +15,7 @@ type Compiler struct {
 }
 
 func InitializeCompiler() (*Compiler, error) {
-	return &Compiler{}, nil
+	return &Compiler{Modules: map[string]*module.Module{}}, nil
 }
 
 func (c *Compiler) LoadEntryModuleFromFile(filepath string) (*module.Module, error) {
@@ -45,7 +46,12 @@ func (c *Compiler) LoadModule(moduleKey, code string) (*module.Module, error) {
 
 	c.Modules[moduleKey] = module
 
-	// c.Compile(module)
+	ir, err := c.Compile(module)
+
+	if err != nil {
+		println(err.Error())
+	}
+	println(ir, err)
 
 	return module, nil
 }
@@ -59,4 +65,33 @@ func getConcatenatedParserErrors(errors []string) error {
 	}
 
 	return fmt.Errorf(errs.String())
+}
+
+func (c *Compiler) Compile(m *module.Module) (string, error) {
+	// ir_module := ir.NewModule()
+	// fn := ir_module.NewFunc("main", types.I32, ir.NewParam("argc", types.I32), ir.NewParam("argv", types.NewPointer(types.I8Ptr)))
+	// entry := fn.NewBlock("entry")
+	// blk := fn.NewBlock("")
+	// blk.NewRet(constant.NewInt(types.I32, 0))
+	// entry.NewBr(blk)
+	// return ir_module.String(), nil
+
+	govno, err := c.Compi(m.Program)
+
+	if err != nil {
+		return "", err
+	}
+
+	return govno.String(), err
+}
+
+func (c *Compiler) Compi(node ast.Node) (Govno, error) {
+	switch node := node.(type) {
+	case *ast.Program:
+		return c.compileProgram(node)
+	default:
+		return nil, newError("Invalid top level statement: %T", node)
+	}
+
+	return nil, nil
 }

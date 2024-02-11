@@ -376,6 +376,11 @@ func (nt NamedType) TokenLiteral() string    { return nt.Token.Literal }
 func (nt NamedType) TokenValue() token.Token { return nt.Token }
 func (nt NamedType) String() string          { return nt.TypeName.String() }
 
+func (vt VoidType) typeNode()               {}
+func (vt VoidType) TokenLiteral() string    { return vt.Token.Literal }
+func (vt VoidType) TokenValue() token.Token { return vt.Token }
+func (vt VoidType) String() string          { return "void" }
+
 func (ft FunctionType) typeNode()               {}
 func (ft FunctionType) TokenLiteral() string    { return ft.Token.Literal }
 func (ft FunctionType) TokenValue() token.Token { return ft.Token }
