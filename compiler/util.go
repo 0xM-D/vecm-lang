@@ -1,7 +1,17 @@
 package compiler
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
-func newError(format string, a ...any) error {
-	return fmt.Errorf(format, a...)
+func getConcatenatedParserErrors(errors []string) error {
+	var errs bytes.Buffer
+
+	errs.WriteString(fmt.Sprintf("parser has %d errors\n", len(errors)))
+	for _, msg := range errors {
+		errs.WriteString(fmt.Sprintf("parser error: %s", msg))
+	}
+
+	return fmt.Errorf(errs.String())
 }

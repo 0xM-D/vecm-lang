@@ -2,33 +2,26 @@ package compiler
 
 import (
 	"github.com/0xM-D/interpreter/ast"
-	"github.com/llir/llvm/ir"
+	"github.com/0xM-D/interpreter/context"
 )
 
-func (c *Compiler) compileProgram(program *ast.Program) (Govno, error) {
-	m := ir.NewModule()
+func (c *Compiler) compileProgram(program *ast.Program) *context.GlobalContext {
+	ctx := context.NewGlobalContext()
 
 	for _, statement := range program.Statements {
-		err := c.compileTopLevelStatement(statement, m)
-		if err != nil {
-			return nil, err
-		}
+		c.compileTopLevelStatement(statement, ctx)
 	}
 
-	return m, nil
+	return ctx
 }
 
-func (c *Compiler) compileTopLevelStatement(statement ast.Statement, m *ir.Module) error {
+func (c *Compiler) compileTopLevelStatement(statement ast.Statement, ctx *context.GlobalContext) {
 	switch statement := statement.(type) {
 	case *ast.FunctionDeclarationStatement:
-		return c.compileFunctionDeclaration(statement, m)
+		c.compileFunctionDeclaration(statement, ctx)
 	case *ast.ExportStatement:
-		return c.compileExportStatement(statement, m)
-	// case *ast.TypedDeclarationStatement:
-	// 	return nil // TODO
-	// case *ast.DeclarationStatement:
-	// 	return nil // TODO
+		c.compileExportStatement(statement, ctx)
 	default:
-		return newError("Invalid statement on top level: %T", statement)
+		c.newCompilerError(statement, "Invalid statement on top level: %T", statement)
 	}
 }

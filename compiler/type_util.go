@@ -1,6 +1,8 @@
 package compiler
 
 import (
+	"fmt"
+
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/object"
 	"github.com/llir/llvm/ir/types"
@@ -14,7 +16,7 @@ func getLLVMType(t ast.Type) (types.Type, error) {
 		return &types.VoidType{}, nil
 	}
 
-	return nil, newError("Type %s cannot be converted to appropriate LLVM type", t.String())
+	return nil, fmt.Errorf("Type %s cannot be converted to appropriate LLVM type", t.String())
 }
 
 func getIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
@@ -46,5 +48,5 @@ func getIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
 	case object.Float64Kind:
 		return &types.FloatType{Kind: types.FloatKindDouble}, nil
 	}
-	return nil, newError("Type %s cannot be converted to appropriate LLVM type", t.String())
+	return nil, fmt.Errorf("Type %s cannot be converted to appropriate LLVM type", t.String())
 }
