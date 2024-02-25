@@ -135,10 +135,10 @@ func (b *BooleanLiteral) TokenLiteral() string    { return b.Token.Literal }
 func (b *BooleanLiteral) TokenValue() token.Token { return b.Token }
 func (b *BooleanLiteral) String() string          { return b.Token.Literal }
 
-func (ie *IfExpression) expressionNode()         {}
-func (ie *IfExpression) TokenLiteral() string    { return ie.Token.Literal }
-func (ie *IfExpression) TokenValue() token.Token { return ie.Token }
-func (ie *IfExpression) String() string {
+func (ie *IfStatement) statementNode()         {}
+func (ie *IfStatement) TokenLiteral() string    { return ie.Token.Literal }
+func (ie *IfStatement) TokenValue() token.Token { return ie.Token }
+func (ie *IfStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("if")

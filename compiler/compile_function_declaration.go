@@ -20,19 +20,15 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 	}
 
 	name := stmt.Name.Value
-	fn := ctx.Module.NewFunc(name, retType, paramTypes...)
-	
-	compileFunctionBody(stmt, fn)
-	ctx.DeclareFunction(name, fn)
+
+	fn := ctx.DeclareFunction(name, retType, paramTypes...)
+	c.compileFunctionBody(stmt, fn)
 }
 
-func compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *ir.Func) {
+func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *ir.Func) {
 	entryBlock := fn.NewBlock("")
-	for _, stmt := range stmt.Body.Statements {
-		compileStatement(stmt, entryBlock)
-	}
+	c.compileBlock(stmt.Body, entryBlock)
 }
-
 
 func getFunctionParamTypes(stmt *ast.FunctionDeclarationStatement) ([]*ir.Param, error) {
 	params := make([]*ir.Param, len(stmt.Type.ParameterTypes))

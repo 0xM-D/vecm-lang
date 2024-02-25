@@ -1,25 +1,40 @@
 package context
 
 import (
-	"fmt"
-
 	"github.com/llir/llvm/ir"
+	"github.com/llir/llvm/ir/types"
 )
 
-func NewGlobalContext() *GlobalContext {
+type GlobalContext struct {
+	Module *ir.Module
+	sharedContextProperties SharedContextProperties
+}
+
+func NewGlobalContext(parentContext *Context) *GlobalContext {
 	return &GlobalContext{
 		Module: ir.NewModule(),
-		BlockContext: BlockContext{
-			FunctionStore: FunctionStore{map[string]FunctionObject{}},
-		},
+		// sharedContextProperties: SharedContextProperties{
+		// 	functionStore: FunctionStore{map[string]*FunctionObject{}},
+		// },
 	}
 }
 
-func (ctx *GlobalContext) DeclareFunction(name string, fn *ir.Func) error {
-	if _, exists := ctx.Fns[name]; exists {
-		return fmt.Errorf("function %s already exists", name);
-	}
-	ctx.Fns[name] = FunctionObject{Name: name, Fn: fn};
-
-	return nil;
+func (ctx *GlobalContext) GetParentContext() *Context {
+	return ctx.sharedContextProperties.parentContext;
 }
+
+func (ctx *GlobalContext) GetFunction(signature types.FuncType) (*ir.Func, bool) {
+	funcs := ctx.Module.Funcs
+	for _, f := range(funcs) {
+		if f.Sig.Equal(&signature) {
+			return f, true
+		}
+	}
+	return nil, false;
+}
+
+func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {
+	fn := ctx.Module.NewFunc(name, retType, params...)
+	return fn;
+}
+

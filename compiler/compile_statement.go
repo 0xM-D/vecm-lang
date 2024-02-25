@@ -5,9 +5,11 @@ import (
 	"github.com/llir/llvm/ir"
 )
 
-func compileStatement(stmt ast.Statement, b *ir.Block) {
+func (c *Compiler) compileStatement(stmt ast.Statement, b *ir.Block) {
 	switch stmt := stmt.(type) {
 	case *ast.ReturnStatement:
-		compileReturnStatement(stmt, b)
+		c.compileReturnStatement(stmt, b)
+	case *ast.IfStatement:
+		c.compileIfStatement(stmt, b);
 	}
 }

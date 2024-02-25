@@ -91,7 +91,7 @@ type BooleanLiteral struct {
 	Value bool
 }
 
-type IfExpression struct {
+type IfStatement struct {
 	Token       token.Token
 	Condition   Expression
 	Consequence *BlockStatement

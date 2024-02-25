@@ -1,25 +1,17 @@
 package context
 
-import "github.com/llir/llvm/ir"
+import (
+	"github.com/llir/llvm/ir"
+	"github.com/llir/llvm/ir/types"
+)
 
-type GlobalContext struct {
-	Module *ir.Module
-	BlockContext	
+type Context interface {
+	GetParentContext() *Context
+	GetFunction(name string, params ...*ir.Param) *ir.Func
+	DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func
 }
 
-type FunctionContext struct {
-	BlockContext
-}
-
-type BlockContext struct {
-	FunctionStore	
-}
-
-type FunctionObject struct {
-	Name string
-	Fn *ir.Func
-}
-
-type FunctionStore struct {
-	Fns map[string]FunctionObject
+type SharedContextProperties struct {	
+	parentContext *Context
+	// functionStore FunctionStore
 }

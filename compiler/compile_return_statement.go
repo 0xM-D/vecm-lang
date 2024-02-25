@@ -5,7 +5,7 @@ import (
 	"github.com/llir/llvm/ir"
 )
 
-func compileReturnStatement(stmt *ast.ReturnStatement, b *ir.Block) {
-	value := compileExpression(stmt.ReturnValue)
+func (c *Compiler) compileReturnStatement(stmt *ast.ReturnStatement, b *ir.Block) {
+	value := c.compileExpression(stmt.ReturnValue, b)
 	b.NewRet(value)
 }

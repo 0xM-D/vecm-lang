@@ -3,6 +3,8 @@ package compiler
 import (
 	"bytes"
 	"fmt"
+
+	"github.com/llir/llvm/ir/constant"
 )
 
 func getConcatenatedParserErrors(errors []string) error {
@@ -14,4 +16,12 @@ func getConcatenatedParserErrors(errors []string) error {
 	}
 
 	return fmt.Errorf(errs.String())
+}
+
+func nativeBoolToLLVMBool(b bool) *constant.Int {
+	if b {
+		return constant.True;
+	} else {
+		return constant.False
+	}
 }
