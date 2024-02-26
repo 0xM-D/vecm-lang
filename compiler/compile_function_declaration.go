@@ -27,7 +27,7 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 
 func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *ir.Func) {
 	entryBlock := fn.NewBlock("")
-	c.compileBlock(stmt.Body, entryBlock)
+	c.compileBlockStatement(stmt.Body, entryBlock)
 }
 
 func getFunctionParamTypes(stmt *ast.FunctionDeclarationStatement) ([]*ir.Param, error) {

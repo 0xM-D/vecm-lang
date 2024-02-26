@@ -5,14 +5,26 @@ import (
 	"github.com/llir/llvm/ir"
 )
 
-func (c *Compiler) compileIfStatement(expr *ast.IfStatement, block *ir.Block) {
-	consequenceBlock := block.Parent.NewBlock("if.consequence")
-	alternativeBlock := block.Parent.NewBlock("if.alternative")
+func (c *Compiler) compileIfStatement(expr *ast.IfStatement, block *ir.Block) *ir.Block {
+	consequenceBlock := block.Parent.NewBlock("")
+	continueBlock := block.Parent.NewBlock("")
+	continueBlock.NewRet(nil)
 
-	c.compileBlock(expr.Consequence, consequenceBlock)
-	c.compileBlock(expr.Alternative, alternativeBlock)
+	consequenceBlock.NewBr(continueBlock)
+	c.compileBlockStatement(expr.Consequence, consequenceBlock)
 
 	condition := c.compileExpression(expr.Condition, block)
-	block.NewCondBr(condition, consequenceBlock, alternativeBlock)
 
+	if(expr.Alternative != nil) {
+		alternativeBlock := block.Parent.NewBlock("")
+		
+		alternativeBlock.NewBr(continueBlock)
+		c.compileBlockStatement(expr.Alternative, alternativeBlock)
+
+		block.NewCondBr(condition, consequenceBlock, alternativeBlock)
+	} else {
+		block.NewCondBr(condition, consequenceBlock, continueBlock)
+	}
+
+	return continueBlock
 }
