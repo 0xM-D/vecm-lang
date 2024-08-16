@@ -135,7 +135,7 @@ func TestFunctionDeclarationWithDifferentReturnTypes(t *testing.T) {
 
 	fn := module.Funcs[0]
 
-	if fn.Typ.LLString() != "i1" {
+	if fn.Sig.RetType.LLString() != "i1" {
 		t.Fatalf("Expected return type i1, got %s", fn.Typ.LLString())
 	}
 }
