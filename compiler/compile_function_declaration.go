@@ -3,11 +3,12 @@ package compiler
 import (
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/context"
+	"github.com/0xM-D/interpreter/util"
 	"github.com/llir/llvm/ir"
 )
 
 func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationStatement, ctx *context.GlobalContext) {
-	retType, err := getLLVMType(stmt.Type.ReturnType)
+	retType, err := util.GetLLVMType(stmt.Type.ReturnType)
 	if err != nil {
 		c.newCompilerError(stmt, err.Error())
 		return;
@@ -21,12 +22,12 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 
 	name := stmt.Name.Value
 
-	fn := ctx.DeclareFunction(name, retType, paramTypes...)
+	fn := context.NewFunctionContext(ctx, ctx.DeclareFunction(name, retType, paramTypes...), stmt.Parameters, stmt.Type.ParameterTypes)
 	c.compileFunctionBody(stmt, fn)
 }
 
-func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *ir.Func) {
-	entryBlock := fn.NewBlock("")
+func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *context.FunctionContext) {
+	entryBlock := context.NewBlockContext(fn, fn.NewBlock(""))
 	c.compileBlockStatement(stmt.Body, entryBlock)
 }
 
@@ -34,7 +35,7 @@ func getFunctionParamTypes(stmt *ast.FunctionDeclarationStatement) ([]*ir.Param,
 	params := make([]*ir.Param, len(stmt.Type.ParameterTypes))
 	for i, param := range stmt.Type.ParameterTypes {
 		paramName := stmt.Parameters[i].Value
-		paramType, err := getLLVMType(param)
+		paramType, err := util.GetLLVMType(param)
 		if err != nil {
 			return nil, err
 		}

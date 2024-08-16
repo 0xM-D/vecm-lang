@@ -2,14 +2,14 @@ package compiler
 
 import (
 	"github.com/0xM-D/interpreter/ast"
-	"github.com/llir/llvm/ir"
+	"github.com/0xM-D/interpreter/context"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
 
-func (c *Compiler) compilePrefixExpression(expr *ast.PrefixExpression, b *ir.Block) value.Value {
+func (c *Compiler) compilePrefixExpression(expr *ast.PrefixExpression, b *context.BlockContext) value.Value {
 	switch expr.Operator {
 	case "!":
 		return c.compileBangPrefixExpression(expr, b)
@@ -23,7 +23,7 @@ func (c *Compiler) compilePrefixExpression(expr *ast.PrefixExpression, b *ir.Blo
 	}
 }
 
-func (c *Compiler) compileBangPrefixExpression(expr *ast.PrefixExpression, b *ir.Block) value.Value {
+func (c *Compiler) compileBangPrefixExpression(expr *ast.PrefixExpression, b *context.BlockContext) value.Value {
 	right := c.compileExpression(expr.Right, b)
 
 	if(!types.IsInt(right.Type())) {
@@ -34,8 +34,12 @@ func (c *Compiler) compileBangPrefixExpression(expr *ast.PrefixExpression, b *ir
 	return b.NewICmp(enum.IPredEQ, constant.NewInt(right.Type().(*types.IntType), 0), right)
 }
 
-func (c *Compiler) compileMinusPrefixExpression(expr *ast.PrefixExpression, b *ir.Block) value.Value {
+func (c *Compiler) compileMinusPrefixExpression(expr *ast.PrefixExpression, b *context.BlockContext) value.Value {
 	right := c.compileExpression(expr.Right, b)
+
+	if right == nil {
+		return nil
+	}
 
 	if(types.IsInt(right.Type())) {
 		return b.NewMul(right, constant.NewInt(right.Type().(*types.IntType), -1))
@@ -47,7 +51,7 @@ func (c *Compiler) compileMinusPrefixExpression(expr *ast.PrefixExpression, b *i
 	}
 }
 
-func (c *Compiler) compileTildePrefixExpression(expr *ast.PrefixExpression, b *ir.Block) value.Value {
+func (c *Compiler) compileTildePrefixExpression(expr *ast.PrefixExpression, b *context.BlockContext) value.Value {
 	right := c.compileExpression(expr.Right, b)
 
 	var bitmaskType *types.IntType

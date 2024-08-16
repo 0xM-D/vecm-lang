@@ -1,4 +1,4 @@
-package compiler
+package util
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 	"github.com/llir/llvm/ir/types"
 )
 
-func getLLVMType(t ast.Type) (types.Type, error) {
+func GetLLVMType(t ast.Type) (types.Type, error) {
 	switch t := t.(type) {
 	case ast.NamedType:
-		return getIntrinsicLLVMType(t)
+		return GetIntrinsicLLVMType(t)
 	case ast.VoidType:
 		return &types.VoidType{}, nil
 	}
@@ -19,7 +19,7 @@ func getLLVMType(t ast.Type) (types.Type, error) {
 	return nil, fmt.Errorf("type %s cannot be converted to appropriate LLVM type", t.String())
 }
 
-func getIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
+func GetIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
 	switch object.ObjectKind(t.TypeName.Value) {
 	case "char":
 		return types.NewInt(8), nil

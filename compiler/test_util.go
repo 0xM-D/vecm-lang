@@ -41,8 +41,10 @@ func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
 
 func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.ExecutionEngine {
     // Initialize LLVM
-    llvm.InitializeNativeTarget()
-    llvm.InitializeNativeAsmPrinter()
+	llvm.InitializeAllTargets()
+	llvm.InitializeAllAsmPrinters()
+	// llvm.InitializeAllAsmParsers()
+	// llvm.InitializeAllTargetInfos()
 
 	// Open file on os
 	file, err := os.CreateTemp("", "ir")

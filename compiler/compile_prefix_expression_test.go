@@ -30,8 +30,8 @@ func TestMinusPrefixExpression(t *testing.T) {
 		t.Fatalf("Expected instruction to be a multiplication, got %v", block.Insts[0])
 	}
 
-	if inst.X.String() != "i32 1" {
-		t.Fatalf("Expected instruction to be i32 5, got %v", inst.X)
+	if inst.X.String() != "i32 %a" {
+		t.Fatalf("Expected instruction to be i32 %%a, got %v", inst.X)
 	}
 
 	if inst.Y.String() != "i32 -1" {
@@ -47,7 +47,7 @@ func TestMinusPrefixExpression(t *testing.T) {
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
 	
 	// Find the function
-	executableFn := executionEngine.FindFunction("main")
+	executableFn := executionEngine.FindFunction("negate")
 
 	if executableFn.IsNil() {
 		t.Fatalf("Failed to find function")
@@ -68,7 +68,7 @@ func TestMinusPrefixExpression(t *testing.T) {
 	for _, test := range tests {
 		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)})
 		if result.Int(true) != uint64(test.expected) {
-			t.Fatalf("Expected %d, got %d", test.expected, result.Int(false))
+			t.Fatalf("Expected %d, got %d", test.expected, int32(result.Int(false)))
 		}
 	}
 
@@ -89,17 +89,23 @@ func TestBangPrefixExpression(t *testing.T) {
 		t.Fatalf("Expected 1 instruction, got %d", len(block.Insts))
 	}
 
-	inst, ok := block.Insts[0].(*ir.InstXor)
-	if !ok {
-		t.Fatalf("Expected instruction to be an XOR, got %s", block.Insts[0].LLString())
+	// Expect compare with false finstruction
+	inst := block.Insts[0].(*ir.InstICmp)
+
+	if inst == nil {
+		t.Fatalf("Expected instruction to be a comparison, got %v", block.Insts[0])
 	}
 
-	if inst.X.String() != "i1 1" {
-		t.Fatalf("Expected instruction to be i1 1, got %v", inst.X)
+	if inst.Pred.String() != "eq" {
+		t.Fatalf("Expected instruction to be eq, got %v", inst.Pred)
 	}
 
-	if inst.Y.String() != "i1 true" {
-		t.Fatalf("Expected instruction to be i1 true, got %v", inst.Y)
+	if inst.X.String() != "i1 false" {
+		t.Fatalf("Expected instruction to be i1 false, got %v", inst.X)
+	}
+
+	if inst.Y.String() != "i1 %a" {
+		t.Fatalf("Expected instruction to be i1 %%a, got %v", inst.Y)
 	}
 
 	expectReturnTerminator(block, inst, t)
@@ -111,7 +117,7 @@ func TestBangPrefixExpression(t *testing.T) {
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
 
 	// Find the function
-	executableFn := executionEngine.FindFunction("main")
+	executableFn := executionEngine.FindFunction("negate")
 
 	if executableFn.IsNil() {
 		t.Fatalf("Failed to find function")
@@ -127,9 +133,9 @@ func TestBangPrefixExpression(t *testing.T) {
 
 	for _, test := range tests {
 		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int1Type(), uint64(boolToInt(test.input)), true)})
-		if result.Int(true) != uint64(boolToInt(test.expected)) {
+		if result.Int(false) != uint64(boolToInt(test.expected)) {
 			t.Fatalf("Expected %v, got %v", test.expected, result.Int(false))
-		}
+		} 
 	}
 }
 
@@ -155,12 +161,12 @@ func TestTildePrefixExpression(t *testing.T) {
 		t.Fatalf("Expected instruction to be a XOR, got %s", block.Insts[0].LLString())
 	}
 
-	if inst.X.String() != "i32 %1" {
-		t.Fatalf("Expected operand to be i32 %%1, got %s", inst.X.String())
+	if inst.X.String() != "i32 %a" {
+		t.Fatalf("Expected operand to be i32 %%a, got %s", inst.X.String())
 	}
 
-	if inst.Y.String() != "i32 1" {
-		t.Fatalf("Expected operand to be i32 1, got %v", inst.Y)
+	if inst.Y.String() != "i32 -1" {
+		t.Fatalf("Expected operand to be i32 -1, got %v", inst.Y)
 	}
 
 	expectReturnTerminator(block, inst, t)
@@ -172,7 +178,7 @@ func TestTildePrefixExpression(t *testing.T) {
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
 
 	// Find the function
-	executableFn := executionEngine.FindFunction("main")
+	executableFn := executionEngine.FindFunction("invert")
 
 	if executableFn.IsNil() {
 		t.Fatalf("Failed to find function")
@@ -192,7 +198,7 @@ func TestTildePrefixExpression(t *testing.T) {
 	for _, test := range tests {
 		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)})
 		if result.Int(true) != uint64(test.expected) {
-			t.Fatalf("Expected %d, got %d", test.expected, result.Int(false))
+			t.Fatalf("Expected %d, got %d", test.expected, result.Int(true))
 		}
 	}
 }

@@ -2,13 +2,13 @@ package compiler
 
 import (
 	"github.com/0xM-D/interpreter/ast"
-	"github.com/llir/llvm/ir"
+	"github.com/0xM-D/interpreter/context"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
 
-func (c *Compiler) compileExpression(expr ast.Expression, b *ir.Block) value.Value {
+func (c *Compiler) compileExpression(expr ast.Expression, b *context.BlockContext) value.Value {
 	switch expr := expr.(type) {
 		case *ast.IntegerLiteral:
 			return constant.NewInt(types.I32, expr.Value.Int64())
@@ -19,8 +19,7 @@ func (c *Compiler) compileExpression(expr ast.Expression, b *ir.Block) value.Val
 		case *ast.BooleanLiteral:
 			return nativeBoolToLLVMBool(expr.Value) 
 		case *ast.Identifier:
-			// return 
-			return constant.NewInt(types.I32, 1)
+			return c.compileIdentifier(expr, b)
 		case *ast.PrefixExpression:
 			return c.compilePrefixExpression(expr, b)
 		case *ast.InfixExpression:
