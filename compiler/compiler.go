@@ -6,6 +6,7 @@ import (
 
 type Compiler struct {
 	Modules     map[string]*module.Module
+
 	EntryModule *module.Module
 	Errors []CompilerError
 }
@@ -14,12 +15,14 @@ func InitializeCompiler() (*Compiler, error) {
 	return &Compiler{Modules: map[string]*module.Module{}}, nil
 }
 
-func (c *Compiler) CompileModule(m *module.Module) string {
-	ctx := c.compileProgram(m.Program)
+func (c *Compiler) LoadModule(moduleKey, code string) (*module.Module, bool) {
+	module, failedToLoad := c.loadModule(moduleKey, code)
+	return module, failedToLoad
+}
 
-	if(c.hasCompilerErrors()) {
-		c.printCompilerErrors()
-	}
-	
-	return ctx.Module.String()
+func (c *Compiler) CompileModule(moduleKey string) (string, bool){
+	module := c.Modules[moduleKey]
+	ctx := c.compileProgram(module.Program)
+
+	return ctx.Module.String(), c.hasCompilerErrors();
 }

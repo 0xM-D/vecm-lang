@@ -10,12 +10,10 @@ import (
 type Module struct {
 	ModuleKey       string
 	RootEnvironment object.Environment
-	Lexer           *lexer.Lexer
-	Parser          *parser.Parser
 	Program         *ast.Program
 }
 
-func ParseModule(moduleKey, code string) *Module {
+func ParseModule(moduleKey, code string) (*Module, []string) {
 	l := lexer.New(string(code))
 	p := parser.New(l)
 
@@ -24,10 +22,8 @@ func ParseModule(moduleKey, code string) *Module {
 	module := &Module{
 		ModuleKey:       moduleKey,
 		RootEnvironment: *object.NewEnvironment(),
-		Lexer:           l,
-		Parser:          p,
 		Program:         program,
 	}
 
-	return module
+	return module, p.Errors()
 }

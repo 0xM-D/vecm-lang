@@ -7,7 +7,6 @@ import (
 
 	"github.com/0xM-D/interpreter/module"
 	"github.com/0xM-D/interpreter/object"
-	"github.com/0xM-D/interpreter/parser"
 )
 
 type Runtime struct {
@@ -70,9 +69,10 @@ func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 
 func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, bool) {
 
-	module := module.ParseModule(moduleKey, code)
-	if checkParserErrors(module.Parser) {
-		return nil, true
+	module, parserErrors := module.ParseModule(moduleKey, code)
+
+	if(len(parserErrors) > 0) {
+		printParserErrors(parserErrors)
 	}
 
 	r.Modules[moduleKey] = module
@@ -82,17 +82,9 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 	return module, false
 }
 
-func checkParserErrors(p *parser.Parser) bool {
-	errors := p.Errors()
-
-	if len(errors) == 0 {
-		return false
-	}
-
+func printParserErrors(errors []string) {
 	fmt.Printf("parser has %d errors\n", len(errors))
 	for _, msg := range errors {
 		fmt.Printf("parser error: %s", msg)
 	}
-
-	return true
 }

@@ -6,6 +6,11 @@ import (
 )
 
 func (c *Compiler) compileReturnStatement(stmt *ast.ReturnStatement, b *ir.Block) *ir.Block {
+	if stmt.ReturnValue == nil {
+		b.NewRet(nil)
+		return b
+	}
+	
 	value := c.compileExpression(stmt.ReturnValue, b)
 	b.NewRet(value)
 	return b
