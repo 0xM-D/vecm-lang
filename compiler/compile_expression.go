@@ -23,8 +23,7 @@ func (c *Compiler) compileExpression(expr ast.Expression, b *context.BlockContex
 		case *ast.PrefixExpression:
 			return c.compilePrefixExpression(expr, b)
 		case *ast.InfixExpression:
-			return nil
-			// return r.evalInfixExpression(node, env)
+			return c.compileInfixExpression(expr, b)
 		default:
 			c.newCompilerError(expr, "Invalid expression node: %T", expr)
 			return nil

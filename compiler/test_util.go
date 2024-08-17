@@ -71,7 +71,7 @@ func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.E
 	module, err := ctx.ParseIR(memoryBuffer)
 
 	if err != nil {
-		t.Fatalf("Failed to parse IR")
+		t.Fatalf("Failed to parse IR: %s", err)
 	}
 
 	// Create a new execution engine

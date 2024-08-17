@@ -15,6 +15,19 @@ func (ctx *BlockContext) GetParentContext() Context {
 	return ctx.sharedContextProperties.parentContext;
 }
 
+func (ct *BlockContext) GetParentFunctionContext() *FunctionContext {
+	
+	// go up the chain until we find a function context
+	for ctx := ct.GetParentContext(); ctx != nil; ctx = ctx.GetParentContext() {
+		if functionContext, ok := ctx.(*FunctionContext); ok {
+			return functionContext
+		}
+	}
+
+	// This should never happen, TODO: Throw compiler error
+	return nil
+}
+
 func (ctx *BlockContext) LookUpIdentifier(name string) (Variable, bool) {
 	variable, ok := ctx.variableStore.LookUpVariable(name)
 	if ok {

@@ -6,31 +6,7 @@ import (
 
 func TestEmptyFunctionDeclaration(t *testing.T) {
 
-	t.Fatalf("No statements in function declaration crashes the compiler")
-	// code := `fn main() -> void {}`
-
-	// module := compileAndVerifyCode(code, t)
-
-	// if len(module.Funcs) != 1 {
-	// 	t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
-	// }
-
-	// fn := module.Funcs[0]
-
-	// if len(fn.Blocks) != 1 {
-	// 	t.Fatalf("Expected 1 block, got %d", len(fn.Blocks))
-	// }
-
-	// block := fn.Blocks[0]
-
-	// if len(block.Insts) != 0 {
-	// 	t.Fatalf("Expected 0 instructions, got %d", len(block.Insts))
-	// }
-
-}
-
-func TestFunctionDeclarationWithIntegerReturn(t *testing.T) {
-	code := `fn main() -> int { return 5; }`
+	code := `fn main() -> void {}`
 
 	module := compileAndVerifyCode(code, t)
 
@@ -46,33 +22,43 @@ func TestFunctionDeclarationWithIntegerReturn(t *testing.T) {
 
 	block := fn.Blocks[0]
 
-	if len(block.Insts) != 1 {
-		t.Fatalf("Expected 1 instruction, got %d", len(block.Insts))
-	}
-
-	inst := block.Insts[0]
-
-	if inst.LLString() != "ret i32 5" {
-		t.Fatalf("Expected ret i32 5, got %s", inst.LLString())
+	if len(block.Insts) != 0 {
+		t.Fatalf("Expected 0 instructions, got %d", len(block.Insts))
 	}
 
 }
+
+func TestFunctionDeclarationWithIntegerReturn(t *testing.T) {
+	code := `fn main() -> int { return 5; }`
+
+	module := compileAndVerifyCode(code, t)
+
+	fn := module.Funcs[0]
+
+	if len(fn.Blocks) != 1 {
+		t.Fatalf("Expected 1 block, got %d", len(fn.Blocks))
+	}
+
+	block := fn.Blocks[0]
+
+	if block.Term.LLString() != "ret i32 5" {
+		t.Fatalf("Expected ret i32 5, got %s", block.Term.LLString())
+	}
+}
 func TestFunctionDeclarationWithNoParameters(t *testing.T) {
-	t.Fatalf("No statements in function declaration crashes the compiler")
+	code := `fn main() -> void {}`
 
-	// code := `fn main() -> void {}`
+	module := compileAndVerifyCode(code, t)
 
-	// module := compileAndVerifyCode(code, t)
+	if len(module.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	}
 
-	// if len(module.Funcs) != 1 {
-	// 	t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
-	// }
+	fn := module.Funcs[0]
 
-	// fn := module.Funcs[0]
-
-	// if len(fn.Params) != 0 {
-	// 	t.Fatalf("Expected 0 parameters, got %d", len(fn.Params))
-	// }
+	if len(fn.Params) != 0 {
+		t.Fatalf("Expected 0 parameters, got %d", len(fn.Params))
+	}
 }
 
 func TestFunctionDeclarationWithOneParameter(t *testing.T) {

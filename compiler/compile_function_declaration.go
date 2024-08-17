@@ -3,6 +3,7 @@ package compiler
 import (
 	"github.com/0xM-D/interpreter/ast"
 	"github.com/0xM-D/interpreter/context"
+	"github.com/0xM-D/interpreter/object"
 	"github.com/0xM-D/interpreter/util"
 	"github.com/llir/llvm/ir"
 )
@@ -27,8 +28,16 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 }
 
 func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *context.FunctionContext) {
-	entryBlock := context.NewBlockContext(fn, fn.NewBlock(""))
-	c.compileBlockStatement(stmt.Body, entryBlock)
+	bodyBlock := context.NewBlockContext(fn, fn.NewBlock(""))
+	c.compileBlockStatement(stmt.Body, bodyBlock)
+
+	if bodyBlock.Block.Term == nil {
+		if stmt.Type.ReturnType.String() == object.VoidKind.Signature() {
+			bodyBlock.NewRet(nil)
+		} else {
+			c.newCompilerError(stmt, "Function must return a value")
+		}
+	}
 }
 
 func getFunctionParamTypes(stmt *ast.FunctionDeclarationStatement) ([]*ir.Param, error) {

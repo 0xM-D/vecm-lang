@@ -15,6 +15,7 @@ func TestIfStatement(t *testing.T) {
 		if 1 {
 			return;
 		}
+		return;
 	}
 	`
 
@@ -124,7 +125,7 @@ func TestIfElseStatement(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	expectFunctionExists(module, "max", []types.Type{types.I32, types.I32}, types.I32, t)
-
+	
 	// Create an LLVM context
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
