@@ -8,7 +8,7 @@ import (
 type GlobalContext struct {
 	Module *ir.Module
 	sharedContextProperties SharedContextProperties
-	variableStore VariableStore
+	variableStore *VariableStore
 }
 
 func NewGlobalContext(parentContext *Context) *GlobalContext {
@@ -17,7 +17,7 @@ func NewGlobalContext(parentContext *Context) *GlobalContext {
 		// sharedContextProperties: SharedContextProperties{
 		// 	functionStore: FunctionStore{map[string]*FunctionObject{}},
 		// },
-		variableStore: VariableStore{},
+		variableStore: NewVariableStore(),
 	}
 }
 

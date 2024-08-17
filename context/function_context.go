@@ -9,7 +9,7 @@ import (
 
 type FunctionContext struct {
 	sharedContextProperties SharedContextProperties
-	functionParams VariableStore
+	functionParams *VariableStore
 	*ir.Func
 }
 
@@ -23,7 +23,7 @@ func NewFunctionContext(parent Context, fn *ir.Func, parameterNames []*ast.Ident
 		Func: fn,
 	}
 
-	ctx.functionParams = VariableStore{variables: map[string]Variable{}}
+	ctx.functionParams = NewVariableStore()
 	for i, name := range parameterNames {
 		t, error := util.GetLLVMType(parameterTypes[i])
 		if error != nil {

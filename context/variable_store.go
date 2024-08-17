@@ -42,3 +42,7 @@ func (vs *VariableStore) LookUpVariable(name string) (Variable, bool) {
 	variable, ok := vs.variables[name]
 	return variable, ok
 }
+
+func NewVariableStore() *VariableStore {
+	return &VariableStore{make(map[string]Variable)}
+}

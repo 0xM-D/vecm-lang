@@ -7,7 +7,7 @@ import (
 
 type BlockContext struct {
 	sharedContextProperties SharedContextProperties
-	variableStore VariableStore
+	variableStore *VariableStore
 	*ir.Block
 }
 
@@ -59,7 +59,7 @@ func (ctx *BlockContext) DeclareLocalVariable(name string, t types.Type) *ir.Ins
 func NewBlockContext(parentContext Context, block *ir.Block) *BlockContext {
 	return &BlockContext{
 		sharedContextProperties: SharedContextProperties{parentContext},
-		variableStore: VariableStore{},
+		variableStore: NewVariableStore(),
 		Block: block,
 	}
 }
