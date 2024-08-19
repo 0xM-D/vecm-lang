@@ -25,5 +25,6 @@ func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockC
 	}
 
 	variable := b.DeclareLocalVariable(stmt.Name.Value, t)
-	b.NewStore(value, variable)
+	
+	b.Block.NewStore(value, variable)
 }

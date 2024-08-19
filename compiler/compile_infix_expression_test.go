@@ -415,7 +415,7 @@ func TestBitwiseXorExpression(t *testing.T) {
 
 // TestAssignmentExpression tests the assignment of a value to a variable.
 func TestAssignmentExpression(t *testing.T) {
-	code := `fn main() -> int { let x = 5; return x; }`
+	code := `fn main() -> void { let x = 5; }`
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions

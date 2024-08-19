@@ -33,7 +33,7 @@ func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
 	irModule, error := asm.ParseString("", ir)
 
 	if error != nil {
-		t.Fatalf("Generated IR is invalid")
+		t.Fatalf("Generated IR is invalid: %s", error)
 	}
 
 	return irModule;

@@ -50,9 +50,8 @@ func (ctx *BlockContext) DeclareFunction(name string, retType types.Type, params
 }
 
 func (ctx *BlockContext) DeclareLocalVariable(name string, t types.Type) *ir.InstAlloca {
-
 	alloca := ctx.Block.NewAlloca(t)
-	ctx.variableStore.DeclareVariable(name, t, alloca)
+	ctx.variableStore.DeclareLocalVariable(name, alloca)
 	return alloca
 }
 

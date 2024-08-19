@@ -30,6 +30,6 @@ func (c *Compiler) hasCompilerErrors() bool {
 
 func (c *Compiler) printCompilerErrors() {
 	for _, error := range(c.Errors) {
-		fmt.Print(error.message)
+		fmt.Printf("Compiler error at line %d, column %d: %s\n", error.linen, error.coln, error.message)
 	}
 }

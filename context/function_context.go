@@ -29,7 +29,12 @@ func NewFunctionContext(parent Context, fn *ir.Func, parameterNames []*ast.Ident
 		if error != nil {
 			panic(error)
 		}
-		ctx.functionParams.DeclareVariable(name.Value, t, fn.Params[i])
+
+		if !fn.Params[i].Typ.Equal(t) {
+			panic("Type mismatch")
+		}
+
+		ctx.functionParams.DeclareFunctionParam(name.Value, fn.Params[i])
 	}
 
 	return ctx

@@ -1,6 +1,7 @@
 package context
 
 import (
+	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
@@ -12,29 +13,50 @@ type VariableStore struct {
 type Variable interface {
 	GetName() string
 	GetType() types.Type
-	GetValue() value.Value
+	GetAddress() value.Value
 }
 
-type VariableImpl struct {
+type FunctionParamVariable struct {
 	name string
-	t types.Type
-	value value.Value
+	param *ir.Param
 }
 
-func (v *VariableImpl) GetName() string {
+type LocalVariable struct {
+	name string
+	alloca *ir.InstAlloca
+}
+
+func (v *LocalVariable) GetName() string {
 	return v.name
 }
 
-func (v *VariableImpl) GetType() types.Type {
-	return v.t
+func (v *LocalVariable) GetType() types.Type {
+	return v.alloca.ElemType
 }
 
-func (v *VariableImpl) GetValue() value.Value {
-	return v.value
+func (v *LocalVariable) GetAddress() value.Value {
+	return v.alloca
 }
 
-func (vs *VariableStore) DeclareVariable(name string, t types.Type, value value.Value) Variable{
-	vs.variables[name] = &VariableImpl{name, t, value}
+func (v *FunctionParamVariable) GetName() string {
+	return v.name
+}
+
+func (v *FunctionParamVariable) GetType() types.Type {
+	return v.param.Type()
+}
+
+func (v *FunctionParamVariable) GetAddress() value.Value {
+	return v.param
+}
+
+func (vs *VariableStore) DeclareLocalVariable(name string, alloca *ir.InstAlloca) Variable{
+	vs.variables[name] = &LocalVariable{name, alloca}
+	return vs.variables[name]
+}
+
+func (vs *VariableStore) DeclareFunctionParam(name string, param *ir.Param) Variable{
+	vs.variables[name] = &FunctionParamVariable{name, param}
 	return vs.variables[name]
 }
 

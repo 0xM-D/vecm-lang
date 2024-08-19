@@ -19,11 +19,33 @@ func (c *Compiler) compileExpression(expr ast.Expression, b *context.BlockContex
 		case *ast.BooleanLiteral:
 			return nativeBoolToLLVMBool(expr.Value) 
 		case *ast.Identifier:
-			return c.compileIdentifier(expr, b)
+			return c.compileIdentifierRValue(expr, b)
 		case *ast.PrefixExpression:
 			return c.compilePrefixExpression(expr, b)
 		case *ast.InfixExpression:
 			return c.compileInfixExpression(expr, b)
+		// case *ast.CallExpression:
+		// 	return c.compileCallExpression(expr, b)
+		// case *ast.AccessExpression:
+		// 	return c.compileAccessExpression(expr, b)
+		// case *ast.ArrayLiteral:
+		// 	return c.compileArrayLiteral(expr, b)
+		// case *ast.IndexExpression:
+		// 	return c.compileIndexExpression(expr, b)
+		// case *ast.StringLiteral:
+		// 	return c.compileStringLiteral(expr, b)
+		// case *ast.FunctionLiteral:
+		// 	return c.compileFunctionLiteral(expr, b)
+		// case *ast.HashLiteral:
+		// 	return c.compileHashLiteral(expr, b)
+		// case *ast.PairExpression:
+		// 	return c.compilePairExpression(expr, b)	
+		// case *ast.TernaryExpression:
+		// 	return c.compileTernaryExpression(expr, b)
+		// case *ast.TypeCastExpression:
+		// 	return c.compileTypeCastExpression(expr, b)
+		// case *ast.NewExpression:
+		// 	return c.compileNewExpression(expr, b)
 		default:
 			c.newCompilerError(expr, "Invalid expression node: %T", expr)
 			return nil

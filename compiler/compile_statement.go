@@ -20,6 +20,21 @@ func (c *Compiler) compileStatement(stmt ast.Statement, b *context.BlockContext)
 	case *ast.LetStatement:
 		c.compileLetStatement(stmt, b)
 		return b
+	// case *ast.FunctionStatement: // OH BOY I AM NOT WRITING THIS TODAY
+	// 	c.compileFunctionStatement(stmt, b)
+	// 	return b
+	case *ast.ForStatement:
+		return c.compileForStatement(stmt, b)
+	// case *ast.AssignmentDeclarationStatement:
+	// 	return c.compileAssignmentDeclarationStatement(stmt, b)
+	// case *ast.AssignmentStatement:
+	// 	return c.compileAssignmentStatement(stmt, b)
+	// case *ast.DeclarationStatement:
+	// 	return c.compileDeclarationStatement(stmt, b)
+	// case *ast.VariableUpdateStatement:
+	// 	return c.compileVariableUpdateStatement(stmt, b)
+	// case *ast.TypedDeclarationStatement:
+	// 	return c.compileTypedDeclarationStatement(stmt, b)
 	default:
 		c.newCompilerError(stmt, "Unknown statement type: %T", stmt)
 		return b
