@@ -30,6 +30,17 @@ func runFile(filePath string) {
 	}
 }
 
+// func compileFile(filePath string) {
+
+// 	compiler, error := compiler.InitializeCompiler()
+// 	if error != nil {
+// 		fmt.Errorf(error.Error())
+// 		return
+// 	}
+
+// 	compiler.LoadEntryModuleFromFile(filePath)
+// }
+
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

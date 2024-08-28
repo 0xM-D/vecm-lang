@@ -91,7 +91,7 @@ type BooleanLiteral struct {
 	Value bool
 }
 
-type IfExpression struct {
+type IfStatement struct {
 	Token       token.Token
 	Condition   Expression
 	Consequence *BlockStatement
@@ -152,13 +152,6 @@ type TypedDeclarationStatement struct {
 
 type AssignmentDeclarationStatement struct {
 	DeclarationStatement
-}
-
-type VariableUpdateStatement struct {
-	Token    token.Token
-	Left     *Identifier
-	Operator string
-	Right    Expression
 }
 
 type VoidType struct {

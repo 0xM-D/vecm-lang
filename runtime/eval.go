@@ -27,7 +27,7 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 		return r.evalInfixExpression(node, env)
 	case *ast.BlockStatement:
 		return r.evalBlockStatement(node, env)
-	case *ast.IfExpression:
+	case *ast.IfStatement:
 		return r.evalIfExpression(node, env)
 	case *ast.ReturnStatement:
 		return r.evalReturnStatement(node, env)

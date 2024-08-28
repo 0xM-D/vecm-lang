@@ -135,10 +135,10 @@ func (b *BooleanLiteral) TokenLiteral() string    { return b.Token.Literal }
 func (b *BooleanLiteral) TokenValue() token.Token { return b.Token }
 func (b *BooleanLiteral) String() string          { return b.Token.Literal }
 
-func (ie *IfExpression) expressionNode()         {}
-func (ie *IfExpression) TokenLiteral() string    { return ie.Token.Literal }
-func (ie *IfExpression) TokenValue() token.Token { return ie.Token }
-func (ie *IfExpression) String() string {
+func (ie *IfStatement) statementNode()         {}
+func (ie *IfStatement) TokenLiteral() string    { return ie.Token.Literal }
+func (ie *IfStatement) TokenValue() token.Token { return ie.Token }
+func (ie *IfStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("if")
@@ -299,8 +299,10 @@ func (ds *DeclarationStatement) String() string {
 		out.WriteString(" ")
 	}
 	out.WriteString(ds.Name.String())
-	out.WriteString(" = ")
-	out.WriteString(ds.Value.String())
+	if ds.Value != nil {
+		out.WriteString(" = ")
+		out.WriteString(ds.Value.String())
+	}
 	out.WriteString(";")
 
 	return out.String()
@@ -336,21 +338,6 @@ func (ad *AssignmentDeclarationStatement) String() string {
 	return out.String()
 }
 
-func (vu *VariableUpdateStatement) statementNode()          {}
-func (vu *VariableUpdateStatement) TokenLiteral() string    { return vu.Token.Literal }
-func (vu *VariableUpdateStatement) TokenValue() token.Token { return vu.Token }
-func (vu *VariableUpdateStatement) String() string {
-	var out bytes.Buffer
-
-	out.WriteString(vu.Left.String())
-	out.WriteString(" ")
-	out.WriteString(vu.Operator)
-	out.WriteString(" ")
-	out.WriteString(vu.Right.String())
-
-	return out.String()
-}
-
 func (ht HashType) typeNode()               {}
 func (ht HashType) TokenLiteral() string    { return ht.Token.Literal }
 func (ht HashType) TokenValue() token.Token { return ht.Token }
@@ -375,6 +362,11 @@ func (nt NamedType) typeNode()               {}
 func (nt NamedType) TokenLiteral() string    { return nt.Token.Literal }
 func (nt NamedType) TokenValue() token.Token { return nt.Token }
 func (nt NamedType) String() string          { return nt.TypeName.String() }
+
+func (vt VoidType) typeNode()               {}
+func (vt VoidType) TokenLiteral() string    { return vt.Token.Literal }
+func (vt VoidType) TokenValue() token.Token { return vt.Token }
+func (vt VoidType) String() string          { return "void" }
 
 func (ft FunctionType) typeNode()               {}
 func (ft FunctionType) TokenLiteral() string    { return ft.Token.Literal }

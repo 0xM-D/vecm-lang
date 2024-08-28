@@ -22,6 +22,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseTypedDeclarationStatement(nil)
 	case token.FOR:
 		return p.parseForStatement()
+	case token.IF:
+		return p.parseIfStatement()
 	case token.IMPORT:
 		return p.parseImportStatement()
 	case token.EXPORT:

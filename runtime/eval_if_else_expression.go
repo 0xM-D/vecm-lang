@@ -5,7 +5,7 @@ import (
 	"github.com/0xM-D/interpreter/object"
 )
 
-func (r *Runtime) evalIfExpression(ie *ast.IfExpression, env *object.Environment) (object.Object, error) {
+func (r *Runtime) evalIfExpression(ie *ast.IfStatement, env *object.Environment) (object.Object, error) {
 	condition, err := r.Eval(ie.Condition, env)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,33 @@
+fn sum(a: int, b: int) -> int { return a + b }
+
+fn pi() -> float32 { return 3.14159 }
+
+fn aHundred() -> int { return 100 }
+
+fn conditional(a: int) -> int {
+    if !a {
+        return 1
+    } else {
+        return 2
+    }
+}
+
+fn conditional2(a: int) -> int {
+    if !a {
+        return 1
+    }
+    return 2
+}
+
+fn conditional2(a: int) -> int {
+    if !a {
+        return 1
+    } else if -a {
+        return 2
+    } else {
+        return 3
+    }
+    return 4
+}
+
+fn invertBits(a: int) -> int { return ~a }
