@@ -25,25 +25,15 @@ func (ctx *GlobalContext) GetParentContext() Context {
 	return nil;
 }
 
-func (ctx *GlobalContext) GetFunction(signature types.FuncType) (*ir.Func, bool) {
+func (ctx GlobalContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
 	funcs := ctx.Module.Funcs
 	for _, f := range(funcs) {
-		if f.Sig.Equal(&signature) {
-			return f, true
+		if f.Name() == name {
+			return f
 		}
 	}
-	return nil, false;
+	return nil
 }
-
-// func (ctx GlobalContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
-// 	funcs := ctx.Module.Funcs
-// 	for _, f := range(funcs) {
-// 		if f.Name == name {
-// 			return f
-// 		}
-// 	}
-// 	return nil
-// }
 
 func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {
 	fn := ctx.Module.NewFunc(name, retType, params...)

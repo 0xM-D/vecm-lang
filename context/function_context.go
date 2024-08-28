@@ -53,8 +53,8 @@ func (ctx *FunctionContext) LookUpIdentifier(name string) (Variable, bool) {
 	return ctx.GetParentContext().LookUpIdentifier(name)
 }
 
-func (ctx *FunctionContext) GetFunction(signature types.FuncType) (*ir.Func, bool) {
-	return ctx.GetParentContext().GetFunction(signature)
+func (ctx *FunctionContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
+	return ctx.GetParentContext().GetFunction(name, params...)
 }
 
 func (ctx *FunctionContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {

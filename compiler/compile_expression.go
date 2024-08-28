@@ -24,10 +24,8 @@ func (c *Compiler) compileExpression(expr ast.Expression, b *context.BlockContex
 			return c.compilePrefixExpression(expr, b)
 		case *ast.InfixExpression:
 			return c.compileInfixExpression(expr, b)
-		// case *ast.CallExpression:
-		// 	return c.compileCallExpression(expr, b)
-
-
+		case *ast.CallExpression:
+			return c.compileCallExpression(expr, b)
 		// case *ast.TernaryExpression:
 		// 	return c.compileTernaryExpression(expr, b)
 
