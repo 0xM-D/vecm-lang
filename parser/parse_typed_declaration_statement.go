@@ -20,6 +20,22 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 		p.nextToken()
 	}
 
+	if p.peekTokenIs(token.SEMICOLON) {
+		ident := p.parseIdentifier().(*ast.Identifier)
+
+		
+		stmt.DeclarationStatement = ast.DeclarationStatement{
+			Token: p.curToken,
+			Name:  ident,
+			IsConstant: stmtIsConstant,
+			Type: stmtType,
+			Value: nil,
+		}
+		
+		p.nextToken() // consume semicolon	
+		return stmt
+	}
+
 	declStmt := p.parseDeclarationStatement(token.ASSIGN)
 
 	if declStmt == nil {

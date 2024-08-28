@@ -299,8 +299,10 @@ func (ds *DeclarationStatement) String() string {
 		out.WriteString(" ")
 	}
 	out.WriteString(ds.Name.String())
-	out.WriteString(" = ")
-	out.WriteString(ds.Value.String())
+	if ds.Value != nil {
+		out.WriteString(" = ")
+		out.WriteString(ds.Value.String())
+	}
 	out.WriteString(";")
 
 	return out.String()
@@ -332,21 +334,6 @@ func (ad *AssignmentDeclarationStatement) String() string {
 	out.WriteString(" := ")
 	out.WriteString(ad.Value.String())
 	out.WriteString(";")
-
-	return out.String()
-}
-
-func (vu *VariableUpdateStatement) statementNode()          {}
-func (vu *VariableUpdateStatement) TokenLiteral() string    { return vu.Token.Literal }
-func (vu *VariableUpdateStatement) TokenValue() token.Token { return vu.Token }
-func (vu *VariableUpdateStatement) String() string {
-	var out bytes.Buffer
-
-	out.WriteString(vu.Left.String())
-	out.WriteString(" ")
-	out.WriteString(vu.Operator)
-	out.WriteString(" ")
-	out.WriteString(vu.Right.String())
 
 	return out.String()
 }

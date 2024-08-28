@@ -16,7 +16,7 @@ func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockC
 			c.newCompilerError(stmt, error.Error())
 			return
 		}
-		if t != decoratorType {
+		if !t.Equal(decoratorType) {
 			c.newCompilerError(stmt, "Type mismatch: %s != %s", t, decoratorType)
 			return
 		}

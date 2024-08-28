@@ -154,13 +154,6 @@ type AssignmentDeclarationStatement struct {
 	DeclarationStatement
 }
 
-type VariableUpdateStatement struct {
-	Token    token.Token
-	Left     *Identifier
-	Operator string
-	Right    Expression
-}
-
 type VoidType struct {
 	Token token.Token
 }
