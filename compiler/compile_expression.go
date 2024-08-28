@@ -26,26 +26,31 @@ func (c *Compiler) compileExpression(expr ast.Expression, b *context.BlockContex
 			return c.compileInfixExpression(expr, b)
 		// case *ast.CallExpression:
 		// 	return c.compileCallExpression(expr, b)
-		// case *ast.AccessExpression:
-		// 	return c.compileAccessExpression(expr, b)
-		// case *ast.ArrayLiteral:
-		// 	return c.compileArrayLiteral(expr, b)
-		// case *ast.IndexExpression:
-		// 	return c.compileIndexExpression(expr, b)
-		// case *ast.StringLiteral:
-		// 	return c.compileStringLiteral(expr, b)
-		// case *ast.FunctionLiteral:
-		// 	return c.compileFunctionLiteral(expr, b)
-		// case *ast.HashLiteral:
-		// 	return c.compileHashLiteral(expr, b)
-		// case *ast.PairExpression:
-		// 	return c.compilePairExpression(expr, b)	
+
+
 		// case *ast.TernaryExpression:
 		// 	return c.compileTernaryExpression(expr, b)
+
 		// case *ast.TypeCastExpression:
 		// 	return c.compileTypeCastExpression(expr, b)
+
+		// For strings, arrays, hashes, etc, we will need to rething the memory model we had in our interpreter
+		// case *ast.StringLiteral:
+		//  	return c.compileStringLiteral(expr)
+		// case *ast.ArrayLiteral:
+		// 	return c.compileArrayLiteral(expr, b)
+		// case *ast.HashLiteral:
+		// 	return c.compileHashLiteral(expr, b)
 		// case *ast.NewExpression:
 		// 	return c.compileNewExpression(expr, b)
+		// case *ast.AccessExpression:
+		// 	return c.compileAccessExpression(expr, b)
+		// case *ast.IndexExpression:
+		// 	return c.compileIndexExpression(expr, b)
+
+		// case *ast.FunctionLiteral:
+		// 	return c.compileFunctionLiteral(expr, b)
+
 		default:
 			c.newCompilerError(expr, "Invalid expression node: %T", expr)
 			return nil
