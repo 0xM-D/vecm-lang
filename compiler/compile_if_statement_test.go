@@ -6,7 +6,7 @@ import (
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/types"
-	"tinygo.org/x/go-llvm"
+	llvm "tinygo.org/x/go-llvm"
 )
 
 func TestIfStatement(t *testing.T) {
@@ -49,7 +49,6 @@ func TestIfStatement(t *testing.T) {
 		t.Fatalf("Expected ret terminator in block 1, got nil")
 	}
 
-
 }
 
 func TestEarlyExit(t *testing.T) {
@@ -76,16 +75,15 @@ func TestEarlyExit(t *testing.T) {
 		t.Fatalf("Expected br terminator in block 1, got nil")
 	}
 
-
 	expectReturnTerminator(blocks[1], constant.NewInt(types.I32, 1), t)
 	expectReturnTerminator(blocks[2], constant.NewInt(types.I32, 2), t)
 
 	// Create an LLVM context
-    ctx := llvm.NewContext()
-    defer ctx.Dispose()
+	ctx := llvm.NewContext()
+	defer ctx.Dispose()
 
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
-	
+
 	// Find the function
 	executableFn := executionEngine.FindFunction("conditional2")
 
@@ -94,7 +92,7 @@ func TestEarlyExit(t *testing.T) {
 	}
 
 	tests := []struct {
-		input int
+		input    int
 		expected int
 	}{
 		{0, 1},
@@ -125,13 +123,13 @@ func TestIfElseStatement(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	expectFunctionExists(module, "max", []types.Type{types.I32, types.I32}, types.I32, t)
-	
+
 	// Create an LLVM context
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
-	
+
 	// Find the function
 	executableFn := executionEngine.FindFunction("max")
 
@@ -188,7 +186,7 @@ func TestNestedConditionals(t *testing.T) {
 	defer ctx.Dispose()
 
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
-	
+
 	// Find the function
 	executableFn := executionEngine.FindFunction("nestedConditionals")
 

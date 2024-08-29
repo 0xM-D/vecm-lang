@@ -5,7 +5,7 @@ import (
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
-	"tinygo.org/x/go-llvm"
+	llvm "tinygo.org/x/go-llvm"
 )
 
 func TestMinusPrefixExpression(t *testing.T) {
@@ -41,11 +41,11 @@ func TestMinusPrefixExpression(t *testing.T) {
 	expectReturnTerminator(block, inst, t)
 
 	// Create an LLVM context
-    ctx := llvm.NewContext()
-    defer ctx.Dispose()
+	ctx := llvm.NewContext()
+	defer ctx.Dispose()
 
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
-	
+
 	// Find the function
 	executableFn := executionEngine.FindFunction("negate")
 
@@ -54,7 +54,7 @@ func TestMinusPrefixExpression(t *testing.T) {
 	}
 
 	tests := []struct {
-		input int
+		input    int
 		expected int
 	}{
 		{0, 0},
@@ -135,7 +135,7 @@ func TestBangPrefixExpression(t *testing.T) {
 		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int1Type(), uint64(boolToInt(test.input)), true)})
 		if result.Int(false) != uint64(boolToInt(test.expected)) {
 			t.Fatalf("Expected %v, got %v", test.expected, result.Int(false))
-		} 
+		}
 	}
 }
 
@@ -209,5 +209,3 @@ func boolToInt(b bool) int {
 	}
 	return 0
 }
-
-

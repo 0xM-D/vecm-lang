@@ -3,7 +3,7 @@ package compiler
 import (
 	"testing"
 
-	"tinygo.org/x/go-llvm"
+	llvm "tinygo.org/x/go-llvm"
 )
 
 func TestForStatementWithoutInitOrAfterThought(t *testing.T) {
@@ -45,11 +45,11 @@ func TestForLoopCounter(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Create an LLVM context
-    ctx := llvm.NewContext()
-    defer ctx.Dispose()
+	ctx := llvm.NewContext()
+	defer ctx.Dispose()
 
 	executionEngine := compileModuleForExecution(ctx, module.String(), t)
-	
+
 	// Find the function
 	executableFn := executionEngine.FindFunction("counter")
 

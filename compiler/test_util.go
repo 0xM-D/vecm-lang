@@ -9,24 +9,22 @@ import (
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 
-	"tinygo.org/x/go-llvm"
+	llvm "tinygo.org/x/go-llvm"
 )
 
-
 func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
-	
 
 	c, _ := InitializeCompiler()
-	_, hasParserErrors := c.loadModule("code", code);
+	_, hasParserErrors := c.loadModule("code", code)
 
 	if hasParserErrors {
 		t.Fatalf("Expected no parser errors, got some")
 	}
-	
+
 	ir, hasCompilerErrors := c.CompileModule("code")
 
 	if hasCompilerErrors {
-		c.printCompilerErrors();
+		c.printCompilerErrors()
 		t.Fatalf("Expected no compiler errors, got some")
 	}
 
@@ -36,11 +34,11 @@ func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
 		t.Fatalf("Generated IR is invalid: %s", error)
 	}
 
-	return irModule;
+	return irModule
 }
 
 func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.ExecutionEngine {
-    // Initialize LLVM
+	// Initialize LLVM
 	llvm.InitializeAllTargets()
 	llvm.InitializeAllAsmPrinters()
 	// llvm.InitializeAllAsmParsers()
@@ -131,7 +129,7 @@ func expectReturnTerminator(block *ir.Block, value value.Value, t *testing.T) {
 	}
 }
 
-func findFunction (module *ir.Module, funcName string) (*ir.Func, bool) {
+func findFunction(module *ir.Module, funcName string) (*ir.Func, bool) {
 	for _, f := range module.Funcs {
 		if f.Name() == funcName {
 			return f, true

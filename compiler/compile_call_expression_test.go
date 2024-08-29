@@ -3,7 +3,7 @@ package compiler
 import (
 	"testing"
 
-	"tinygo.org/x/go-llvm"
+	llvm "tinygo.org/x/go-llvm"
 )
 
 func TestCallExpression(t *testing.T) {
