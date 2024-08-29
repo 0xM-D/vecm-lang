@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
@@ -23,7 +23,7 @@ func (c *Compiler) compileInfixExpression(infixExpr *ast.InfixExpression, b *con
 	if left == nil || right == nil {
 		return nil
 	}
-	
+
 	switch infixExpr.Operator {
 	case "+":
 		return b.Block.NewAdd(left, right)
@@ -80,7 +80,7 @@ func (c *Compiler) compileAssignmentInfixExpression(infixExpr *ast.InfixExpressi
 	case "=":
 		b.Block.NewStore(right, left)
 	case "+=":
-		leftValue := b.Block.NewLoad(leftType, left)		
+		leftValue := b.Block.NewLoad(leftType, left)
 		sum := b.Block.NewAdd(leftValue, right)
 		b.Block.NewStore(sum, left)
 	case "-=":
@@ -100,7 +100,7 @@ func (c *Compiler) compileAssignmentInfixExpression(infixExpr *ast.InfixExpressi
 		return nil
 	}
 
-	return left;
+	return left
 }
 
 func (c *Compiler) compileLValue(expr ast.Expression, b *context.BlockContext) (value.Value, types.Type) {

@@ -3,8 +3,8 @@ package runtime
 import (
 	"fmt"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func (r *Runtime) evalExportStatement(node *ast.ExportStatement, env *object.Environment) (object.Object, error) {

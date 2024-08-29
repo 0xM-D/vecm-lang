@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/0xM-D/interpreter/ast"
+	"github.com/DustTheory/interpreter/ast"
 )
 
 type FunctionObjectType struct {

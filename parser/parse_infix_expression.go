@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/0xM-D/interpreter/ast"
+import "github.com/DustTheory/interpreter/ast"
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{

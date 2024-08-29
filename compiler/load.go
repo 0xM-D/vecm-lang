@@ -3,14 +3,14 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/0xM-D/interpreter/module"
+	"github.com/DustTheory/interpreter/module"
 )
 
 func (c *Compiler) loadModule(moduleKey, code string) (*module.Module, bool) {
 	module, failedToLoad := module.ParseModule(moduleKey, code)
-	
+
 	if len(failedToLoad) != 0 {
-		printParserErrors(failedToLoad);	
+		printParserErrors(failedToLoad)
 	}
 
 	c.Modules[moduleKey] = module

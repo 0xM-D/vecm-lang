@@ -1,6 +1,6 @@
 package runtime
 
-import "github.com/0xM-D/interpreter/object"
+import "github.com/DustTheory/interpreter/object"
 
 var (
 	NULL  = &object.Null{}

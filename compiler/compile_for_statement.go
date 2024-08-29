@@ -1,13 +1,13 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
 )
 
 func (c *Compiler) compileForStatement(forStatement *ast.ForStatement, block *context.BlockContext) *context.BlockContext {
 	functionContext := block.GetParentFunctionContext()
-	
+
 	// Create a new block for the for loop
 	forBlock := context.NewBlockContext(block, functionContext.NewBlock(""))
 	continueBlock := context.NewBlockContext(block, functionContext.NewBlock(""))

@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func (r *Runtime) evalExplicitTypeCast(node *ast.TypeCastExpression, env *object.Environment) (object.Object, error) {

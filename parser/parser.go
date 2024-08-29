@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/lexer"
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/token"
 )
 
 type Parser struct {

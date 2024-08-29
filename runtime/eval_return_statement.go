@@ -1,15 +1,15 @@
 package runtime
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func (r *Runtime) evalReturnStatement(node *ast.ReturnStatement, env *object.Environment) (object.Object, error) {
 	if node.ReturnValue == nil {
 		return &object.ReturnValue{Value: nil, ReturnValueObjectType: object.ReturnValueObjectType{ReturnType: object.VoidKind}}, nil
 	}
-	
+
 	val, err := r.Eval(node.ReturnValue, env)
 	if err != nil {
 		return nil, err

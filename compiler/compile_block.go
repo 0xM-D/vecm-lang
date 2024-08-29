@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
 )
 
 func (c *Compiler) compileBlockStatement(blockStatement *ast.BlockStatement, block *context.BlockContext) *context.BlockContext {
@@ -15,11 +15,11 @@ func (c *Compiler) compileBlockStatement(blockStatement *ast.BlockStatement, blo
 			// TODO: Throw a warning
 			// Create a new unreachable block
 
-			if i == len(blockStatement.Statements) - 1 {
+			if i == len(blockStatement.Statements)-1 {
 				// If this is the last statement in the block, we don't need to create a new block
 				break
 			}
-			
+
 			newBlock := currentBlockContext.GetParentFunctionContext().NewBlock("")
 			currentBlockContext = context.NewBlockContext(currentBlockContext.GetParentContext(), newBlock)
 		} else {
@@ -27,6 +27,5 @@ func (c *Compiler) compileBlockStatement(blockStatement *ast.BlockStatement, blo
 		}
 	}
 
-	
 	return currentBlockContext
 }

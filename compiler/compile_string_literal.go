@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
+	"github.com/DustTheory/interpreter/ast"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/value"
 )

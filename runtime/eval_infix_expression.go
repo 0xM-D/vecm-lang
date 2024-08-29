@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
+	"github.com/DustTheory/interpreter/token"
 )
 
 type OperatorFnSignature struct {

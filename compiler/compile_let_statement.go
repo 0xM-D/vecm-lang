@@ -1,9 +1,9 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
-	"github.com/0xM-D/interpreter/util"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
+	"github.com/DustTheory/interpreter/util"
 )
 
 func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockContext) {
@@ -25,6 +25,6 @@ func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockC
 	}
 
 	variable := b.DeclareLocalVariable(stmt.Name.Value, t)
-	
+
 	b.Block.NewStore(value, variable)
 }

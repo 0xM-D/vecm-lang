@@ -3,7 +3,7 @@ package parser
 import (
 	"math/big"
 
-	"github.com/0xM-D/interpreter/ast"
+	"github.com/DustTheory/interpreter/ast"
 )
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {

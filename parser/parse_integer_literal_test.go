@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/lexer"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/lexer"
 )
 
 func TestIntegerLiteral(t *testing.T) {

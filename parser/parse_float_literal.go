@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/0xM-D/interpreter/ast"
+	"github.com/DustTheory/interpreter/ast"
 )
 
 func (p *Parser) parseFloat32Literal() ast.Expression {

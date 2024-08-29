@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/0xM-D/interpreter/ast"
+	"github.com/DustTheory/interpreter/ast"
 )
 
 func checkParserErrors(t *testing.T, p *Parser) {

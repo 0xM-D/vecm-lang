@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/token"
 )
 
 func (p *Program) TokenLiteral() string {
@@ -135,7 +135,7 @@ func (b *BooleanLiteral) TokenLiteral() string    { return b.Token.Literal }
 func (b *BooleanLiteral) TokenValue() token.Token { return b.Token }
 func (b *BooleanLiteral) String() string          { return b.Token.Literal }
 
-func (ie *IfStatement) statementNode()         {}
+func (ie *IfStatement) statementNode()          {}
 func (ie *IfStatement) TokenLiteral() string    { return ie.Token.Literal }
 func (ie *IfStatement) TokenValue() token.Token { return ie.Token }
 func (ie *IfStatement) String() string {

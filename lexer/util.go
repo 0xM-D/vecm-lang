@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/token"
 )
 
 func (l *Lexer) readChar() {

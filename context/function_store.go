@@ -5,7 +5,7 @@ package context
 // 	"fmt"
 // 	"strings"
 
-// 	"github.com/0xM-D/interpreter/module"
+// 	"github.com/DustTheory/interpreter/module"
 // 	"github.com/llir/llvm/ir"
 // )
 

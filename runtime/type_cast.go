@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/object"
 )
 
 type CastType = int

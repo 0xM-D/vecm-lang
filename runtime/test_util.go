@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func testEval(input string) (object.Object, error) {

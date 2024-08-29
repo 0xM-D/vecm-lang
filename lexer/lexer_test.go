@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/token"
 )
 
 func TestNextToken(t *testing.T) {

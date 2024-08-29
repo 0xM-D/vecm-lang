@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/token"
 )
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {

@@ -3,7 +3,7 @@ package runtime
 import (
 	"testing"
 
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func TestFunctionLiteral(t *testing.T) {

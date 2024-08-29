@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func (r *Runtime) evalPrefixExpression(node *ast.PrefixExpression, env *object.Environment) (object.Object, error) {

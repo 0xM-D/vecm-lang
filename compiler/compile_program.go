@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
 )
 
 func (c *Compiler) compileProgram(program *ast.Program) *context.GlobalContext {

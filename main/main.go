@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/0xM-D/interpreter/runtime"
+	"github.com/DustTheory/interpreter/runtime"
 	"github.com/spf13/cobra"
 )
 

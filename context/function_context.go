@@ -1,26 +1,26 @@
 package context
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/util"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
 )
 
 type FunctionContext struct {
 	sharedContextProperties SharedContextProperties
-	functionParams *VariableStore
+	functionParams          *VariableStore
 	*ir.Func
 }
 
 func (ctx *FunctionContext) GetParentContext() Context {
-	return ctx.sharedContextProperties.parentContext;
+	return ctx.sharedContextProperties.parentContext
 }
 
 func NewFunctionContext(parent Context, fn *ir.Func, parameterNames []*ast.Identifier, parameterTypes []ast.Type) *FunctionContext {
 	ctx := &FunctionContext{
 		sharedContextProperties: SharedContextProperties{parentContext: parent},
-		Func: fn,
+		Func:                    fn,
 	}
 
 	ctx.functionParams = NewVariableStore()

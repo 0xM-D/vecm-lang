@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/0xM-D/interpreter/module"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/module"
+	"github.com/DustTheory/interpreter/object"
 )
 
 type Runtime struct {
@@ -71,7 +71,7 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 
 	module, parserErrors := module.ParseModule(moduleKey, code)
 
-	if(len(parserErrors) > 0) {
+	if len(parserErrors) > 0 {
 		printParserErrors(parserErrors)
 	}
 

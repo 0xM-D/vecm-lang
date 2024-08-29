@@ -1,10 +1,10 @@
 package module
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/lexer"
-	"github.com/0xM-D/interpreter/object"
-	"github.com/0xM-D/interpreter/parser"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/object"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 type Module struct {

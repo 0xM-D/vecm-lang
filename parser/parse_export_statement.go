@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/0xM-D/interpreter/ast"
+import "github.com/DustTheory/interpreter/ast"
 
 func (p *Parser) parseExportStatement() ast.Statement {
 	exportStmt := &ast.ExportStatement{Token: p.curToken}

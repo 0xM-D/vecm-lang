@@ -5,8 +5,8 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/object"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/object"
 )
 
 func nativeBoolToBooleanObject(input bool) *object.Boolean {

@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/token"
 )
 
 type Lexer struct {

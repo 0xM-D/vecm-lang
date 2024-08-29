@@ -1,10 +1,10 @@
 package compiler
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/context"
-	"github.com/0xM-D/interpreter/object"
-	"github.com/0xM-D/interpreter/util"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/context"
+	"github.com/DustTheory/interpreter/object"
+	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir"
 )
 
@@ -12,13 +12,13 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 	retType, err := util.GetLLVMType(stmt.Type.ReturnType)
 	if err != nil {
 		c.newCompilerError(stmt, err.Error())
-		return;
+		return
 	}
 
 	paramTypes, err := getFunctionParamTypes(stmt)
 	if err != nil {
 		c.newCompilerError(stmt, err.Error())
-		return;
+		return
 	}
 
 	name := stmt.Name.Value

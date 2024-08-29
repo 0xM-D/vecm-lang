@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/token"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/token"
 )
 
 func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDeclarationStatement {
@@ -23,16 +23,15 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 	if p.peekTokenIs(token.SEMICOLON) {
 		ident := p.parseIdentifier().(*ast.Identifier)
 
-		
 		stmt.DeclarationStatement = ast.DeclarationStatement{
-			Token: p.curToken,
-			Name:  ident,
+			Token:      p.curToken,
+			Name:       ident,
 			IsConstant: stmtIsConstant,
-			Type: stmtType,
-			Value: nil,
+			Type:       stmtType,
+			Value:      nil,
 		}
-		
-		p.nextToken() // consume semicolon	
+
+		p.nextToken() // consume semicolon
 		return stmt
 	}
 

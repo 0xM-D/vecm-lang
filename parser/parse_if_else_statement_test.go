@@ -3,8 +3,8 @@ package parser
 import (
 	"testing"
 
-	"github.com/0xM-D/interpreter/ast"
-	"github.com/0xM-D/interpreter/lexer"
+	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/lexer"
 )
 
 func TestIfExpression(t *testing.T) {
@@ -24,7 +24,6 @@ func TestIfExpression(t *testing.T) {
 	if !ok {
 		t.Fatalf("stmt is not ast.IfStatement. got=%T", stmt)
 	}
-
 
 	if !testInfixExpression(t, stmt.Condition, TestIdentifier{"x"}, "<", TestIdentifier{"y"}) {
 		return
