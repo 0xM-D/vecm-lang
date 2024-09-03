@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -48,7 +49,7 @@ func (r *Runtime) Run() error {
 func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 	absolutePath, err := filepath.Abs(modulePath)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err.Error())
 		return nil, true
 	}
 
@@ -59,7 +60,7 @@ func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 
 	code, err := os.ReadFile(modulePath)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err.Error())
 		return nil, true
 	}
 
@@ -78,7 +79,7 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 	_, err := r.Eval(module.Program, &module.RootEnvironment)
 
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err.Error())
 		return nil, true
 	}
 
@@ -86,8 +87,8 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 }
 
 func printParserErrors(errors []string) {
-	fmt.Printf("parser has %d errors\n", len(errors))
+	log.Printf("parser has %d errors\n", len(errors))
 	for _, msg := range errors {
-		fmt.Printf("parser error: %s", msg)
+		log.Printf("parser error: %s", msg)
 	}
 }

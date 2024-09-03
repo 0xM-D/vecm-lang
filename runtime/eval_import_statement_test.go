@@ -1,4 +1,4 @@
-package runtime
+package runtime_test
 
 import (
 	"fmt"
@@ -95,9 +95,9 @@ func TestImportStatement(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result, err := testEval(tt.input)
-		if err != nil {
-			t.Fatal(err)
+		result, evalErr := testEval(tt.input)
+		if evalErr != nil {
+			t.Fatal(evalErr)
 		}
 		testLiteralObject(t, result, tt.expected)
 	}

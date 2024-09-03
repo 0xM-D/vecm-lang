@@ -1,7 +1,7 @@
 package runtime
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/object"
@@ -15,7 +15,7 @@ func (r *Runtime) evalExportStatement(node *ast.ExportStatement, env *object.Env
 
 	variableReference, ok := stmtResult.(*object.VariableReference)
 	if !ok {
-		return nil, fmt.Errorf("export statement expects a variable reference")
+		return nil, errors.New("export statement expects a variable reference")
 	}
 
 	env.GetStore()[variableReference.Name].IsExported = true

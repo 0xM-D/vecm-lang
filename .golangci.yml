@@ -98,7 +98,6 @@ linters-settings:
     # Default: false
     all: true
 
-
 linters:
   disable-all: true
   enable:
@@ -127,7 +126,7 @@ linters:
     - forbidigo # forbids identifiers
     - funlen # tool for detection of long functions
     - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
-    # - gochecknoglobals # checks that no global variables exist // TODO: enable after fixing issues
+    - gochecknoglobals # checks that no global variables exist // TODO: enable after fixing issues
     - gochecknoinits # checks that no init functions are present in Go code
     - gochecksumtype # checks exhaustiveness on Go "sum types"
     - gocognit # computes and checks the cognitive complexity of functions
@@ -177,7 +176,6 @@ linters:
     - godox # detects FIXME, TODO and other comment keywords
     - exhaustruct # checks if all structure fields are initialized
     - interfacebloat # checks the number of methods inside an interface
-    - ireturn # accept interfaces, return concrete types
     - prealloc # [premature optimization, but can be used in some cases] finds slice declarations that could potentially be preallocated
     - wrapcheck # checks that errors returned from external packages are wrapped
     - tagalign # checks that struct tags are well aligned

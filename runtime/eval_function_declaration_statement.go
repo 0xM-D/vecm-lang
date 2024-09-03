@@ -1,11 +1,16 @@
 package runtime
 
 import (
+	"fmt"
+
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalFunctionDeclarationStatement(node *ast.FunctionDeclarationStatement, env *object.Environment) (object.Object, error) {
+func (r *Runtime) evalFunctionDeclarationStatement(
+	node *ast.FunctionDeclarationStatement,
+	env *object.Environment,
+) (object.Object, error) {
 	functionType, err := r.evalType(node.Type, env)
 	if err != nil {
 		return nil, err
@@ -18,5 +23,9 @@ func (r *Runtime) evalFunctionDeclarationStatement(node *ast.FunctionDeclaration
 		FunctionObjectType: *functionType.(*object.FunctionObjectType),
 	}
 
-	return env.Declare(node.Name.Value, true, function)
+	ref, err := env.Declare(node.Name.Value, true, function)
+	if err != nil {
+		return nil, fmt.Errorf("error in function declaration: %w", err)
+	}
+	return ref, nil
 }

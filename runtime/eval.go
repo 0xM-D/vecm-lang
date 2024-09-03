@@ -20,7 +20,7 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 	case *ast.Float64Literal:
 		return &object.Number{Value: math.Float64bits(node.Value), Kind: object.Float64Kind}, nil
 	case *ast.BooleanLiteral:
-		return r.evalBooleanLiteral(node)
+		return r.evalBooleanLiteral(node), nil
 	case *ast.PrefixExpression:
 		return r.evalPrefixExpression(node, env)
 	case *ast.InfixExpression:
@@ -50,7 +50,7 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 	case *ast.AssignmentDeclarationStatement:
 		return r.evalDeclarationStatement(&(*node).DeclarationStatement, env)
 	case *ast.ForStatement:
-		return r.evalForStatement(node, env)
+		return nil, r.evalForStatement(node, env)
 	case *ast.TernaryExpression:
 		return r.evalTernaryExpression(node, env)
 	case *ast.TypeCastExpression:
@@ -58,7 +58,7 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 	case *ast.NewExpression:
 		return r.evalNewExpression(node, env)
 	case *ast.ImportStatement:
-		return r.evalImportStatement(node, env)
+		return nil, r.evalImportStatement(node, env)
 	case *ast.ExportStatement:
 		return r.evalExportStatement(node, env)
 	case *ast.FunctionDeclarationStatement:

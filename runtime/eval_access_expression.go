@@ -1,20 +1,24 @@
 package runtime
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalAccessExpression(node *ast.AccessExpression, env *object.Environment) (object.Object, error) {
+func (r *Runtime) evalAccessExpression(
+	node *ast.AccessExpression,
+	env *object.Environment,
+) (*object.BuiltinFunction, error) {
 	leftRef, err := r.Eval(node.Left, env)
 	if err != nil {
 		return nil, err
 	}
 	right, ok := node.Right.(*ast.Identifier)
 	if !ok {
-		return nil, fmt.Errorf("right side of access expression is not an identifier")
+		return nil, errors.New("right side of access expression is not an identifier")
 	}
 
 	left := object.UnwrapReferenceObject(leftRef)
@@ -29,7 +33,11 @@ func (r *Runtime) evalAccessExpression(node *ast.AccessExpression, env *object.E
 	}
 
 	if object.IsBuiltinFunction(member) {
-		return object.BuiltinFunction{BoundParams: []object.Object{left}, Function: member.Function, FunctionObjectType: member.FunctionObjectType, Name: member.Name}, nil
+		return &object.BuiltinFunction{
+			BoundParams:        []object.Object{left},
+			Function:           member.Function,
+			FunctionObjectType: member.FunctionObjectType,
+			Name:               member.Name}, nil
 	}
 	return member, nil
 }

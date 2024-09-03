@@ -57,15 +57,29 @@ func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Env
 	}
 
 	if evalFn == nil {
-		return nil, fmt.Errorf("operator %s not defined on types %s and %s", operatorFnSignature.Operator, operatorFnSignature.LType, operatorFnSignature.RType)
+		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
+			operatorFnSignature.Operator,
+			operatorFnSignature.LType,
+			operatorFnSignature.RType)
 	}
 
 	return evalFn(left, right, env)
 }
 
-func (r *Runtime) evalNumberInfixExpression(left object.Object, right object.Object, operator string, env *object.Environment) (object.Object, error) {
-	leftNum := object.UnwrapReferenceObject(left).(*object.Number)
-	rightNum := object.UnwrapReferenceObject(right).(*object.Number)
+func (r *Runtime) evalNumberInfixExpression(
+	left object.Object,
+	right object.Object,
+	operator string,
+	env *object.Environment,
+) (object.Object, error) {
+	leftNum, ok := object.UnwrapReferenceObject(left).(*object.Number)
+	if !ok {
+		return nil, fmt.Errorf("invalid left operand type: expected *object.Number, got %T", left)
+	}
+	rightNum, ok := object.UnwrapReferenceObject(right).(*object.Number)
+	if !ok {
+		return nil, fmt.Errorf("invalid right operand type: expected *object.Number, got %T", left)
+	}
 	switch operator {
 	case string(token.PLUS):
 		return numberAddition(leftNum, rightNum)
@@ -106,7 +120,10 @@ func (r *Runtime) evalNumberInfixExpression(left object.Object, right object.Obj
 	case string(token.SLASH_ASSIGN):
 		return numberDivideEquals(left, rightNum, env)
 	default:
-		return nil, fmt.Errorf("operator %s not defined on types %s and %s", operator, left.Type().Signature(), right.Type().Signature())
+		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
+			operator,
+			left.Type().Signature(),
+			right.Type().Signature())
 	}
 }
 

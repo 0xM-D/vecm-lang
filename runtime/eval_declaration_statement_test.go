@@ -1,4 +1,4 @@
-package runtime
+package runtime_test
 
 import (
 	"math/big"
@@ -66,7 +66,10 @@ func TestTypedDeclarationStatement(t *testing.T) {
 	}{
 		{"int64 a = 5; a;", big.NewInt(5)},
 		{"string a = \"testmmm\"; a;", "testmmm"},
-		{"const []int a = new []int{1, 2, 3, 4}; let b = a; b;", []interface{}{big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)}},
+		{
+			"const []int a = new []int{1, 2, 3, 4}; let b = a; b;",
+			[]interface{}{big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)},
+		},
 		{"bool a = true; let b = !a; b;", false},
 		{"const function(int64, int64)->int64 sum = fn(a: int64, b: int64) -> int64 { return a + b; }; sum", ExpectedFunction{
 			"fn(a, b) {" + "\n" +

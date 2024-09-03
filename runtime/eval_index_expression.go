@@ -21,44 +21,54 @@ func (r *Runtime) evalIndexExpression(node *ast.IndexExpression, env *object.Env
 
 	switch {
 	case object.IsArray(left) && object.IsInteger(index):
-		return r.evalArrayIndexExpression(left, index)
+		return r.evalArrayIndexExpression(left.(*object.Array), index)
 	case object.IsHash(left):
-		return r.evalHashIndexExpression(left, index)
+		return r.evalHashIndexExpression(left.(*object.Hash), index)
 	default:
 		return nil, fmt.Errorf("index operator not supported: %s", left.Type().Signature())
 	}
 }
 
-func (r *Runtime) evalArrayIndexExpression(array, index object.Object) (object.Object, error) {
-	arrayObject := array.(*object.Array)
-
+func (r *Runtime) evalArrayIndexExpression(array *object.Array, index object.Object) (object.Object, error) {
 	idxObj, err := typeCast(index, object.Int64Kind, EXPLICIT_CAST)
 	if err != nil {
 		return nil, err
 	}
 	idx := idxObj.(*object.Number).GetInt64()
 
-	max := int64(len(arrayObject.Elements) - 1)
+	maxIndex := int64(len(array.Elements) - 1)
 
-	if idx < 0 || idx > max {
+	if idx < 0 || idx > maxIndex {
 		return NULL, nil
 	}
 
-	return &object.ArrayElementReference{Array: arrayObject, Index: idx}, nil
+	return &object.ArrayElementReference{
+		Array: array,
+		Index: idx,
+		ReferenceType: object.ReferenceType{
+			IsConstantReference: array.IsConstant(),
+			ValueType:           array.ElementType,
+		},
+	}, nil
 }
 
-func (r *Runtime) evalHashIndexExpression(hash, index object.Object) (object.Object, error) {
-	hashObject := hash.(*object.Hash)
-
+func (r *Runtime) evalHashIndexExpression(hash *object.Hash, index object.Object) (object.Object, error) {
 	key, ok := index.(object.Hashable)
 	if !ok {
 		return nil, fmt.Errorf("unusable as hash key: %s", index.Type().Signature())
 	}
 
-	_, exists := hashObject.Pairs[key.HashKey()]
+	_, exists := hash.Pairs[key.HashKey()]
 	if !exists {
 		return NULL, nil
 	}
 
-	return &object.HashElementReference{Hash: hashObject, Key: index}, nil
+	return &object.HashElementReference{
+		Hash: hash,
+		Key:  index,
+		ReferenceType: object.ReferenceType{
+			IsConstantReference: hash.IsConstant(),
+			ValueType:           hash.ValueType,
+		},
+	}, nil
 }

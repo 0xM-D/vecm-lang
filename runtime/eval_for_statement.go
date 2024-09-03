@@ -5,13 +5,14 @@ import (
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environment) (object.Object, error) {
+//gocognit:ignore
+func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environment) error {
 	forEnv := object.NewEnclosedEnvironment(env)
 
 	if node.Initialization != nil {
 		_, err := r.Eval(node.Initialization, forEnv)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 
@@ -20,7 +21,7 @@ func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environme
 			conditionResult, err := r.Eval(node.Condition, forEnv)
 
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			if !isTruthy(conditionResult) {
@@ -32,7 +33,7 @@ func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environme
 			_, err := r.Eval(node.Body, forEnv)
 
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
 
@@ -40,10 +41,10 @@ func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environme
 			_, err := r.Eval(node.AfterThought, forEnv)
 
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
 	}
 
-	return nil, nil
+	return nil
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalIntegerLiteral(node *ast.IntegerLiteral, env *object.Environment) (object.Object, error) {
+func (r *Runtime) evalIntegerLiteral(node *ast.IntegerLiteral, _ *object.Environment) (object.Object, error) {
 	kind, err := getMinimumIntegerType(&node.Value)
 	if err != nil {
 		return nil, err

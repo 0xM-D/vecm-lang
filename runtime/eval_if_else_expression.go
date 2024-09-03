@@ -10,11 +10,12 @@ func (r *Runtime) evalIfExpression(ie *ast.IfStatement, env *object.Environment)
 	if err != nil {
 		return nil, err
 	}
-	if isTruthy(condition) {
+	switch {
+	case isTruthy(condition):
 		return r.Eval(ie.Consequence, env)
-	} else if ie.Alternative != nil {
+	case ie.Alternative != nil:
 		return r.Eval(ie.Alternative, env)
-	} else {
+	default:
 		return NULL, nil
 	}
 }

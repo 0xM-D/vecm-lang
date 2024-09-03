@@ -5,6 +5,6 @@ import (
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalBooleanLiteral(node *ast.BooleanLiteral) (object.Object, error) {
-	return nativeBoolToBooleanObject(node.Value), nil
+func (r *Runtime) evalBooleanLiteral(node *ast.BooleanLiteral) *object.Boolean {
+	return nativeBoolToBooleanObject(node.Value)
 }

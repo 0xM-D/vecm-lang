@@ -13,7 +13,7 @@ func (r *Runtime) evalIdentifier(
 ) (object.Object, error) {
 	reference := env.GetReference(node.Value)
 	if reference == nil {
-		return nil, fmt.Errorf("identifier not found: " + node.Value)
+		return nil, fmt.Errorf("identifier not found: %s", node.Value)
 	}
 	return reference, nil
 }
