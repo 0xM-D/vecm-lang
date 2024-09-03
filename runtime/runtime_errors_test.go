@@ -62,7 +62,7 @@ func TestRuntimeErrors(t *testing.T) {
 		},
 		{
 			`a := "fasdf"; string a = a;`,
-			"identifier with name a already exists",
+			"failed to declare variable a: identifier with name a already exists",
 		},
 		{
 			`const abcc = "fasdf"; abcc = "fasdfsd";`,

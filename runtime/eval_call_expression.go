@@ -41,7 +41,7 @@ func (r *Runtime) ApplyFunction(fn object.Object, args []object.Object) (object.
 		}
 		return unwrapReturnValue(evaluated), nil
 	case object.IsBuiltinFunction(fn):
-		function, ok := object.UnwrapReferenceObject(fn).(object.BuiltinFunction)
+		function, ok := object.UnwrapReferenceObject(fn).(*object.BuiltinFunction)
 		if !ok {
 			return nil, fmt.Errorf("object is not a builtin function: %s", fn.Inspect())
 		}
