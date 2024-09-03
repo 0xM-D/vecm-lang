@@ -9,5 +9,4 @@ func TestExportStatement(t *testing.T) {
 
 	// TODO, just fail for now
 	t.Fatalf("Not implemented")
-
 }

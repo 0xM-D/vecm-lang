@@ -90,7 +90,6 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 			value = uint64(math.Float32bits(float32(number.GetUInt64())))
 		}
 	} else if object.IsFloat(number) && object.IsIntegerKind(target) { // casting from float to int
-
 		if object.IS_SIGNED[target] && object.IsFloat32(number) {
 			value = uint64(int64(number.GetFloat32()))
 		} else if object.IS_SIGNED[target] && object.IsFloat64(number) {

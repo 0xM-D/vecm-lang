@@ -32,5 +32,4 @@ func TestTypedDeclarationStatementInteger(t *testing.T) {
 	if _, ok := blocks[0].Insts[2].(*ir.InstAlloca); !ok {
 		t.Fatalf("Expected an alloca instruction, got %T", blocks[0].Insts[2])
 	}
-
 }

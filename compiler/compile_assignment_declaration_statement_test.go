@@ -36,7 +36,6 @@ func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 	if blocks[0].Insts[1].LLString() != "store i32 10, i32* %1" {
 		t.Fatalf("Expected store instruction, got %s", blocks[0].Insts[1].LLString())
 	}
-
 }
 
 func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
