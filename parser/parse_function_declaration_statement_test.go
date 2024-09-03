@@ -47,5 +47,4 @@ func TestFunctionDeclarationStatement(t *testing.T) {
 	}
 
 	testInfixExpression(t, bodyStmt.ReturnValue, TestIdentifier{"param1"}, "+", TestIdentifier{"param2"})
-
 }

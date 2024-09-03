@@ -5,8 +5,8 @@ import (
 )
 
 func TestCompileEmptyProgram(t *testing.T) {
-	code := ``;
+	code := ``
 
 	compileAndVerifyCode(code, t)
 
-} 
+}

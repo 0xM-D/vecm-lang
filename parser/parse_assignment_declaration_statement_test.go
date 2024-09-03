@@ -45,6 +45,5 @@ func TestAssignmentDeclarationStatement(t *testing.T) {
 		if decl.Value.String() != tt.expectedValue {
 			t.Fatalf("decl.Value is not %s. got=%s", tt.expectedValue, decl.Value.String())
 		}
-
 	}
 }

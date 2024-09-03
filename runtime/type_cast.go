@@ -67,7 +67,6 @@ func typeCast(obj object.Object, targetType object.ObjectType, castType CastType
 }
 
 func numberCast(number *object.Number, target object.ObjectKind, castType CastType) (*object.Number, error) {
-
 	if number.Kind == target {
 		return number, nil
 	}
@@ -90,7 +89,6 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 		} else if number.IsUnsigned() && target.Kind() == object.Float32Kind {
 			value = uint64(math.Float32bits(float32(number.GetUInt64())))
 		}
-
 	} else if object.IsFloat(number) && object.IsIntegerKind(target) { // casting from float to int
 
 		if object.IS_SIGNED[target] && object.IsFloat32(number) {
@@ -102,7 +100,6 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 		} else if !object.IS_SIGNED[target] && object.IsFloat64(number) {
 			value = uint64(number.GetFloat64())
 		}
-
 	} else if object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind) { // casting from float to float
 		if number.Type() == object.Float32Kind && target == object.Float64Kind {
 			value = math.Float64bits(float64(number.GetFloat32()))
@@ -128,7 +125,6 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 		case object.UInt64Kind:
 			value = uint64(uint64(number.GetInt64()))
 		}
-
 	}
 
 	return &object.Number{Value: value, Kind: target}, nil
@@ -155,7 +151,6 @@ func arrayCast(array *object.Array, targetType *object.ArrayObjectType, castType
 }
 
 func arithmeticCast(first, second *object.Number) (*object.Number, *object.Number, error) {
-
 	if first.Type().Kind() == second.Type().Kind() {
 		return first, second, nil
 	}

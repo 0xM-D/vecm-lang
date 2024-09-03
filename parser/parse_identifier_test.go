@@ -25,5 +25,4 @@ func TestIdentifierExpression(t *testing.T) {
 	}
 
 	testIdentifier(t, stmt.Expression, "foobar")
-
 }

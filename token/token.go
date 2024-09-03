@@ -13,14 +13,14 @@ const (
 	ILLEGAL TokenType = "ILLEGAL"
 	EOF     TokenType = "EOF"
 
-	// Identifiers + literals
+	// Identifiers + literals.
 	IDENT   TokenType = "IDENT"
 	INT     TokenType = "INT"
 	FLOAT32 TokenType = "FLOAT32"
 	FLOAT64 TokenType = "FLOAT64"
 	STRING  TokenType = "STRING"
 
-	// Operators
+	// Operators.
 	PLUS     TokenType = "+"
 	MINUS    TokenType = "-"
 	BANG     TokenType = "!"
@@ -28,7 +28,7 @@ const (
 	SLASH    TokenType = "/"
 	ACCESS   TokenType = "."
 
-	// Assignment operators
+	// Assignment operators.
 	ASSIGN          TokenType = "="
 	DECL_ASSIGN     TokenType = ":="
 	PLUS_ASSIGN     TokenType = "+="
@@ -36,7 +36,7 @@ const (
 	ASTERISK_ASSIGN TokenType = "*="
 	SLASH_ASSIGN    TokenType = "/="
 
-	// Comparison operators
+	// Comparison operators.
 	LT     = "<"
 	GT     = ">"
 	LTE    = "<="
@@ -44,11 +44,11 @@ const (
 	EQ     = "=="
 	NOT_EQ = "!="
 
-	// Boolean operators
+	// Boolean operators.
 	AND = "&&"
 	OR  = "||"
 
-	// Bitwise operators
+	// Bitwise operators.
 	B_AND     = "&"
 	B_OR      = "|"
 	B_XOR     = "^"
@@ -56,7 +56,7 @@ const (
 	B_SHIFT_L = "<<"
 	B_SHIFT_R = ">>"
 
-	// Delimiters
+	// Delimiters.
 	COMMA        TokenType = ","
 	SEMICOLON    TokenType = ";"
 	COLON        TokenType = ":"
@@ -69,7 +69,7 @@ const (
 	LBRACKET TokenType = "["
 	RBRACKET TokenType = "]"
 
-	// Keywords
+	// Keywords.
 	FUNCTION TokenType = "FUNCTION"
 	LET      TokenType = "LET"
 	TRUE     TokenType = "TRUE"
@@ -81,7 +81,7 @@ const (
 	FOR      TokenType = "FOR"
 	AS       TokenType = "AS"
 
-	// Type tokens
+	// Type tokens.
 	DASH_ARROW    TokenType = "->"
 	EQUALS_ARROW  TokenType = "=>"
 	NEW           TokenType = "new"
@@ -89,7 +89,7 @@ const (
 	ARRAY_TYPE    TokenType = "[]"
 	FUNCTION_TYPE TokenType = "function"
 
-	// import / export
+	// import / export.
 	IMPORT TokenType = "import"
 	FROM   TokenType = "from"
 	EXPORT TokenType = "export"

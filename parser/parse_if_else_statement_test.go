@@ -45,7 +45,6 @@ func TestIfExpression(t *testing.T) {
 	if stmt.Alternative != nil {
 		t.Errorf("stmt.Alternative.Statements was not nil. got=%+v", stmt.Alternative)
 	}
-
 }
 
 func TestIfExpressionNoBrace(t *testing.T) {
@@ -97,7 +96,6 @@ func TestIfExpressionNoBrace(t *testing.T) {
 	if !testIdentifier(t, alternative.Expression, "y") {
 		return
 	}
-
 }
 
 func TestIfElseExpression(t *testing.T) {
@@ -153,5 +151,4 @@ func TestIfElseExpression(t *testing.T) {
 	if !testIdentifier(t, alternative.Expression, "y") {
 		return
 	}
-
 }

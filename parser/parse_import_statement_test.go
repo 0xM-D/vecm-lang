@@ -8,7 +8,6 @@ import (
 )
 
 func TestImportStatement(t *testing.T) {
-
 	tests := []struct {
 		input                     string
 		expectedImportPath        string
@@ -56,6 +55,5 @@ func TestImportStatement(t *testing.T) {
 		for i, identifier := range importStmt.ImportedIdentifiers {
 			testIdentifier(t, identifier, tt.expectedImportIdentifiers[i])
 		}
-
 	}
 }

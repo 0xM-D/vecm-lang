@@ -47,6 +47,5 @@ func TestExplicitTypeCast(t *testing.T) {
 		if typeCastExpr.Type.String() != tt.expectedType {
 			t.Fatalf("typeCastExpr.Type is not %s. got=%s", tt.expectedType, typeCastExpr.Type.String())
 		}
-
 	}
 }

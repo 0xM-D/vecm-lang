@@ -152,7 +152,6 @@ func (ie *IfStatement) String() string {
 	}
 
 	return out.String()
-
 }
 
 func (bs *BlockStatement) statementNode()          {}

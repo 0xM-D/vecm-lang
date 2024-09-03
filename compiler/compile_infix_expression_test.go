@@ -253,6 +253,7 @@ func TestNotEqualExpression(t *testing.T) {
 		t.Fatalf("Expected icmp ne i32 5, 10, got %s", inst.LLString())
 	}
 }
+
 // TestGreaterOrEqualExpression tests the greater than or equal comparison of two numbers.
 func TestGreaterOrEqualExpression(t *testing.T) {
 	code := `fn main() -> bool { return 10 >= 5; }`

@@ -48,7 +48,6 @@ func TestFunctionLiteral(t *testing.T) {
 	}
 
 	testInfixExpression(t, bodyStmt.Expression, TestIdentifier{"x"}, "+", TestIdentifier{"y"})
-
 }
 
 func TestFunctionLiteralParameters(t *testing.T) {

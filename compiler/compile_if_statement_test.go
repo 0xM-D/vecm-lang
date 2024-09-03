@@ -48,7 +48,6 @@ func TestIfStatement(t *testing.T) {
 	if blocks[2].Term.(*ir.TermRet) == nil {
 		t.Fatalf("Expected ret terminator in block 1, got nil")
 	}
-
 }
 
 func TestEarlyExit(t *testing.T) {
@@ -106,7 +105,6 @@ func TestEarlyExit(t *testing.T) {
 			t.Fatalf("Expected %d, got %d", test.expected, result.Int(true))
 		}
 	}
-
 }
 
 func TestIfElseStatement(t *testing.T) {

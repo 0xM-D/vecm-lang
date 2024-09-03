@@ -6,7 +6,6 @@ import (
 )
 
 func (p *Parser) parseStatement() ast.Statement {
-
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement()

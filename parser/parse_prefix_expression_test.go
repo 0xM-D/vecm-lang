@@ -48,6 +48,5 @@ func TestPrefixExpression(t *testing.T) {
 		if !testLiteralExpression(t, expr.Right, tt.value) {
 			return
 		}
-
 	}
 }

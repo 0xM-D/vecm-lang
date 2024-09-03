@@ -25,5 +25,4 @@ func TestBooleanLiteral(t *testing.T) {
 	}
 
 	testBooleanLiteral(t, stmt.Expression, true)
-
 }

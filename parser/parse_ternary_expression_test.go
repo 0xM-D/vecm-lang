@@ -52,6 +52,5 @@ func TestTernaryOperator(t *testing.T) {
 		if !testLiteralExpression(t, ternaryExpression.ValueIfFalse, tt.valueIfFalse) {
 			t.Fatalf("Ternary expression falueIfFalse is different than expected. want=%s got=%s", ternaryExpression.ValueIfFalse.String(), tt.valueIfFalse)
 		}
-
 	}
 }

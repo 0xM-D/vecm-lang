@@ -29,7 +29,6 @@ func TestFloat32Literal(t *testing.T) {
 
 		testFloat32Literal(t, stmt.Expression, expected[i])
 	}
-
 }
 
 func TestFloat64Literal(t *testing.T) {
@@ -54,5 +53,4 @@ func TestFloat64Literal(t *testing.T) {
 
 		testFloat64Literal(t, stmt.Expression, expected[i])
 	}
-
 }

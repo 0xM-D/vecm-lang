@@ -63,7 +63,6 @@ func TestBooleanInfixExpression(t *testing.T) {
 }
 
 func TestFloatInfixExpression(t *testing.T) {
-
 	tests := []struct {
 		input    string
 		expected interface{}

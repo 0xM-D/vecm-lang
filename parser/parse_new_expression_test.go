@@ -47,7 +47,6 @@ func TestNewArrayArrayExpression(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 func TestNewHashExpression(t *testing.T) {
@@ -117,7 +116,6 @@ func TestNewHashLiteralExpressionEmpty(t *testing.T) {
 	if len(hash.InitializationList) != 0 {
 		t.Errorf("hash.Pairs has wrong length. got=%d", len(hash.InitializationList))
 	}
-
 }
 
 func TestNewHashLiteralExpressionWithExpressions(t *testing.T) {

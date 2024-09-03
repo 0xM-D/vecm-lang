@@ -136,10 +136,8 @@ type TestIdentifier struct {
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
-
 	expectedKind := reflect.TypeOf(expected).Kind()
 	if expectedKind == reflect.Array || expectedKind == reflect.Slice {
-
 		arrayLiteral := exp.(*ast.NewExpression)
 		expectedElements := expected.([]interface{})
 

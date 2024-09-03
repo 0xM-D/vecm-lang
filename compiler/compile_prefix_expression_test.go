@@ -71,7 +71,6 @@ func TestMinusPrefixExpression(t *testing.T) {
 			t.Fatalf("Expected %d, got %d", test.expected, int32(result.Int(false)))
 		}
 	}
-
 }
 func TestBangPrefixExpression(t *testing.T) {
 	code := `

@@ -101,5 +101,4 @@ func TestImportStatement(t *testing.T) {
 		}
 		testLiteralObject(t, result, tt.expected)
 	}
-
 }

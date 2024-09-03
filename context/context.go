@@ -13,7 +13,7 @@ type Context interface {
 	LookUpIdentifier(name string) (Variable, bool)
 }
 
-type SharedContextProperties struct {	
+type SharedContextProperties struct {
 	parentContext Context
 	// functionStore FunctionStore
 }

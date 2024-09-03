@@ -47,7 +47,6 @@ func (r *Runtime) evalExpressionsArray(
 		result = append(result, evaluated)
 	}
 	return result, nil
-
 }
 
 func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {

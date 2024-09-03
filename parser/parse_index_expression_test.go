@@ -30,5 +30,4 @@ func TestIndexExpression(t *testing.T) {
 	if !testInfixExpression(t, indexExp.Index, big.NewInt(1), "+", big.NewInt(1)) {
 		return
 	}
-
 }

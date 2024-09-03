@@ -17,12 +17,12 @@ type Variable interface {
 }
 
 type FunctionParamVariable struct {
-	name string
+	name  string
 	param *ir.Param
 }
 
 type LocalVariable struct {
-	name string
+	name   string
 	alloca *ir.InstAlloca
 }
 
@@ -50,12 +50,12 @@ func (v *FunctionParamVariable) GetAddress() value.Value {
 	return v.param
 }
 
-func (vs *VariableStore) DeclareLocalVariable(name string, alloca *ir.InstAlloca) Variable{
+func (vs *VariableStore) DeclareLocalVariable(name string, alloca *ir.InstAlloca) Variable {
 	vs.variables[name] = &LocalVariable{name, alloca}
 	return vs.variables[name]
 }
 
-func (vs *VariableStore) DeclareFunctionParam(name string, param *ir.Param) Variable{
+func (vs *VariableStore) DeclareFunctionParam(name string, param *ir.Param) Variable {
 	vs.variables[name] = &FunctionParamVariable{name, param}
 	return vs.variables[name]
 }

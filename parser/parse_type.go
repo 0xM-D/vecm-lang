@@ -6,7 +6,6 @@ import (
 )
 
 func (p *Parser) parseType() ast.Type {
-
 	var result ast.Type
 
 	if p.curToken.Type == token.ARRAY_TYPE {
@@ -55,7 +54,6 @@ func (p *Parser) parseMapType() ast.Type {
 }
 
 func (p *Parser) parseFunctionType() ast.Type {
-
 	functionType := ast.FunctionType{Token: p.curToken}
 
 	functionType.ParameterTypes = p.parseFunctionTypeParameters()

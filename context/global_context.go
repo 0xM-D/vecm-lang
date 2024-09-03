@@ -6,9 +6,9 @@ import (
 )
 
 type GlobalContext struct {
-	Module *ir.Module
+	Module                  *ir.Module
 	sharedContextProperties SharedContextProperties
-	variableStore *VariableStore
+	variableStore           *VariableStore
 }
 
 func NewGlobalContext(parentContext *Context) *GlobalContext {
@@ -22,12 +22,12 @@ func NewGlobalContext(parentContext *Context) *GlobalContext {
 }
 
 func (ctx *GlobalContext) GetParentContext() Context {
-	return nil;
+	return nil
 }
 
 func (ctx GlobalContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
 	funcs := ctx.Module.Funcs
-	for _, f := range(funcs) {
+	for _, f := range funcs {
 		if f.Name() == name {
 			return f
 		}
@@ -37,7 +37,7 @@ func (ctx GlobalContext) GetFunction(name string, params ...*ir.Param) *ir.Func 
 
 func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {
 	fn := ctx.Module.NewFunc(name, retType, params...)
-	return fn;
+	return fn
 }
 
 func (ctx *GlobalContext) DeclareLocalVariable(name string, t types.Type) *ir.InstAlloca {

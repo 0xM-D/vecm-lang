@@ -35,5 +35,4 @@ func TestReturnStatement(t *testing.T) {
 			t.Errorf("returnStmt.TokenLiteral not 'return', got=%q", returnStmt.TokenLiteral())
 		}
 	}
-
 }

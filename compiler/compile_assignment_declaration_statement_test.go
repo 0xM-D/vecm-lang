@@ -20,8 +20,8 @@ func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 
 	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
 
-	blocks := expectFunctionHasNBlocks(fn, 1, t);
-	
+	blocks := expectFunctionHasNBlocks(fn, 1, t)
+
 	// expect 2 instructions
 	if len(blocks[0].Insts) != 2 {
 		t.Fatalf("Expected 2 instructions, got %d", len(blocks[0].Insts))
@@ -36,7 +36,7 @@ func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 	if blocks[0].Insts[1].LLString() != "store i32 10, i32* %1" {
 		t.Fatalf("Expected store instruction, got %s", blocks[0].Insts[1].LLString())
 	}
-		
+
 }
 
 func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
@@ -46,8 +46,8 @@ func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
 
 	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
 
-	blocks := expectFunctionHasNBlocks(fn, 1, t);
-	
+	blocks := expectFunctionHasNBlocks(fn, 1, t)
+
 	// expect 2 instructions
 	if len(blocks[0].Insts) != 2 {
 		t.Fatalf("Expected 2 instructions, got %d", len(blocks[0].Insts))
@@ -61,6 +61,5 @@ func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
 	// expect store instruction
 	if blocks[0].Insts[1].LLString() != "store i1 true, i1* %1" {
 		t.Fatalf("Expected store instruction, got %s", blocks[0].Insts[1].LLString())
-
 	}
 }

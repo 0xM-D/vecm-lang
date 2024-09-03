@@ -11,7 +11,6 @@ type File struct {
 }
 
 func ReadFile(filePath string) (*File, error) {
-
 	absolutePath, err := filepath.Abs(filePath)
 	if err != nil {
 		return nil, err

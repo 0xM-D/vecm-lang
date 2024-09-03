@@ -31,5 +31,4 @@ func TestIfElseExpressions(t *testing.T) {
 			testNullObject(t, evaluated)
 		}
 	}
-
 }

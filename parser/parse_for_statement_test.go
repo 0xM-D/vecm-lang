@@ -61,7 +61,6 @@ func TestForStatement(t *testing.T) {
 	}
 
 	testDeclarationStatement(t, &bodyStmt.DeclarationStatement, "x", "(i * i)")
-
 }
 
 func TestEmptyForStatement(t *testing.T) {
@@ -101,7 +100,6 @@ func TestEmptyForStatement(t *testing.T) {
 	if len(stmt.Body.Statements) != 0 {
 		t.Fatalf("for loop body is not empty.\n")
 	}
-
 }
 
 func TestForStatementNoBraces(t *testing.T) {
@@ -157,5 +155,4 @@ func TestForStatementNoBraces(t *testing.T) {
 	}
 
 	testDeclarationStatement(t, &bodyStmt.DeclarationStatement, "x", "(i * i)")
-
 }

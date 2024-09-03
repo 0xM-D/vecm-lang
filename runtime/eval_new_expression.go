@@ -9,7 +9,6 @@ import (
 
 func (r *Runtime) evalNewExpression(exp *ast.NewExpression,
 	env *object.Environment) (object.Object, error) {
-
 	_, isArray := exp.Type.(ast.ArrayType)
 	if isArray {
 		return r.evalNewArrayExpression(exp, env)
@@ -21,7 +20,6 @@ func (r *Runtime) evalNewExpression(exp *ast.NewExpression,
 	}
 
 	return nil, fmt.Errorf("new operator not yet supported on type: %s", exp.Type.String())
-
 }
 
 func (r *Runtime) evalNewArrayExpression(exp *ast.NewExpression, env *object.Environment) (object.Object, error) {

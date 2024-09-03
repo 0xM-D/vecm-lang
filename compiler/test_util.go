@@ -8,12 +8,10 @@ import (
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
-
 	llvm "tinygo.org/x/go-llvm"
 )
 
 func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
-
 	c, _ := InitializeCompiler()
 	_, hasParserErrors := c.loadModule("code", code)
 
@@ -107,7 +105,6 @@ func expectFunctionExists(module *ir.Module, funcName string, paramTypes []types
 }
 
 func expectFunctionHasNBlocks(fn *ir.Func, n int, t *testing.T) []*ir.Block {
-
 	if len(fn.Blocks) != n {
 		t.Fatalf("Function %s has wrong number of blocks, ecxpected %d, got %d", fn.Name(), n, len(fn.Blocks))
 	}

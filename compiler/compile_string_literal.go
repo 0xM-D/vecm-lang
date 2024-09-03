@@ -8,7 +8,7 @@ import (
 
 // For now, string literals can be treated as constants
 // This will change when we implement a different memory model
-// This is untested code
+// This is untested code.
 func (c *Compiler) compileStringLiteral(stringLiteral *ast.StringLiteral) value.Value {
 	return constant.NewCharArrayFromString(stringLiteral.Value)
 }

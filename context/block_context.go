@@ -7,16 +7,15 @@ import (
 
 type BlockContext struct {
 	sharedContextProperties SharedContextProperties
-	variableStore *VariableStore
+	variableStore           *VariableStore
 	*ir.Block
 }
 
 func (ctx *BlockContext) GetParentContext() Context {
-	return ctx.sharedContextProperties.parentContext;
+	return ctx.sharedContextProperties.parentContext
 }
 
 func (ct *BlockContext) GetParentFunctionContext() *FunctionContext {
-	
 	// go up the chain until we find a function context
 	for ctx := ct.GetParentContext(); ctx != nil; ctx = ctx.GetParentContext() {
 		if functionContext, ok := ctx.(*FunctionContext); ok {
@@ -58,7 +57,7 @@ func (ctx *BlockContext) DeclareLocalVariable(name string, t types.Type) *ir.Ins
 func NewBlockContext(parentContext Context, block *ir.Block) *BlockContext {
 	return &BlockContext{
 		sharedContextProperties: SharedContextProperties{parentContext},
-		variableStore: NewVariableStore(),
-		Block: block,
+		variableStore:           NewVariableStore(),
+		Block:                   block,
 	}
 }

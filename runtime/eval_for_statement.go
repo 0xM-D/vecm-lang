@@ -43,7 +43,6 @@ func (r *Runtime) evalForStatement(node *ast.ForStatement, env *object.Environme
 				return nil, err
 			}
 		}
-
 	}
 
 	return nil, nil

@@ -20,5 +20,4 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 
 	return block
-
 }

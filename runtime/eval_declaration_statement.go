@@ -22,7 +22,6 @@ func (r *Runtime) evalDeclarationStatement(declNode *ast.DeclarationStatement, e
 		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	val := object.UnwrapReferenceObject(ref)

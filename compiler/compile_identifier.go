@@ -35,5 +35,4 @@ func (c *Compiler) compileIdentifierRValue(identifier *ast.Identifier, ctx *cont
 		c.newCompilerError(identifier, "Invalid identifier type: %T", ident)
 		return nil
 	}
-
 }

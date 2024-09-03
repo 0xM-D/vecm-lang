@@ -5,7 +5,6 @@ import (
 )
 
 func TestEmptyFunctionDeclaration(t *testing.T) {
-
 	code := `fn main() -> void {}`
 
 	module := compileAndVerifyCode(code, t)
@@ -25,7 +24,6 @@ func TestEmptyFunctionDeclaration(t *testing.T) {
 	if len(block.Insts) != 0 {
 		t.Fatalf("Expected 0 instructions, got %d", len(block.Insts))
 	}
-
 }
 
 func TestFunctionDeclarationWithIntegerReturn(t *testing.T) {

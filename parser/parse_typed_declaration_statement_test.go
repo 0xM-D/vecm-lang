@@ -57,7 +57,6 @@ func TestTypedDeclaration(t *testing.T) {
 		if decl.Value.String() != tt.expectedValue {
 			t.Fatalf("decl.Value is not %s. got=%s", tt.expectedValue, decl.Value.String())
 		}
-
 	}
 }
 
@@ -97,7 +96,6 @@ func TestConstDeclarationStatement(t *testing.T) {
 		default:
 			t.Fatalf("program.Statements[0] is not ast.DeclarationStatement. got=%T", program.Statements[0])
 		}
-
 	}
 }
 
@@ -109,5 +107,4 @@ func testDeclarationStatement(t *testing.T, decl *ast.DeclarationStatement, expe
 	if decl.Value.String() != expectedValue {
 		t.Fatalf("decl.Value is not %s. got=%s", expectedValue, decl.Value.String())
 	}
-
 }

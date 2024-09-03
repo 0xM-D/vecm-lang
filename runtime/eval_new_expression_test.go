@@ -29,7 +29,6 @@ func TestArrayLiterals(t *testing.T) {
 	testIntegerObject(t, result.Elements[0], big.NewInt(1))
 	testIntegerObject(t, result.Elements[1], big.NewInt(4))
 	testIntegerObject(t, result.Elements[2], big.NewInt(6))
-
 }
 
 func TestHashLiterals(t *testing.T) {

@@ -46,7 +46,6 @@ func (r *Runtime) Run() error {
 }
 
 func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
-
 	absolutePath, err := filepath.Abs(modulePath)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -68,7 +67,6 @@ func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 }
 
 func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, bool) {
-
 	module, parserErrors := module.ParseModule(moduleKey, code)
 
 	if len(parserErrors) > 0 {
@@ -78,7 +76,7 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 	r.Modules[moduleKey] = module
 
 	_, err := r.Eval(module.Program, &module.RootEnvironment)
-	
+
 	if err != nil {
 		fmt.Print(err.Error())
 		return nil, true
