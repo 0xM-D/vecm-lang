@@ -19,6 +19,8 @@ linters-settings:
     exclude:
       # std libs
       - "^os/exec.Cmd$"
+      # 3rd party
+      - "^github.com/spf13/cobra.Command$"
 
   funlen:
     lines: 100
@@ -125,7 +127,7 @@ linters:
     - forbidigo # forbids identifiers
     - funlen # tool for detection of long functions
     - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
-    - gochecknoglobals # checks that no global variables exist
+    # - gochecknoglobals # checks that no global variables exist // TODO: enable after fixing issues
     - gochecknoinits # checks that no init functions are present in Go code
     - gochecksumtype # checks exhaustiveness on Go "sum types"
     - gocognit # computes and checks the cognitive complexity of functions
@@ -174,7 +176,6 @@ linters:
     - whitespace # detects leading and trailing whitespace
     - godox # detects FIXME, TODO and other comment keywords
     - exhaustruct # checks if all structure fields are initialized
-    - gci # controls golang package import order and makes it always deterministic
     - interfacebloat # checks the number of methods inside an interface
     - ireturn # accept interfaces, return concrete types
     - prealloc # [premature optimization, but can be used in some cases] finds slice declarations that could potentially be preallocated

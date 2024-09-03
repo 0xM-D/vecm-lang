@@ -1,25 +1,28 @@
-package ast
+package ast_test
 
 import (
 	"testing"
 
+	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/token"
 )
 
 func TestString(t *testing.T) {
-	program := &Program{
-		Statements: []Statement{
-			&LetStatement{
-				DeclarationStatement{
-					Token: token.Token{Type: token.LET, Literal: "let"},
-					Name: &Identifier{
-						Token: token.Token{Type: token.IDENT, Literal: "myVar"},
+	program := &ast.Program{
+		Statements: []ast.Statement{
+			&ast.LetStatement{
+				ast.DeclarationStatement{
+					Token: token.Token{Type: token.LET, Literal: "let", Linen: 0, Coln: 0},
+					Name: &ast.Identifier{
+						Token: token.Token{Type: token.IDENT, Literal: "myVar", Linen: 0, Coln: 0},
 						Value: "myVar",
 					},
-					Value: &Identifier{
-						Token: token.Token{Type: token.IDENT, Literal: "anotherVar"},
+					Value: &ast.Identifier{
+						Token: token.Token{Type: token.IDENT, Literal: "anotherVar", Linen: 0, Coln: 0},
 						Value: "anotherVar",
 					},
+					IsConstant: false,
+					Type:       nil,
 				},
 			},
 		},

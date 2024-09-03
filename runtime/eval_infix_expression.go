@@ -68,7 +68,7 @@ func (r *Runtime) evalNumberInfixExpression(left object.Object, right object.Obj
 	rightNum := object.UnwrapReferenceObject(right).(*object.Number)
 	switch operator {
 	case string(token.PLUS):
-		return numberAddition(leftNum, rightNum, env)
+		return numberAddition(leftNum, rightNum)
 	case string(token.MINUS):
 		return numberSubtraction(leftNum, rightNum, env)
 	case string(token.ASTERISK):
@@ -110,7 +110,7 @@ func (r *Runtime) evalNumberInfixExpression(left object.Object, right object.Obj
 	}
 }
 
-func numberAddition(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberAddition(left *object.Number, right *object.Number) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 	if err != nil {
 		return nil, err
@@ -337,7 +337,7 @@ func numberNotEquals(left *object.Number, right *object.Number, env *object.Envi
 }
 
 func numberPlusEquals(left object.Object, right *object.Number, env *object.Environment) (object.Object, error) {
-	sum, err := numberAddition(object.UnwrapReferenceObject(left).(*object.Number), right, env)
+	sum, err := numberAddition(object.UnwrapReferenceObject(left).(*object.Number), right)
 	if err != nil {
 		return nil, err
 	}

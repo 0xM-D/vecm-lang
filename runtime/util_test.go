@@ -1,4 +1,4 @@
-package runtime
+package runtime_test
 
 import (
 	"fmt"
@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/object"
+	"github.com/DustTheory/interpreter/runtime"
 )
 
 func testEval(input string) (object.Object, error) {
-	r, hasErrors := NewRuntimeFromCode(input)
+	r, hasErrors := runtime.NewRuntimeFromCode(input)
 	if hasErrors {
 		return nil, fmt.Errorf("test failed with parser errors")
 	}
@@ -17,7 +18,7 @@ func testEval(input string) (object.Object, error) {
 }
 
 func testNullObject(t *testing.T, obj object.Object) bool {
-	if obj != NULL {
+	if obj != runtime.NULL {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
 		return false
 	}

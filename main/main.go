@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/DustTheory/interpreter/runtime"
@@ -12,7 +12,7 @@ var rootCmd = &cobra.Command{
 	Use:   "vecm",
 	Short: "Vecm is a vector SIMD language interpreter",
 	Long:  "Vecm is a programming language that emphasizes vector SIMD instructions and operations.",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		runFile(args[0])
 	},
 }
@@ -25,7 +25,7 @@ func runFile(filePath string) {
 
 	runtimeError := r.Run()
 	if runtimeError != nil {
-		fmt.Println(runtimeError)
+		log.Println(runtimeError)
 	}
 }
 
@@ -42,7 +42,7 @@ func runFile(filePath string) {
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }

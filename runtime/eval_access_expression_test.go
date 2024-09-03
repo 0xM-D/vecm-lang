@@ -1,4 +1,4 @@
-package runtime
+package runtime_test
 
 import (
 	"math/big"
@@ -21,7 +21,10 @@ func TestTypeBuiltins(t *testing.T) {
 		{"let arr = new []int{1, 2, 3}; arr.push(4).size()", big.NewInt(4)},
 		{"new []int{}.push(1).size();", big.NewInt(1)},
 		{"new []int{1, 2, 3}.delete(1, 5).size();", big.NewInt(1)},
-		{`new []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}.delete(1, 3);`, []interface{}{"1", "5", "6", "7", "8", "9", "10"}},
+		{
+			`new []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}.delete(1, 3);`,
+			[]interface{}{"1", "5", "6", "7", "8", "9", "10"},
+		},
 		{`new []string{}.pushMultiple("0", 10)`, []interface{}{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"}},
 		{`new []int{1, 2, 3}.pushMultiple(0, 10).size()`, big.NewInt(13)},
 		{`new []int{1, 2, 3}.slice(0, 3).size()`, big.NewInt(3)},
