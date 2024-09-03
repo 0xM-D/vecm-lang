@@ -77,7 +77,12 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 
 	r.Modules[moduleKey] = module
 
-	r.Eval(module.Program, &module.RootEnvironment)
+	_, err := r.Eval(module.Program, &module.RootEnvironment)
+	
+	if err != nil {
+		fmt.Print(err.Error())
+		return nil, true
+	}
 
 	return module, false
 }

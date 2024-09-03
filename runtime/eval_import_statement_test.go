@@ -41,7 +41,10 @@ func TestImportStatement(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	importFile.Sync()
+	err = importFile.Sync()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	tests := []struct {
 		input    string
