@@ -389,7 +389,7 @@ func numberDivideEquals(left object.Object, right *object.Number, env *object.En
 }
 
 func assignment(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	lvalue, ok := left.(object.ObjectReference)
+	lvalue, ok := left.(object.Reference)
 	rvalue := object.UnwrapReferenceObject(right)
 	lvalueType := object.UnwrapReferenceType(lvalue.GetValue().Type())
 	rvalueType := object.UnwrapReferenceType(rvalue.Type())

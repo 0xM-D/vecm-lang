@@ -6,11 +6,11 @@ import (
 )
 
 type ArrayObjectType struct {
-	ElementType ObjectType
+	ElementType Type
 }
 
 func (a *ArrayObjectType) Signature() string             { return "[]" + a.ElementType.Signature() }
-func (a *ArrayObjectType) Kind() ObjectKind              { return ArrayKind }
+func (a *ArrayObjectType) Kind() Kind                    { return ArrayKind }
 func (a *ArrayObjectType) Builtins() *FunctionRepository { return ArrayKind.Builtins() }
 func (a *ArrayObjectType) IsConstant() bool              { return false }
 
@@ -33,4 +33,4 @@ func (a *Array) Inspect() string {
 
 	return out.String()
 }
-func (a *Array) Type() ObjectType { return &a.ArrayObjectType }
+func (a *Array) Type() Type { return &a.ArrayObjectType }

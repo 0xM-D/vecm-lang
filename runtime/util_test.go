@@ -147,7 +147,7 @@ func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFuncti
 	}
 }
 
-func testFunctionType(t *testing.T, objectType object.ObjectType, expected object.FunctionObjectType) bool {
+func testFunctionType(t *testing.T, objectType object.Type, expected object.FunctionObjectType) bool {
 	functionType, ok := object.UnwrapReferenceType(objectType).(*object.FunctionObjectType)
 	if !ok {
 		t.Errorf("objectType is not function. got=%s", objectType.Signature())

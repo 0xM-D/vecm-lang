@@ -1,6 +1,9 @@
 package object
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type EnvStoreEntry struct {
 	Object
@@ -9,12 +12,12 @@ type EnvStoreEntry struct {
 }
 
 type Environment struct {
-	typeStore map[string]ObjectType
+	typeStore map[string]Type
 	store     map[string]*EnvStoreEntry
 	outer     *Environment
 }
 
-var GLOBAL_TYPES = map[ObjectKind]ObjectKind{
+var GlobalTypes = map[Kind]Kind{
 	"char":      Int8Kind,
 	"int":       Int64Kind,
 	Int8Kind:    Int8Kind,
@@ -35,7 +38,7 @@ var GLOBAL_TYPES = map[ObjectKind]ObjectKind{
 
 func NewEnvironment() *Environment {
 	s := make(map[string]*EnvStoreEntry)
-	return &Environment{store: s, outer: nil}
+	return &Environment{store: s, outer: nil, typeStore: map[string]Type{}}
 }
 
 func (e *Environment) GetReference(name string) Object {
@@ -46,7 +49,14 @@ func (e *Environment) GetReference(name string) Object {
 	if !ok {
 		return nil
 	}
-	return &VariableReference{Env: e, Name: name, ReferenceType: ReferenceType{IsConstantReference: entry.IsConstant, ValueType: entry.Object.Type()}}
+	return &VariableReference{
+		Env:  e,
+		Name: name,
+		ReferenceType: ReferenceType{
+			IsConstantReference: entry.IsConstant,
+			ValueType:           entry.Object.Type(),
+		},
+	}
 }
 
 func (e *Environment) Get(name string) Object {
@@ -61,8 +71,8 @@ func (e *Environment) Get(name string) Object {
 	return entry.Object
 }
 
-func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
-	globalObjectType, globalObjectTypeExists := GLOBAL_TYPES[ObjectKind(name)]
+func (e *Environment) GetObjectType(name string) (Type, bool) {
+	globalObjectType, globalObjectTypeExists := GlobalTypes[Kind(name)]
 	if globalObjectTypeExists {
 		return globalObjectType, true
 	}
@@ -73,7 +83,7 @@ func (e *Environment) GetObjectType(name string) (ObjectType, bool) {
 	return objectType, objectTypeExists
 }
 
-func (e *Environment) Declare(name string, isConstant bool, val Object) (ObjectReference, error) {
+func (e *Environment) Declare(name string, isConstant bool, val Object) (Reference, error) {
 	_, exists := e.store[name]
 	if exists {
 		return nil, fmt.Errorf("identifier with name %s already exists", name)
@@ -87,7 +97,7 @@ func (e *Environment) Declare(name string, isConstant bool, val Object) (ObjectR
 func (e *Environment) Set(name string, val Object) (Object, error) {
 	entry, exists := e.store[name]
 	if exists && entry.IsConstant {
-		return nil, fmt.Errorf("cannot assign to const variable")
+		return nil, errors.New("cannot assign to const variable")
 	}
 	e.store[name] = &EnvStoreEntry{val, entry.IsConstant, false}
 	return e.store[name].Object, nil

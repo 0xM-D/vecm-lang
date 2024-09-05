@@ -29,7 +29,7 @@ const (
 	FLOAT64_WEIGHT
 )
 
-var numberCastWeight = map[object.ObjectKind]uint8{
+var numberCastWeight = map[object.Kind]uint8{
 	object.Int8Kind:    INT8_WEIGHT,
 	object.Int16Kind:   INT16_WEIGHT,
 	object.Int32Kind:   INT32_WEIGHT,
@@ -42,7 +42,7 @@ var numberCastWeight = map[object.ObjectKind]uint8{
 	object.Float64Kind: FLOAT64_WEIGHT,
 }
 
-func typeCast(obj object.Object, targetType object.ObjectType, castType CastType) (object.Object, error) {
+func typeCast(obj object.Object, targetType object.Type, castType CastType) (object.Object, error) {
 	if obj.Type().Signature() == targetType.Signature() {
 		return obj, nil
 	}
@@ -66,7 +66,7 @@ func typeCast(obj object.Object, targetType object.ObjectType, castType CastType
 	return nil, fmt.Errorf("type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
 }
 
-func numberCast(number *object.Number, target object.ObjectKind, castType CastType) (*object.Number, error) {
+func numberCast(number *object.Number, target object.Kind, castType CastType) (*object.Number, error) {
 	if number.Kind == target {
 		return number, nil
 	}
@@ -94,13 +94,13 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 	case object.IsFloat(number) && object.IsIntegerKind(target):
 		// casting from float to int
 		switch {
-		case object.IS_SIGNED[target] && object.IsFloat32(number):
+		case object.IsSigned[target] && object.IsFloat32(number):
 			value = uint64(int64(number.GetFloat32()))
-		case object.IS_SIGNED[target] && object.IsFloat64(number):
+		case object.IsSigned[target] && object.IsFloat64(number):
 			value = uint64(int64(number.GetFloat64()))
-		case !object.IS_SIGNED[target] && object.IsFloat32(number):
+		case !object.IsSigned[target] && object.IsFloat32(number):
 			value = uint64(number.GetFloat32())
-		case !object.IS_SIGNED[target] && object.IsFloat64(number):
+		case !object.IsSigned[target] && object.IsFloat64(number):
 			value = uint64(number.GetFloat64())
 		}
 	case object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind):

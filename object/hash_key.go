@@ -7,9 +7,8 @@ type HashKey uint64
 func (b *Boolean) HashKey() HashKey {
 	if b.Value {
 		return 1
-	} else {
-		return 0
 	}
+	return 0
 }
 
 func (i Number) HashKey() HashKey {

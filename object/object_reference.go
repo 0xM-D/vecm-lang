@@ -1,7 +1,7 @@
 package object
 
-type ObjectReference interface {
-	Type() ObjectType
+type Reference interface {
+	Type() Type
 	Inspect() string
 	UpdateValue(Object) (Object, error)
 	GetValue() Object
@@ -15,7 +15,7 @@ type VariableReference struct {
 
 type ReferenceType struct {
 	IsConstantReference bool
-	ValueType           ObjectType
+	ValueType           Type
 }
 
 type ArrayElementReference struct {
@@ -38,7 +38,7 @@ func (vr *VariableReference) GetValue() Object {
 	return vr.Env.Get(vr.Name)
 }
 
-func (vr *VariableReference) Type() ObjectType {
+func (vr *VariableReference) Type() Type {
 	return ReferenceType{vr.ReferenceType.IsConstantReference, vr.GetValue().Type()}
 }
 
@@ -55,7 +55,7 @@ func (ar *ArrayElementReference) GetValue() Object {
 	return ar.Array.Elements[ar.Index]
 }
 
-func (ar *ArrayElementReference) Type() ObjectType {
+func (ar *ArrayElementReference) Type() Type {
 	return ReferenceType{ar.ReferenceType.IsConstantReference, ar.GetValue().Type()}
 }
 
@@ -74,7 +74,7 @@ func (hr *HashElementReference) GetValue() Object {
 	return hr.Hash.Pairs[hashKey].Value
 }
 
-func (hr *HashElementReference) Type() ObjectType {
+func (hr *HashElementReference) Type() Type {
 	return ReferenceType{hr.ReferenceType.IsConstantReference, hr.GetValue().Type()}
 }
 
@@ -83,6 +83,6 @@ func (hr *HashElementReference) Inspect() string {
 }
 
 func (t ReferenceType) Signature() string             { return "&" + t.ValueType.Signature() }
-func (t ReferenceType) Kind() ObjectKind              { return t.ValueType.Kind() }
+func (t ReferenceType) Kind() Kind                    { return t.ValueType.Kind() }
 func (t ReferenceType) Builtins() *FunctionRepository { return nil }
 func (t ReferenceType) IsConstant() bool              { return t.IsConstantReference }

@@ -12,7 +12,7 @@ func (r *Runtime) evalDeclarationStatement(
 	env *object.Environment,
 ) (object.Object, error) {
 	ref, err := r.Eval(declNode.Value, env)
-	var expectedType object.ObjectType
+	var expectedType object.Type
 
 	if err != nil {
 		return nil, fmt.Errorf("error returned from external package: %w", err)

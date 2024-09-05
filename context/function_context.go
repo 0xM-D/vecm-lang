@@ -17,17 +17,22 @@ func (ctx *FunctionContext) GetParentContext() Context {
 	return ctx.sharedContextProperties.parentContext
 }
 
-func NewFunctionContext(parent Context, fn *ir.Func, parameterNames []*ast.Identifier, parameterTypes []ast.Type) *FunctionContext {
+func NewFunctionContext(
+	parent Context,
+	fn *ir.Func,
+	parameterNames []*ast.Identifier,
+	parameterTypes []ast.Type,
+) *FunctionContext {
 	ctx := &FunctionContext{
 		sharedContextProperties: SharedContextProperties{parentContext: parent},
 		Func:                    fn,
+		functionParams:          NewVariableStore(),
 	}
 
-	ctx.functionParams = NewVariableStore()
 	for i, name := range parameterNames {
-		t, error := util.GetLLVMType(parameterTypes[i])
-		if error != nil {
-			panic(error)
+		t, llvmTypeError := util.GetLLVMType(parameterTypes[i])
+		if llvmTypeError != nil {
+			panic(llvmTypeError)
 		}
 
 		if !fn.Params[i].Typ.Equal(t) {
@@ -61,6 +66,6 @@ func (ctx *FunctionContext) DeclareFunction(name string, retType types.Type, par
 	return ctx.GetParentContext().DeclareFunction(name, retType, params...)
 }
 
-func (ctx *FunctionContext) DeclareLocalVariable(name string, t types.Type) *ir.InstAlloca {
+func (ctx *FunctionContext) DeclareLocalVariable(_ string, _ types.Type) *ir.InstAlloca {
 	return nil // TODO: Throw error
 }

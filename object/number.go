@@ -3,12 +3,13 @@ package object
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"unsafe"
 )
 
 type Number struct {
 	Value uint64
-	Kind  ObjectKind
+	Kind  Kind
 }
 
 func (n *Number) Inspect() string {
@@ -19,12 +20,12 @@ func (n *Number) Inspect() string {
 		return fmt.Sprintf("%g", n.GetFloat64())
 	}
 	if n.IsSigned() {
-		return fmt.Sprintf("%d", n.GetInt64())
+		return strconv.FormatInt(n.GetInt64(), 10)
 	}
-	return fmt.Sprintf("%d", n.GetUInt64())
+	return strconv.FormatUint(n.GetUInt64(), 10)
 }
 
-func (n *Number) Type() ObjectType {
+func (n *Number) Type() Type {
 	return n.Kind
 }
 
@@ -44,7 +45,7 @@ func (n *Number) GetFloat64() float64 {
 	return math.Float64frombits(n.Value)
 }
 
-var IS_SIGNED = map[ObjectKind]bool{
+var IsSigned = map[Kind]bool{
 	Int8Kind:    true,
 	Int16Kind:   true,
 	Int32Kind:   true,
@@ -58,11 +59,11 @@ var IS_SIGNED = map[ObjectKind]bool{
 }
 
 func (n *Number) IsSigned() bool {
-	return IS_SIGNED[n.Kind]
+	return IsSigned[n.Kind]
 }
 
 func (n *Number) IsUnsigned() bool {
-	return !IS_SIGNED[n.Kind]
+	return !IsSigned[n.Kind]
 }
 
 func Int64Bits(x int64) uint64 {
@@ -73,7 +74,7 @@ func Int64FromBits(x uint64) int64 {
 	return *(*int64)(unsafe.Pointer(&x))
 }
 
-var NumberTypes = []ObjectKind{
+var NumberTypes = []Kind{
 	Int8Kind,
 	Int16Kind,
 	Int32Kind,

@@ -7,8 +7,8 @@ import (
 )
 
 type HashObjectType struct {
-	KeyType   ObjectType
-	ValueType ObjectType
+	KeyType   Type
+	ValueType Type
 }
 
 func (h *HashObjectType) Signature() string {
@@ -23,7 +23,7 @@ func (h *HashObjectType) Signature() string {
 	return out.String()
 }
 
-func (h *HashObjectType) Kind() ObjectKind              { return HashKind }
+func (h *HashObjectType) Kind() Kind                    { return HashKind }
 func (h *HashObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
 func (h *HashObjectType) IsConstant() bool              { return false }
 
@@ -55,4 +55,4 @@ func (h *Hash) Inspect() string {
 
 	return out.String()
 }
-func (h *Hash) Type() ObjectType { return &h.HashObjectType }
+func (h *Hash) Type() Type { return &h.HashObjectType }

@@ -14,7 +14,7 @@ type Module struct {
 }
 
 func ParseModule(moduleKey, code string) (*Module, []string) {
-	l := lexer.New(string(code))
+	l := lexer.New(code)
 	p := parser.New(l)
 
 	program := p.ParseProgram()

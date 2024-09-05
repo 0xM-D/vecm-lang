@@ -11,7 +11,7 @@ func (r *Runtime) evalIntegerLiteral(node *ast.IntegerLiteral, _ *object.Environ
 		return nil, err
 	}
 
-	if !object.IS_SIGNED[kind] {
+	if !object.IsSigned[kind] {
 		return &object.Number{Value: node.Value.Uint64(), Kind: object.UInt64Kind}, nil
 	}
 

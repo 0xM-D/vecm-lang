@@ -1,39 +1,39 @@
 package object
 
-type ObjectKind string
+type Kind string
 
 var intrinsicTypeFunctionRepositories = initIntrinsicTypeBuiltins()
 
-func (o ObjectKind) Signature() string             { return string(o) }
-func (o ObjectKind) Kind() ObjectKind              { return o }
-func (o ObjectKind) Builtins() *FunctionRepository { return intrinsicTypeFunctionRepositories[o] }
-func (o ObjectKind) IsConstant() bool              { return true }
+func (o Kind) Signature() string             { return string(o) }
+func (o Kind) Kind() Kind                    { return o }
+func (o Kind) Builtins() *FunctionRepository { return intrinsicTypeFunctionRepositories[o] }
+func (o Kind) IsConstant() bool              { return true }
 
 const (
-	Invalid             ObjectKind = "invalid"
-	Int8Kind            ObjectKind = "int8"
-	Int16Kind           ObjectKind = "int16"
-	Int32Kind           ObjectKind = "int32"
-	Int64Kind           ObjectKind = "int64"
-	UInt8Kind           ObjectKind = "uint8"
-	UInt16Kind          ObjectKind = "uint16"
-	UInt32Kind          ObjectKind = "uint32"
-	UInt64Kind          ObjectKind = "uint64"
-	Float32Kind         ObjectKind = "float32"
-	Float64Kind         ObjectKind = "float64"
-	BooleanKind         ObjectKind = "bool"
-	StringKind          ObjectKind = "string"
-	ArrayKind           ObjectKind = "array"
-	HashKind            ObjectKind = "hash"
-	FunctionKind        ObjectKind = "function"
-	BuiltinFunctionKind ObjectKind = "builtinFunction"
-	NullKind            ObjectKind = "null"
-	VoidKind            ObjectKind = "void"
-	AnyKind             ObjectKind = "any"
+	Invalid             Kind = "invalid"
+	Int8Kind            Kind = "int8"
+	Int16Kind           Kind = "int16"
+	Int32Kind           Kind = "int32"
+	Int64Kind           Kind = "int64"
+	UInt8Kind           Kind = "uint8"
+	UInt16Kind          Kind = "uint16"
+	UInt32Kind          Kind = "uint32"
+	UInt64Kind          Kind = "uint64"
+	Float32Kind         Kind = "float32"
+	Float64Kind         Kind = "float64"
+	BooleanKind         Kind = "bool"
+	StringKind          Kind = "string"
+	ArrayKind           Kind = "array"
+	HashKind            Kind = "hash"
+	FunctionKind        Kind = "function"
+	BuiltinFunctionKind Kind = "builtinFunction"
+	NullKind            Kind = "null"
+	VoidKind            Kind = "void"
+	AnyKind             Kind = "any"
 )
 
-func initIntrinsicTypeBuiltins() map[ObjectKind]*FunctionRepository {
-	repos := map[ObjectKind]*FunctionRepository{}
+func initIntrinsicTypeBuiltins() map[Kind]*FunctionRepository {
+	repos := map[Kind]*FunctionRepository{}
 
 	numberBuiltins := initNumberBuiltins()
 	for _, nt := range NumberTypes {
@@ -48,7 +48,14 @@ func initIntrinsicTypeBuiltins() map[ObjectKind]*FunctionRepository {
 func initNumberBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("toString", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: StringKind}, numberToString)
+	repo.register(
+		"toString",
+		FunctionObjectType{
+			ParameterTypes:  []Type{},
+			ReturnValueType: StringKind,
+		},
+		numberToString,
+	)
 
 	return &repo
 }
@@ -56,7 +63,7 @@ func initNumberBuiltins() *FunctionRepository {
 func initStringBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("length", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, stringLength)
+	repo.register("length", FunctionObjectType{ParameterTypes: []Type{}, ReturnValueType: Int64Kind}, stringLength)
 
 	return &repo
 }
@@ -64,31 +71,63 @@ func initStringBuiltins() *FunctionRepository {
 func initArrayBuiltins() *FunctionRepository {
 	repo := FunctionRepository{Functions: map[string]*BuiltinFunction{}}
 
-	repo.register("size", FunctionObjectType{ParameterTypes: []ObjectType{}, ReturnValueType: Int64Kind}, arraySize)
-	repo.register("push", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind}, ReturnValueType: ArrayKind}, arrayPush)
-	repo.register("pushMultiple", FunctionObjectType{ParameterTypes: []ObjectType{AnyKind, Int64Kind}, ReturnValueType: ArrayKind}, arrayPushMultiple)
-	repo.register("delete", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arrayDelete)
-	repo.register("slice", FunctionObjectType{ParameterTypes: []ObjectType{Int64Kind, Int64Kind}, ReturnValueType: ArrayKind}, arraySlice)
+	repo.register(
+		"size",
+		FunctionObjectType{ParameterTypes: []Type{}, ReturnValueType: Int64Kind},
+		arraySize,
+	)
+	repo.register(
+		"push",
+		FunctionObjectType{
+			ParameterTypes:  []Type{Int64Kind},
+			ReturnValueType: ArrayKind,
+		},
+		arrayPush,
+	)
+	repo.register(
+		"pushMultiple",
+		FunctionObjectType{
+			ParameterTypes:  []Type{AnyKind, Int64Kind},
+			ReturnValueType: ArrayKind,
+		},
+		arrayPushMultiple,
+	)
+	repo.register(
+		"delete",
+		FunctionObjectType{
+			ParameterTypes:  []Type{Int64Kind, Int64Kind},
+			ReturnValueType: ArrayKind,
+		},
+		arrayDelete,
+	)
+	repo.register(
+		"slice",
+		FunctionObjectType{
+			ParameterTypes:  []Type{Int64Kind, Int64Kind},
+			ReturnValueType: ArrayKind,
+		},
+		arraySlice,
+	)
 	return &repo
 }
 
 func numberToString(params ...Object) Object {
-	number := params[0].(*Number)
+	number, _ := params[0].(*Number)
 	return &String{number.Inspect()}
 }
 
 func stringLength(params ...Object) Object {
-	str := params[0].(*String)
+	str, _ := params[0].(*String)
 	return &Number{Value: uint64(len(str.Value)), Kind: UInt64Kind}
 }
 
 func arraySize(params ...Object) Object {
-	arr := params[0].(*Array)
+	arr, _ := params[0].(*Array)
 	return &Number{Value: uint64(len(arr.Elements)), Kind: UInt64Kind}
 }
 
 func arrayPush(params ...Object) Object {
-	arr := params[0].(*Array)
+	arr, _ := params[0].(*Array)
 	elem := params[1]
 
 	arr.Elements = append(arr.Elements, elem)
@@ -96,7 +135,7 @@ func arrayPush(params ...Object) Object {
 }
 
 func arrayDelete(params ...Object) Object {
-	arr := params[0].(*Array)
+	arr, _ := params[0].(*Array)
 	startIndex := UnwrapReferenceObject(params[1]).(*Number).GetInt64()
 	count := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 	arrLen := int64(len(arr.Elements))
@@ -115,7 +154,7 @@ func arrayDelete(params ...Object) Object {
 }
 
 func arrayPushMultiple(params ...Object) Object {
-	arr := params[0].(*Array)
+	arr, _ := params[0].(*Array)
 	element := UnwrapReferenceObject(params[1])
 	size := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 
@@ -130,7 +169,7 @@ func arrayPushMultiple(params ...Object) Object {
 }
 
 func arraySlice(params ...Object) Object {
-	arr := params[0].(*Array)
+	arr, _ := params[0].(*Array)
 	startIndex := UnwrapReferenceObject(params[1]).(*Number).GetInt64()
 	count := UnwrapReferenceObject(params[2]).(*Number).GetInt64()
 

@@ -76,14 +76,14 @@ func TestTypedDeclarationStatement(t *testing.T) {
 				"return (a + b);" + "\n" +
 				"}",
 			object.FunctionObjectType{
-				ParameterTypes:  []object.ObjectType{object.Int64Kind, object.Int64Kind},
+				ParameterTypes:  []object.Type{object.Int64Kind, object.Int64Kind},
 				ReturnValueType: object.Int64Kind,
 			},
 		}},
 		{"function()->void sum = fn() -> void {}; sum", ExpectedFunction{
 			"fn() {\n\n}",
 			object.FunctionObjectType{
-				ParameterTypes:  []object.ObjectType{},
+				ParameterTypes:  []object.Type{},
 				ReturnValueType: object.VoidKind,
 			},
 		}},

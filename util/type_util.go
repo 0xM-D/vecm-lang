@@ -20,7 +20,7 @@ func GetLLVMType(t ast.Type) (types.Type, error) {
 }
 
 func GetIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
-	switch object.ObjectKind(t.TypeName.Value) {
+	switch object.Kind(t.TypeName.Value) {
 	case "char":
 		return types.NewInt(8), nil
 	case "int":

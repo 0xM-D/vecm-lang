@@ -7,7 +7,7 @@ import (
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.ObjectType, error) {
+func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.Type, error) {
 	switch casted := typeNode.(type) {
 	case ast.HashType:
 		keyType, err := r.evalType(casted.KeyType, env)
@@ -32,7 +32,7 @@ func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.O
 		}
 		return namedType, nil
 	case ast.FunctionType:
-		parameterTypes := []object.ObjectType{}
+		parameterTypes := []object.Type{}
 		returnType, returnTypeErr := r.evalType(casted.ReturnType, env)
 		if returnTypeErr != nil {
 			return nil, returnTypeErr

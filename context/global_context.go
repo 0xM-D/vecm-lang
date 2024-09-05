@@ -6,17 +6,13 @@ import (
 )
 
 type GlobalContext struct {
-	Module                  *ir.Module
-	sharedContextProperties SharedContextProperties
-	variableStore           *VariableStore
+	Module        *ir.Module
+	variableStore *VariableStore
 }
 
-func NewGlobalContext(parentContext *Context) *GlobalContext {
+func NewGlobalContext() *GlobalContext {
 	return &GlobalContext{
-		Module: ir.NewModule(),
-		// sharedContextProperties: SharedContextProperties{
-		// 	functionStore: FunctionStore{map[string]*FunctionObject{}},
-		// },
+		Module:        ir.NewModule(),
 		variableStore: NewVariableStore(),
 	}
 }

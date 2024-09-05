@@ -1,13 +1,13 @@
 package object
 
-type ObjectType interface {
+type Type interface {
 	Signature() string
-	Kind() ObjectKind
+	Kind() Kind
 	Builtins() *FunctionRepository
 	IsConstant() bool
 }
 
 type Object interface {
-	Type() ObjectType
+	Type() Type
 	Inspect() string
 }

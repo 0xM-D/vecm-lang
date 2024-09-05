@@ -49,7 +49,7 @@ func (r *Runtime) evalExpressionsArray(
 	return result, nil
 }
 
-func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {
+func getMinimumIntegerType(number *big.Int) (object.Kind, error) {
 	switch {
 	case number.Cmp(big.NewInt(math.MaxInt8)) == -1:
 		return object.Int8Kind, nil

@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Compiler) compileProgram(program *ast.Program) *context.GlobalContext {
-	ctx := context.NewGlobalContext(nil)
+	ctx := context.NewGlobalContext()
 
 	for _, statement := range program.Statements {
 		c.compileTopLevelStatement(statement, ctx)

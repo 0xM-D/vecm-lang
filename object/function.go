@@ -8,8 +8,8 @@ import (
 )
 
 type FunctionObjectType struct {
-	ParameterTypes  []ObjectType
-	ReturnValueType ObjectType
+	ParameterTypes  []Type
+	ReturnValueType Type
 }
 
 func (f FunctionObjectType) Signature() string {
@@ -27,7 +27,7 @@ func (f FunctionObjectType) Signature() string {
 	return out.String()
 }
 
-func (f FunctionObjectType) Kind() ObjectKind              { return FunctionKind }
+func (f FunctionObjectType) Kind() Kind                    { return FunctionKind }
 func (f FunctionObjectType) Builtins() *FunctionRepository { return FunctionKind.Builtins() }
 func (f FunctionObjectType) IsConstant() bool              { return true }
 
@@ -38,7 +38,7 @@ type Function struct {
 	Env        *Environment
 }
 
-func (f *Function) Type() ObjectType { return &f.FunctionObjectType }
+func (f *Function) Type() Type { return &f.FunctionObjectType }
 func (f *Function) Inspect() string {
 	var out bytes.Buffer
 	params := []string{}
