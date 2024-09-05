@@ -8,16 +8,16 @@ import (
 func (p *Parser) parseForStatement() ast.Statement {
 	stmt := &ast.ForStatement{Token: p.curToken}
 
-	if !p.expectPeek(token.LPAREN) {
+	if !p.expectPeek(token.LeftParen) {
 		return nil
 	}
 	p.nextToken()
 
 	// Initialization
-	if !p.curTokenIs(token.SEMICOLON) {
+	if !p.curTokenIs(token.Semicolon) {
 		stmt.Initialization = p.parseStatement()
 	}
-	if p.curTokenIs(token.SEMICOLON) {
+	if p.curTokenIs(token.Semicolon) {
 		p.nextToken()
 	} else {
 		p.newError(stmt, "Expected ;")
@@ -25,13 +25,13 @@ func (p *Parser) parseForStatement() ast.Statement {
 	}
 
 	// Condition
-	if !p.curTokenIs(token.SEMICOLON) {
+	if !p.curTokenIs(token.Semicolon) {
 		stmt.Condition = p.parseStatement()
 	}
 
 	// Afterthought
-	if !p.peekTokenIs(token.RPAREN) {
-		if p.curTokenIs(token.SEMICOLON) {
+	if !p.peekTokenIs(token.RightParen) {
+		if p.curTokenIs(token.Semicolon) {
 			p.nextToken()
 		} else {
 			p.newError(stmt, "Expected ;")
@@ -40,12 +40,12 @@ func (p *Parser) parseForStatement() ast.Statement {
 		stmt.AfterThought = p.parseStatement()
 	}
 
-	if !p.expectPeek(token.RPAREN) {
+	if !p.expectPeek(token.RightParen) {
 		return nil
 	}
 
 	p.nextToken()
-	if p.curTokenIs(token.LBRACE) {
+	if p.curTokenIs(token.LeftBrace) {
 		stmt.Body = p.parseBlockStatement()
 	} else {
 		stmt.Body = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}

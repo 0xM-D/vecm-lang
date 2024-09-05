@@ -23,18 +23,19 @@ func (l *Lexer) readChar() {
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
-	} else {
-		return l.input[l.readPosition]
 	}
+
+	return l.input[l.readPosition]
 }
 
 func (l *Lexer) skipWhitespaceAndComments() {
 	for l.ch != 0 {
-		if l.whiteSpaceAhead() {
+		switch {
+		case l.whiteSpaceAhead():
 			l.skipWhitespace()
-		} else if l.commentAhead() {
+		case l.commentAhead():
 			l.skipComments()
-		} else {
+		default:
 			break
 		}
 	}
@@ -88,7 +89,7 @@ func (l *Lexer) commentAhead() bool {
 	return peekTwo == "//" || peekTwo == "/*"
 }
 
-func (l *Lexer) newToken(tokenType token.TokenType, literal string) token.Token {
+func (l *Lexer) newToken(tokenType token.Type, literal string) token.Token {
 	return token.Token{Type: tokenType, Literal: literal, Linen: l.linen, Coln: l.coln}
 }
 
@@ -100,16 +101,16 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) readNumber() (token.TokenType, string) {
+func (l *Lexer) readNumber() (token.Type, string) {
 	position := l.position
-	tokenType := token.INT
+	tokenType := token.Int
 
 	for isDigit(l.ch) {
 		l.readChar()
 	}
 
 	if l.ch == '.' && isDigit(l.peekChar()) {
-		tokenType = token.FLOAT64
+		tokenType = token.Float64
 		l.readChar()
 
 		for isDigit(l.ch) {
@@ -118,7 +119,7 @@ func (l *Lexer) readNumber() (token.TokenType, string) {
 	}
 
 	if l.ch == 'f' {
-		tokenType = token.FLOAT32
+		tokenType = token.Float32
 		l.readChar()
 	}
 	return tokenType, l.input[position:l.position]
@@ -153,15 +154,15 @@ func (l *Lexer) GetLine(linen int) string {
 
 type TokenMapping struct {
 	byte
-	token.TokenType
+	token.Type
 }
 
-func (l *Lexer) getTokenWithPeek(defaultToken token.TokenType, tokenMappings ...TokenMapping) token.Token {
+func (l *Lexer) getTokenWithPeek(defaultToken token.Type, tokenMappings ...TokenMapping) token.Token {
 	for _, tokenMapping := range tokenMappings {
 		if l.peekChar() == tokenMapping.byte {
 			ch := l.ch
 			l.readChar()
-			return token.Token{Type: tokenMapping.TokenType, Literal: string(ch) + string(l.ch)}
+			return token.Token{Type: tokenMapping.Type, Literal: string(ch) + string(l.ch), Linen: l.linen, Coln: l.coln}
 		}
 	}
 
@@ -174,14 +175,14 @@ func NewError(linen int, coln int, line string, format string, a ...interface{})
 	out.WriteString(fmt.Sprintf("Parser error at line %d, column %d:\n", linen+1, coln+1))
 	out.WriteString(line)
 	out.WriteByte('\n')
-	out.WriteString(getAsciiArrow(line, coln))
+	out.WriteString(getASCIIArrow(coln))
 	out.WriteString(fmt.Sprintf(format, a...))
 	out.WriteByte('\n')
 
 	return out.String()
 }
 
-func getAsciiArrow(line string, coln int) string {
+func getASCIIArrow(coln int) string {
 	var out bytes.Buffer
 	for i := 0; i < coln; i++ {
 		out.WriteByte(' ')

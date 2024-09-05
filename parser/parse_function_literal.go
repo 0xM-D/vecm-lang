@@ -8,7 +8,7 @@ import (
 func (p *Parser) parseFunctionLiteral() ast.Expression {
 	lit := &ast.FunctionLiteral{Token: p.curToken, Type: ast.FunctionType{Token: p.curToken}}
 
-	if !p.expectPeek(token.LPAREN) {
+	if !p.expectPeek(token.LeftParen) {
 		return nil
 	}
 
@@ -17,7 +17,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		return nil
 	}
 
-	if !p.expectPeek(token.DASH_ARROW) {
+	if !p.expectPeek(token.DashArrow) {
 		return nil
 	}
 	p.nextToken()
@@ -27,7 +27,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		return nil
 	}
 
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LeftBrace) {
 		return nil
 	}
 
@@ -40,7 +40,7 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 	identifiers := []*ast.Identifier{}
 	types := []ast.Type{}
 
-	if p.peekTokenIs(token.RPAREN) {
+	if p.peekTokenIs(token.RightParen) {
 		p.nextToken()
 		return identifiers, types
 	}
@@ -52,7 +52,7 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 	identifiers = append(identifiers, ident)
 	types = append(types, param_type)
 
-	for p.peekTokenIs(token.COMMA) {
+	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
 		ident, param_type := p.parseFunctionParameter()
 		if ident == nil || param_type == nil {
@@ -62,7 +62,7 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 		types = append(types, param_type)
 	}
 
-	if !p.expectPeek(token.RPAREN) {
+	if !p.expectPeek(token.RightParen) {
 		return nil, nil
 	}
 
@@ -73,7 +73,7 @@ func (p *Parser) parseFunctionParameter() (*ast.Identifier, ast.Type) {
 	p.nextToken()
 	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
-	if !p.expectPeek(token.COLON) {
+	if !p.expectPeek(token.Colon) {
 		return nil, nil
 	}
 

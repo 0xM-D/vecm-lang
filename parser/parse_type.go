@@ -8,7 +8,7 @@ import (
 func (p *Parser) parseType() ast.Type {
 	var result ast.Type
 
-	if p.curToken.Type == token.ARRAY_TYPE {
+	if p.curToken.Type == token.ArrayType {
 		p.nextToken()
 		elementType := p.parseType()
 		if elementType == nil {
@@ -18,11 +18,11 @@ func (p *Parser) parseType() ast.Type {
 	}
 
 	switch p.curToken.Type {
-	case token.MAP_TYPE:
+	case token.MapType:
 		result = p.parseMapType()
-	case token.FUNCTION_TYPE:
+	case token.FunctionType:
 		result = p.parseFunctionType()
-	case token.IDENT:
+	case token.Ident:
 		typeIdentifier := p.parseIdentifier().(*ast.Identifier)
 		result = ast.NamedType{Token: p.curToken, TypeName: *typeIdentifier}
 	default:
@@ -32,21 +32,21 @@ func (p *Parser) parseType() ast.Type {
 }
 
 func (p *Parser) parseMapType() ast.Type {
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LeftBrace) {
 		return nil
 	}
 	p.nextToken()
 
 	keyType := p.parseType()
 
-	if !p.expectPeek(token.DASH_ARROW) {
+	if !p.expectPeek(token.DashArrow) {
 		return nil
 	}
 	p.nextToken()
 
 	valueType := p.parseType()
 
-	if !p.expectPeek(token.RBRACE) {
+	if !p.expectPeek(token.RightBrace) {
 		return nil
 	}
 
@@ -62,7 +62,7 @@ func (p *Parser) parseFunctionType() ast.Type {
 		return nil
 	}
 
-	if !p.expectPeek(token.DASH_ARROW) {
+	if !p.expectPeek(token.DashArrow) {
 		return nil
 	}
 	p.nextToken()
@@ -79,12 +79,12 @@ func (p *Parser) parseFunctionType() ast.Type {
 func (p *Parser) parseFunctionTypeParameters() []ast.Type {
 	parameterTypes := []ast.Type{}
 
-	if !p.expectPeek(token.LPAREN) {
+	if !p.expectPeek(token.LeftParen) {
 		return nil
 	}
 
 	for {
-		if p.peekTokenIs(token.RPAREN) {
+		if p.peekTokenIs(token.RightParen) {
 			break
 		}
 		p.nextToken()
@@ -96,13 +96,13 @@ func (p *Parser) parseFunctionTypeParameters() []ast.Type {
 
 		parameterTypes = append(parameterTypes, nextType)
 
-		if !p.peekTokenIs(token.COMMA) {
+		if !p.peekTokenIs(token.Comma) {
 			break
 		}
 		p.nextToken()
 	}
 
-	if !p.expectPeek(token.RPAREN) {
+	if !p.expectPeek(token.RightParen) {
 		return nil
 	}
 

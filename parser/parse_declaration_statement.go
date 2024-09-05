@@ -5,7 +5,7 @@ import (
 	"github.com/DustTheory/interpreter/token"
 )
 
-func (p *Parser) parseDeclarationStatement(assignToken token.TokenType) *ast.DeclarationStatement {
+func (p *Parser) parseDeclarationStatement(assignToken token.Type) *ast.DeclarationStatement {
 	stmt := &ast.DeclarationStatement{Token: p.curToken}
 
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
@@ -20,7 +20,7 @@ func (p *Parser) parseDeclarationStatement(assignToken token.TokenType) *ast.Dec
 
 	stmt.Value = p.parseExpression(LOWEST)
 
-	if p.peekTokenIs(token.SEMICOLON) {
+	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
 	}
 

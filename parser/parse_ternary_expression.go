@@ -16,7 +16,7 @@ func (p *Parser) parseTernaryExpression(left ast.Expression) ast.Expression {
 		return nil
 	}
 
-	if !p.expectPeek(token.COLON) {
+	if !p.expectPeek(token.Colon) {
 		return nil
 	}
 	p.nextToken()

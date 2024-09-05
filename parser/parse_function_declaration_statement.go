@@ -12,13 +12,13 @@ func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationSta
 
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
 
-	if !p.expectPeek(token.LPAREN) {
+	if !p.expectPeek(token.LeftParen) {
 		return nil
 	}
 
 	stmt.Parameters, stmt.Type.ParameterTypes = p.parseFunctionParameters()
 
-	if !p.expectPeek(token.DASH_ARROW) {
+	if !p.expectPeek(token.DashArrow) {
 		return nil
 	}
 	p.nextToken()
@@ -28,7 +28,7 @@ func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationSta
 		return nil
 	}
 
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LeftBrace) {
 		return nil
 	}
 

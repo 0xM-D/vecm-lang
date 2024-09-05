@@ -10,12 +10,12 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	if p.curTokenIs(token.SEMICOLON) {
+	if p.curTokenIs(token.Semicolon) {
 		return stmt
 	}
 
 	stmt.ReturnValue = p.parseExpression(LOWEST)
-	if p.peekTokenIs(token.SEMICOLON) {
+	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
 	}
 

@@ -5,7 +5,7 @@ import (
 	"github.com/DustTheory/interpreter/token"
 )
 
-func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
+func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 	list := []ast.Expression{}
 	if p.peekTokenIs(end) {
 		p.nextToken()
@@ -13,7 +13,7 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	}
 	p.nextToken()
 	list = append(list, p.parseExpression(LOWEST))
-	for p.peekTokenIs(token.COMMA) {
+	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
 		p.nextToken()
 		list = append(list, p.parseExpression(LOWEST))

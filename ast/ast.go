@@ -15,9 +15,9 @@ func (p *Program) TokenLiteral() string {
 func (p *Program) TokenValue() token.Token {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenValue()
-	} else {
-		return token.Token{Type: token.EOF, Literal: "", Linen: 0, Coln: 0}
 	}
+	
+	return token.Token{Type: token.EOF, Literal: "", Linen: 0, Coln: 0}
 }
 
 func (p *Program) String() string {

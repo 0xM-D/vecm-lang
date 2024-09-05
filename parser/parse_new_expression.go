@@ -8,7 +8,7 @@ import (
 func (p *Parser) parseNewExpression() ast.Expression {
 	newExpr := &ast.NewExpression{Token: p.curToken}
 
-	if !p.curTokenIs(token.NEW) {
+	if !p.curTokenIs(token.New) {
 		p.newError(nil, `Expected "new" keyword. got=%s`, p.curToken.Literal)
 		return nil
 	}
@@ -20,11 +20,11 @@ func (p *Parser) parseNewExpression() ast.Expression {
 		return nil
 	}
 
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LeftBrace) {
 		return nil
 	}
 
-	newExpr.InitializationList = p.parseExpressionList(token.RBRACE)
+	newExpr.InitializationList = p.parseExpressionList(token.RightBrace)
 
 	if newExpr.InitializationList == nil {
 		return nil

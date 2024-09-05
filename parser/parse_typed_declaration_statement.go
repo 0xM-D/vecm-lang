@@ -10,17 +10,17 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 
 	var stmtIsConstant bool
 
-	if p.curTokenIs(token.CONST) {
+	if p.curTokenIs(token.Const) {
 		stmtIsConstant = true
 		p.nextToken()
 	}
 
-	if !p.peekTokenIs(token.ASSIGN) && stmtType == nil {
+	if !p.peekTokenIs(token.Assign) && stmtType == nil {
 		stmtType = p.parseType()
 		p.nextToken()
 	}
 
-	if p.peekTokenIs(token.SEMICOLON) {
+	if p.peekTokenIs(token.Semicolon) {
 		ident := p.parseIdentifier().(*ast.Identifier)
 
 		stmt.DeclarationStatement = ast.DeclarationStatement{
@@ -35,7 +35,7 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 		return stmt
 	}
 
-	declStmt := p.parseDeclarationStatement(token.ASSIGN)
+	declStmt := p.parseDeclarationStatement(token.Assign)
 
 	if declStmt == nil {
 		return nil

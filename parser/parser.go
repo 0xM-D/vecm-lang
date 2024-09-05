@@ -13,8 +13,8 @@ type Parser struct {
 	curToken  token.Token
 	peekToken token.Token
 
-	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns  map[token.TokenType]infixParseFn
+	prefixParseFns map[token.Type]prefixParseFn
+	infixParseFns  map[token.Type]infixParseFn
 }
 
 type (
@@ -25,51 +25,51 @@ type (
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 
-	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 
-	p.registerPrefix(token.IDENT, p.parseIdentifier)
-	p.registerPrefix(token.INT, p.parseIntegerLiteral)
-	p.registerPrefix(token.FLOAT32, p.parseFloat32Literal)
-	p.registerPrefix(token.FLOAT64, p.parseFloat64Literal)
-	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
-	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
-	p.registerPrefix(token.BANG, p.parsePrefixExpression)
-	p.registerPrefix(token.B_INV, p.parsePrefixExpression)
-	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
-	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
-	p.registerPrefix(token.STRING, p.parseStringLiteral)
-	p.registerPrefix(token.NEW, p.parseNewExpression)
+	p.registerPrefix(token.Ident, p.parseIdentifier)
+	p.registerPrefix(token.Int, p.parseIntegerLiteral)
+	p.registerPrefix(token.Float32, p.parseFloat32Literal)
+	p.registerPrefix(token.Float64, p.parseFloat64Literal)
+	p.registerPrefix(token.True, p.parseBooleanLiteral)
+	p.registerPrefix(token.False, p.parseBooleanLiteral)
+	p.registerPrefix(token.Bang, p.parsePrefixExpression)
+	p.registerPrefix(token.BitwiseInv, p.parsePrefixExpression)
+	p.registerPrefix(token.Minus, p.parsePrefixExpression)
+	p.registerPrefix(token.LeftParen, p.parseGroupedExpression)
+	p.registerPrefix(token.Function, p.parseFunctionLiteral)
+	p.registerPrefix(token.String, p.parseStringLiteral)
+	p.registerPrefix(token.New, p.parseNewExpression)
 
-	p.infixParseFns = make(map[token.TokenType]infixParseFn)
-	p.registerInfix(token.PLUS, p.parseInfixExpression)
-	p.registerInfix(token.MINUS, p.parseInfixExpression)
-	p.registerInfix(token.SLASH, p.parseInfixExpression)
-	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
-	p.registerInfix(token.EQ, p.parseInfixExpression)
-	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
-	p.registerInfix(token.LT, p.parseInfixExpression)
-	p.registerInfix(token.GT, p.parseInfixExpression)
-	p.registerInfix(token.LTE, p.parseInfixExpression)
-	p.registerInfix(token.GTE, p.parseInfixExpression)
-	p.registerInfix(token.AND, p.parseInfixExpression)
-	p.registerInfix(token.OR, p.parseInfixExpression)
-	p.registerInfix(token.B_AND, p.parseInfixExpression)
-	p.registerInfix(token.B_OR, p.parseInfixExpression)
-	p.registerInfix(token.B_XOR, p.parseInfixExpression)
-	p.registerInfix(token.B_SHIFT_L, p.parseInfixExpression)
-	p.registerInfix(token.B_SHIFT_R, p.parseInfixExpression)
-	p.registerInfix(token.LPAREN, p.parseCallExpression)
-	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	p.registerInfix(token.ASSIGN, p.parseInfixExpression)
-	p.registerInfix(token.PLUS_ASSIGN, p.parseInfixExpression)
-	p.registerInfix(token.MINUS_ASSIGN, p.parseInfixExpression)
-	p.registerInfix(token.ASTERISK_ASSIGN, p.parseInfixExpression)
-	p.registerInfix(token.SLASH_ASSIGN, p.parseInfixExpression)
-	p.registerInfix(token.ACCESS, p.parseAccessExpression)
-	p.registerInfix(token.QUESTIONMARK, p.parseTernaryExpression)
-	p.registerInfix(token.AS, p.parseExplicitTypeCast)
-	p.registerInfix(token.COLON, p.prasePairExpression)
+	p.infixParseFns = make(map[token.Type]infixParseFn)
+	p.registerInfix(token.Plus, p.parseInfixExpression)
+	p.registerInfix(token.Minus, p.parseInfixExpression)
+	p.registerInfix(token.Slash, p.parseInfixExpression)
+	p.registerInfix(token.Asterisk, p.parseInfixExpression)
+	p.registerInfix(token.Eq, p.parseInfixExpression)
+	p.registerInfix(token.NotEq, p.parseInfixExpression)
+	p.registerInfix(token.Lt, p.parseInfixExpression)
+	p.registerInfix(token.Gt, p.parseInfixExpression)
+	p.registerInfix(token.Lte, p.parseInfixExpression)
+	p.registerInfix(token.Gte, p.parseInfixExpression)
+	p.registerInfix(token.And, p.parseInfixExpression)
+	p.registerInfix(token.Or, p.parseInfixExpression)
+	p.registerInfix(token.BitwiseAnd, p.parseInfixExpression)
+	p.registerInfix(token.BitwiseOr, p.parseInfixExpression)
+	p.registerInfix(token.BitwiseXor, p.parseInfixExpression)
+	p.registerInfix(token.BitwiseShiftL, p.parseInfixExpression)
+	p.registerInfix(token.BitwiseShiftR, p.parseInfixExpression)
+	p.registerInfix(token.LeftParen, p.parseCallExpression)
+	p.registerInfix(token.LeftBracket, p.parseIndexExpression)
+	p.registerInfix(token.Assign, p.parseInfixExpression)
+	p.registerInfix(token.PlusAssign, p.parseInfixExpression)
+	p.registerInfix(token.MinusAssign, p.parseInfixExpression)
+	p.registerInfix(token.AsteriskAssing, p.parseInfixExpression)
+	p.registerInfix(token.SlashAssign, p.parseInfixExpression)
+	p.registerInfix(token.Access, p.parseAccessExpression)
+	p.registerInfix(token.Questionmark, p.parseTernaryExpression)
+	p.registerInfix(token.As, p.parseExplicitTypeCast)
+	p.registerInfix(token.Colon, p.prasePairExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -108,10 +108,10 @@ func (p *Parser) newError(node ast.Node, format string, a ...interface{}) {
 	p.errors = append(p.errors, lexer.NewError(linen, coln, p.getLine(linen), format, a...))
 }
 
-func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+func (p *Parser) registerPrefix(tokenType token.Type, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+func (p *Parser) registerInfix(tokenType token.Type, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }

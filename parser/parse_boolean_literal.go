@@ -6,5 +6,5 @@ import (
 )
 
 func (p *Parser) parseBooleanLiteral() ast.Expression {
-	return &ast.BooleanLiteral{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
+	return &ast.BooleanLiteral{Token: p.curToken, Value: p.curTokenIs(token.True)}
 }

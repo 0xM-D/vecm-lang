@@ -7,41 +7,41 @@ import (
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
-	case token.LET:
+	case token.Let:
 		return p.parseLetStatement()
-	case token.RETURN:
+	case token.Return:
 		return p.parseReturnStatement()
-	case token.CONST:
+	case token.Const:
 		fallthrough
-	case token.MAP_TYPE:
+	case token.MapType:
 		fallthrough
-	case token.ARRAY_TYPE:
+	case token.ArrayType:
 		fallthrough
-	case token.FUNCTION_TYPE:
+	case token.FunctionType:
 		return p.parseTypedDeclarationStatement(nil)
-	case token.FOR:
+	case token.For:
 		return p.parseForStatement()
-	case token.IF:
+	case token.If:
 		return p.parseIfStatement()
-	case token.IMPORT:
+	case token.Import:
 		return p.parseImportStatement()
-	case token.EXPORT:
+	case token.Export:
 		return p.parseExportStatement()
-	case token.FUNCTION:
+	case token.Function:
 		switch p.peekToken.Type {
-		case token.IDENT:
+		case token.Ident:
 			return p.parseFunctionDeclarationStatement()
 		}
 		fallthrough
-	case token.IDENT:
+	case token.Ident:
 		switch p.peekToken.Type {
-		case token.DECL_ASSIGN:
+		case token.DeclAssign:
 			return p.parseAssignmentDeclarationStatement()
-		case token.IDENT:
+		case token.Ident:
 			fallthrough
-		case token.ARRAY_TYPE:
+		case token.ArrayType:
 			fallthrough
-		case token.LBRACE:
+		case token.LeftBrace:
 			return p.parseTypedDeclarationStatement(nil)
 		}
 		fallthrough

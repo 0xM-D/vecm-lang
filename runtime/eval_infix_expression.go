@@ -41,7 +41,7 @@ func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Env
 
 	operator := node.Operator
 
-	if operator == string(token.ASSIGN) {
+	if operator == string(token.Assign) {
 		return assignment(left, right, env)
 	}
 
@@ -81,43 +81,43 @@ func (r *Runtime) evalNumberInfixExpression(
 		return nil, fmt.Errorf("invalid right operand type: expected *object.Number, got %T", left)
 	}
 	switch operator {
-	case string(token.PLUS):
+	case string(token.Plus):
 		return numberAddition(leftNum, rightNum)
-	case string(token.MINUS):
+	case string(token.Minus):
 		return numberSubtraction(leftNum, rightNum, env)
-	case string(token.ASTERISK):
+	case string(token.Asterisk):
 		return numberMultiplication(leftNum, rightNum, env)
-	case string(token.SLASH):
+	case string(token.Slash):
 		return numberDivision(leftNum, rightNum, env)
-	case string(token.B_SHIFT_L):
+	case string(token.BitwiseShiftL):
 		return numberBitwiseShiftLeft(leftNum, rightNum, env)
-	case string(token.B_SHIFT_R):
+	case string(token.BitwiseShiftR):
 		return numberBitwiseShiftRight(leftNum, rightNum, env)
-	case string(token.B_AND):
+	case string(token.BitwiseAnd):
 		return numberBitwiseAnd(leftNum, rightNum, env), nil
-	case string(token.B_OR):
+	case string(token.BitwiseOr):
 		return numberBitwiseOr(leftNum, rightNum, env), nil
-	case string(token.B_XOR):
+	case string(token.BitwiseXor):
 		return numberBitwiseXor(leftNum, rightNum, env), nil
-	case string(token.EQ):
+	case string(token.Eq):
 		return numberEquals(leftNum, rightNum, env)
-	case string(token.NOT_EQ):
+	case string(token.NotEq):
 		return numberNotEquals(leftNum, rightNum, env)
-	case string(token.GT):
+	case string(token.Gt):
 		return numberGreaterThan(leftNum, rightNum, env)
-	case string(token.LT):
+	case string(token.Lt):
 		return numberLessThan(leftNum, rightNum, env)
-	case string(token.LTE):
+	case string(token.Lte):
 		return numberLessThanEqual(leftNum, rightNum, env)
-	case string(token.GTE):
+	case string(token.Gte):
 		return numberGreaterThanEqual(leftNum, rightNum, env)
-	case string(token.PLUS_ASSIGN):
+	case string(token.PlusAssign):
 		return numberPlusEquals(left, rightNum, env)
-	case string(token.MINUS_ASSIGN):
+	case string(token.MinusAssign):
 		return numberMinusEquals(left, rightNum, env)
-	case string(token.ASTERISK_ASSIGN):
+	case string(token.AsteriskAssing):
 		return numberTimesEquals(left, rightNum, env)
-	case string(token.SLASH_ASSIGN):
+	case string(token.SlashAssign):
 		return numberDivideEquals(left, rightNum, env)
 	default:
 		return nil, fmt.Errorf("operator %s not defined on types %s and %s",

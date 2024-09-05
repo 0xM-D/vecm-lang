@@ -12,16 +12,16 @@ func (p *Parser) parseIfStatement() ast.Statement {
 	stmt.Condition = p.parseExpression(LOWEST)
 
 	p.nextToken()
-	if p.curTokenIs(token.LBRACE) {
+	if p.curTokenIs(token.LeftBrace) {
 		stmt.Consequence = p.parseBlockStatement()
 	} else {
 		stmt.Consequence = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
 	}
 
-	if p.peekTokenIs(token.ELSE) {
+	if p.peekTokenIs(token.Else) {
 		p.nextToken()
 		p.nextToken()
-		if p.curTokenIs(token.LBRACE) {
+		if p.curTokenIs(token.LeftBrace) {
 			stmt.Alternative = p.parseBlockStatement()
 		} else {
 			stmt.Alternative = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}

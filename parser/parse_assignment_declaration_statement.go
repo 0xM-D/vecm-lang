@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Parser) parseAssignmentDeclarationStatement() *ast.AssignmentDeclarationStatement {
-	declStmt := p.parseDeclarationStatement(token.DECL_ASSIGN)
+	declStmt := p.parseDeclarationStatement(token.DeclAssign)
 	if declStmt == nil {
 		return nil
 	}

@@ -12,13 +12,13 @@ func TestString(t *testing.T) {
 		Statements: []ast.Statement{
 			&ast.LetStatement{
 				ast.DeclarationStatement{
-					Token: token.Token{Type: token.LET, Literal: "let", Linen: 0, Coln: 0},
+					Token: token.Token{Type: token.Let, Literal: "let", Linen: 0, Coln: 0},
 					Name: &ast.Identifier{
-						Token: token.Token{Type: token.IDENT, Literal: "myVar", Linen: 0, Coln: 0},
+						Token: token.Token{Type: token.Ident, Literal: "myVar", Linen: 0, Coln: 0},
 						Value: "myVar",
 					},
 					Value: &ast.Identifier{
-						Token: token.Token{Type: token.IDENT, Literal: "anotherVar", Linen: 0, Coln: 0},
+						Token: token.Token{Type: token.Ident, Literal: "anotherVar", Linen: 0, Coln: 0},
 						Value: "anotherVar",
 					},
 					IsConstant: false,

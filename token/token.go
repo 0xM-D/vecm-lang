@@ -1,122 +1,122 @@
 package token
 
-type TokenType string
+type Type string
 
 type Token struct {
-	Type    TokenType
+	Type    Type
 	Literal string
 	Linen   int
 	Coln    int
 }
 
 const (
-	ILLEGAL TokenType = "ILLEGAL"
-	EOF     TokenType = "EOF"
+	Illegal Type = "ILLEGAL"
+	EOF     Type = "EOF"
 
 	// Identifiers + literals.
-	IDENT   TokenType = "IDENT"
-	INT     TokenType = "INT"
-	FLOAT32 TokenType = "FLOAT32"
-	FLOAT64 TokenType = "FLOAT64"
-	STRING  TokenType = "STRING"
+	Ident   Type = "IDENT"
+	Int     Type = "INT"
+	Float32 Type = "FLOAT32"
+	Float64 Type = "FLOAT64"
+	String  Type = "STRING"
 
 	// Operators.
-	PLUS     TokenType = "+"
-	MINUS    TokenType = "-"
-	BANG     TokenType = "!"
-	ASTERISK TokenType = "*"
-	SLASH    TokenType = "/"
-	ACCESS   TokenType = "."
+	Plus     Type = "+"
+	Minus    Type = "-"
+	Bang     Type = "!"
+	Asterisk Type = "*"
+	Slash    Type = "/"
+	Access   Type = "."
 
 	// Assignment operators.
-	ASSIGN          TokenType = "="
-	DECL_ASSIGN     TokenType = ":="
-	PLUS_ASSIGN     TokenType = "+="
-	MINUS_ASSIGN    TokenType = "-="
-	ASTERISK_ASSIGN TokenType = "*="
-	SLASH_ASSIGN    TokenType = "/="
+	Assign         Type = "="
+	DeclAssign     Type = ":="
+	PlusAssign     Type = "+="
+	MinusAssign    Type = "-="
+	AsteriskAssing Type = "*="
+	SlashAssign    Type = "/="
 
 	// Comparison operators.
-	LT     = "<"
-	GT     = ">"
-	LTE    = "<="
-	GTE    = ">="
-	EQ     = "=="
-	NOT_EQ = "!="
+	Lt    = "<"
+	Gt    = ">"
+	Lte   = "<="
+	Gte   = ">="
+	Eq    = "=="
+	NotEq = "!="
 
 	// Boolean operators.
-	AND = "&&"
-	OR  = "||"
+	And = "&&"
+	Or  = "||"
 
 	// Bitwise operators.
-	B_AND     = "&"
-	B_OR      = "|"
-	B_XOR     = "^"
-	B_INV     = "~"
-	B_SHIFT_L = "<<"
-	B_SHIFT_R = ">>"
+	BitwiseAnd    = "&"
+	BitwiseOr     = "|"
+	BitwiseXor    = "^"
+	BitwiseInv    = "~"
+	BitwiseShiftL = "<<"
+	BitwiseShiftR = ">>"
 
 	// Delimiters.
-	COMMA        TokenType = ","
-	SEMICOLON    TokenType = ";"
-	COLON        TokenType = ":"
-	QUESTIONMARK TokenType = "?"
+	Comma        Type = ","
+	Semicolon    Type = ";"
+	Colon        Type = ":"
+	Questionmark Type = "?"
 
-	LPAREN   TokenType = "("
-	RPAREN   TokenType = ")"
-	LBRACE   TokenType = "{"
-	RBRACE   TokenType = "}"
-	LBRACKET TokenType = "["
-	RBRACKET TokenType = "]"
+	LeftParen    Type = "("
+	RightParen   Type = ")"
+	LeftBrace    Type = "{"
+	RightBrace   Type = "}"
+	LeftBracket  Type = "["
+	RightBracket Type = "]"
 
 	// Keywords.
-	FUNCTION TokenType = "FUNCTION"
-	LET      TokenType = "LET"
-	TRUE     TokenType = "TRUE"
-	FALSE    TokenType = "FALSE"
-	IF       TokenType = "IF"
-	ELSE     TokenType = "ELSE"
-	RETURN   TokenType = "RETURN"
-	CONST    TokenType = "CONST"
-	FOR      TokenType = "FOR"
-	AS       TokenType = "AS"
+	Function Type = "FUNCTION"
+	Let      Type = "LET"
+	True     Type = "TRUE"
+	False    Type = "FALSE"
+	If       Type = "IF"
+	Else     Type = "ELSE"
+	Return   Type = "RETURN"
+	Const    Type = "CONST"
+	For      Type = "FOR"
+	As       Type = "AS"
 
 	// Type tokens.
-	DASH_ARROW    TokenType = "->"
-	EQUALS_ARROW  TokenType = "=>"
-	NEW           TokenType = "new"
-	MAP_TYPE      TokenType = "map"
-	ARRAY_TYPE    TokenType = "[]"
-	FUNCTION_TYPE TokenType = "function"
+	DashArrow    Type = "->"
+	EqualsArrow  Type = "=>"
+	New          Type = "new"
+	MapType      Type = "map"
+	ArrayType    Type = "[]"
+	FunctionType Type = "function"
 
 	// import / export.
-	IMPORT TokenType = "import"
-	FROM   TokenType = "from"
-	EXPORT TokenType = "export"
+	Import Type = "import"
+	From   Type = "from"
+	Export Type = "export"
 )
 
-var keywords = map[string]TokenType{
-	"fn":       FUNCTION,
-	"let":      LET,
-	"true":     TRUE,
-	"false":    FALSE,
-	"if":       IF,
-	"else":     ELSE,
-	"return":   RETURN,
-	"const":    CONST,
-	"map":      MAP_TYPE,
-	"function": FUNCTION_TYPE,
-	"for":      FOR,
-	"as":       AS,
-	"new":      NEW,
-	"import":   IMPORT,
-	"from":     FROM,
-	"export":   EXPORT,
+var keywords = map[string]Type{
+	"fn":       Function,
+	"let":      Let,
+	"true":     True,
+	"false":    False,
+	"if":       If,
+	"else":     Else,
+	"return":   Return,
+	"const":    Const,
+	"map":      MapType,
+	"function": FunctionType,
+	"for":      For,
+	"as":       As,
+	"new":      New,
+	"import":   Import,
+	"from":     From,
+	"export":   Export,
 }
 
-func LookupIdent(ident string) TokenType {
+func LookupIdent(ident string) Type {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
-	return IDENT
+	return Ident
 }
