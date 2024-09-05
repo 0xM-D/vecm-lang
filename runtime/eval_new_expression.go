@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/DustTheory/interpreter/ast"
@@ -28,6 +29,7 @@ func (r *Runtime) evalNewArrayExpression(exp *ast.NewExpression, env *object.Env
 		return nil, err
 	}
 
+	// TODO: Resolve this with proprer typing of NewExpression statements
 	arrayType := exp.Type.(ast.ArrayType)
 
 	elementType, err := r.evalType(arrayType.ElementType, env)
@@ -45,7 +47,7 @@ func (r *Runtime) evalNewHashExpression(exp *ast.NewExpression, env *object.Envi
 		pair, ok := expr.(*ast.PairExpression)
 
 		if !ok {
-			return nil, fmt.Errorf("found non pair element in hash initialization list")
+			return nil, errors.New("found non pair element in hash initialization list")
 		}
 
 		key, err := r.Eval(pair.Left, env)
@@ -67,5 +69,11 @@ func (r *Runtime) evalNewHashExpression(exp *ast.NewExpression, env *object.Envi
 		pairs[hashed] = object.HashPair{Key: key, Value: value}
 	}
 
-	return &object.Hash{Pairs: pairs, HashObjectType: object.HashObjectType{KeyType: object.AnyKind, ValueType: object.AnyKind}}, nil
+	return &object.Hash{
+		Pairs: pairs,
+		HashObjectType: object.HashObjectType{
+			KeyType:   object.AnyKind,
+			ValueType: object.AnyKind,
+		},
+	}, nil
 }

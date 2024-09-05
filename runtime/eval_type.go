@@ -33,15 +33,15 @@ func (r *Runtime) evalType(typeNode ast.Type, env *object.Environment) (object.O
 		return namedType, nil
 	case ast.FunctionType:
 		parameterTypes := []object.ObjectType{}
-		returnType, err := r.evalType(casted.ReturnType, env)
-		if err != nil {
-			return nil, err
+		returnType, returnTypeErr := r.evalType(casted.ReturnType, env)
+		if returnTypeErr != nil {
+			return nil, returnTypeErr
 		}
 
 		for _, p := range casted.ParameterTypes {
-			parsedType, err := r.evalType(p, env)
-			if err != nil {
-				return nil, err
+			parsedType, parsedTypeError := r.evalType(p, env)
+			if parsedTypeError != nil {
+				return nil, parsedTypeError
 			}
 			parameterTypes = append(parameterTypes, parsedType)
 		}

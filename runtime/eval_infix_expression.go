@@ -140,7 +140,10 @@ func numberAddition(left *object.Number, right *object.Number) (object.Object, e
 	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
 		sum = &object.Number{Value: leftNum.GetUInt64() + rightNum.GetUInt64(), Kind: object.UInt64Kind}
 	} else if object.IsFloat32(leftNum) {
-		sum = &object.Number{Value: uint64(math.Float32bits(leftNum.GetFloat32() + rightNum.GetFloat32())), Kind: object.Float32Kind}
+		sum = &object.Number{
+			Value: uint64(math.Float32bits(leftNum.GetFloat32() + rightNum.GetFloat32())),
+			Kind:  object.Float32Kind,
+		}
 	} else if object.IsFloat64(leftNum) {
 		sum = &object.Number{Value: math.Float64bits(leftNum.GetFloat64() + rightNum.GetFloat64()), Kind: object.Float64Kind}
 	}
@@ -154,7 +157,7 @@ func numberAddition(left *object.Number, right *object.Number) (object.Object, e
 	return castedSum, nil
 }
 
-func numberSubtraction(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberSubtraction(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {

@@ -16,7 +16,7 @@ type Runtime struct {
 }
 
 func NewRuntimeFromFile(entryModulePath string) (*Runtime, bool) {
-	runtime := &Runtime{Modules: map[string]*module.Module{}}
+	runtime := &Runtime{Modules: map[string]*module.Module{}, EntryModule: nil}
 	entryModule, failedToLoad := runtime.loadModuleFromFile(entryModulePath)
 
 	runtime.EntryModule = entryModule
@@ -24,7 +24,7 @@ func NewRuntimeFromFile(entryModulePath string) (*Runtime, bool) {
 }
 
 func NewRuntimeFromCode(code string) (*Runtime, bool) {
-	runtime := &Runtime{Modules: map[string]*module.Module{}}
+	runtime := &Runtime{Modules: map[string]*module.Module{}, EntryModule: nil}
 	entryModule, failedToLoad := runtime.loadModule("__entryPoint__", code)
 
 	runtime.EntryModule = entryModule
@@ -69,8 +69,9 @@ func (r *Runtime) loadModuleFromFile(modulePath string) (*module.Module, bool) {
 
 func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, bool) {
 	module, parserErrors := module.ParseModule(moduleKey, code)
+	hasParserErrors := len(parserErrors) > 0
 
-	if len(parserErrors) > 0 {
+	if hasParserErrors {
 		printParserErrors(parserErrors)
 	}
 

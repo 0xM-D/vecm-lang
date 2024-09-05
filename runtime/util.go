@@ -1,7 +1,7 @@
 package runtime
 
 import (
-	"fmt"
+	"errors"
 	"math"
 	"math/big"
 
@@ -36,7 +36,7 @@ func (r *Runtime) evalExpressionsArray(
 	exps []ast.Expression,
 	env *object.Environment,
 ) ([]object.Object, error) {
-	var result []object.Object
+	result := make([]object.Object, 0, len(exps))
 
 	for _, e := range exps {
 		evaluated, err := r.Eval(e, env)
@@ -68,7 +68,7 @@ func getMinimumIntegerType(number *big.Int) (object.ObjectKind, error) {
 	case number.Cmp(new(big.Int).SetUint64(math.MaxUint64)) == -1:
 		return object.UInt64Kind, nil
 	default:
-		return object.AnyKind, fmt.Errorf("integer ouside maximum range")
+		return object.AnyKind, errors.New("integer ouside maximum range")
 	}
 }
 
@@ -78,6 +78,8 @@ func extendFunctionEnv(
 ) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 	for paramIdx, param := range fn.Parameters {
+		// TODO: Handle error
+		//nolint:errcheck // I noticed this error, but now is not the time to fix it
 		env.Declare(param.Value, false, object.UnwrapReferenceObject(args[paramIdx]))
 	}
 	return env

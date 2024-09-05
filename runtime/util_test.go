@@ -1,7 +1,7 @@
 package runtime_test
 
 import (
-	"fmt"
+	"errors"
 	"math/big"
 	"testing"
 
@@ -12,17 +12,15 @@ import (
 func testEval(input string) (object.Object, error) {
 	r, hasErrors := runtime.NewRuntimeFromCode(input)
 	if hasErrors {
-		return nil, fmt.Errorf("test failed with parser errors")
+		return nil, errors.New("failed to load module")
 	}
 	return r.Eval(r.EntryModule.Program, object.NewEnvironment())
 }
 
-func testNullObject(t *testing.T, obj object.Object) bool {
+func testNullObject(t *testing.T, obj object.Object) {
 	if obj != runtime.NULL {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
-		return false
 	}
-	return true
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected *big.Int) bool {
@@ -87,38 +85,39 @@ func testNumber(t *testing.T, obj object.Object, expected interface{}) bool {
 	}
 }
 
-func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+func testStringObject(t *testing.T, obj object.Object, expected string) {
 	if !object.IsString(obj) {
 		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
-		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.String)
+	result, isString := object.UnwrapReferenceObject(obj).(*object.String)
+
+	if !isString {
+		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
+	}
 
 	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%q, want=%q",
-			result.Value, expected)
-		return false
+		t.Errorf("object has wrong value. got=%q, want=%q", result.Value, expected)
 	}
-	return true
 }
 
-func testArrayObject(t *testing.T, obj object.Object, expected []interface{}) bool {
+func testArrayObject(t *testing.T, obj object.Object, expected []interface{}) {
 	if !object.IsArray(obj) {
 		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
-		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Array)
+	result, isArray := object.UnwrapReferenceObject(obj).(*object.Array)
+
+	if !isArray {
+		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
+	}
 
 	if len(result.Elements) != len(expected) {
 		t.Errorf("Incorrect array length. expected=%d. got=%d", len(expected), len(result.Elements))
-		return false
 	}
 	for i, el := range result.Elements {
 		testLiteralObject(t, el, expected[i])
 	}
-	return true
 }
 
 type ExpectedFunction struct {
@@ -126,25 +125,26 @@ type ExpectedFunction struct {
 	Type   object.FunctionObjectType
 }
 
-func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFunction) bool {
+func testFunctionObject(t *testing.T, obj object.Object, expected ExpectedFunction) {
 	if !object.IsFunction(obj) {
 		t.Errorf("object is not Function. got=%T (%+v)", obj, obj)
-		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Function)
+	result, isFunction := object.UnwrapReferenceObject(obj).(*object.Function)
+
+	if !isFunction {
+		t.Errorf("object is not Function. got=%T (%+v)", obj, obj)
+	}
 
 	if !testFunctionType(t, obj.Type(), expected.Type) {
-		return false
+		t.Errorf("function type incorrect. got=%s, want=%s",
+			obj.Type().Signature(), expected.Type.Signature())
 	}
 
 	if result.Inspect() != expected.String {
 		t.Errorf("function body incorrect. got=\n%s\n, want=\n%s",
 			result.Inspect(), expected.String)
-		return false
 	}
-
-	return true
 }
 
 func testFunctionType(t *testing.T, objectType object.ObjectType, expected object.FunctionObjectType) bool {
@@ -163,27 +163,29 @@ func testFunctionType(t *testing.T, objectType object.ObjectType, expected objec
 	}
 
 	if functionType.ReturnValueType.Signature() != expected.ReturnValueType.Signature() {
-		t.Errorf("function return value has wrong type. got=%s, want=%s", functionType.ReturnValueType.Signature(), expected.ReturnValueType.Signature())
+		t.Errorf("function return value has wrong type. got=%s, want=%s",
+			functionType.ReturnValueType.Signature(), expected.ReturnValueType.Signature())
 		return false
 	}
 
 	return true
 }
 
-func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
+func testBooleanObject(t *testing.T, obj object.Object, expected bool) {
 	if !object.IsBoolean(obj) {
 		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
-		return false
 	}
 
-	result := object.UnwrapReferenceObject(obj).(*object.Boolean)
+	result, isBoolean := object.UnwrapReferenceObject(obj).(*object.Boolean)
+
+	if !isBoolean {
+		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
+	}
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%t, want=%t",
 			result.Value, expected)
-		return false
 	}
-	return true
 }
 
 func testLiteralObject(t *testing.T, obj object.Object, expected interface{}) {

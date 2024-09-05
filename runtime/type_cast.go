@@ -78,34 +78,40 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 		return nil, fmt.Errorf("cannot implicitly cast %s into %s", number.Type().Kind(), target.Kind())
 	}
 	var value uint64
-
-	if object.IsInteger(number) && !object.IsIntegerKind(target) { // Casting from int to float
-		if number.IsSigned() && target.Kind() == object.Float64Kind {
+	switch {
+	case object.IsInteger(number) && !object.IsIntegerKind(target):
+		// Casting from int to float
+		switch {
+		case number.IsSigned() && target.Kind() == object.Float64Kind:
 			value = math.Float64bits(float64(number.GetInt64()))
-		} else if number.IsSigned() && target.Kind() == object.Float32Kind {
+		case number.IsSigned() && target.Kind() == object.Float32Kind:
 			value = uint64(math.Float32bits(float32(number.GetInt64())))
-		} else if number.IsUnsigned() && target.Kind() == object.Float64Kind {
+		case number.IsUnsigned() && target.Kind() == object.Float64Kind:
 			value = math.Float64bits(float64(number.GetUInt64()))
-		} else if number.IsUnsigned() && target.Kind() == object.Float32Kind {
+		case number.IsUnsigned() && target.Kind() == object.Float32Kind:
 			value = uint64(math.Float32bits(float32(number.GetUInt64())))
 		}
-	} else if object.IsFloat(number) && object.IsIntegerKind(target) { // casting from float to int
-		if object.IS_SIGNED[target] && object.IsFloat32(number) {
+	case object.IsFloat(number) && object.IsIntegerKind(target):
+		// casting from float to int
+		switch {
+		case object.IS_SIGNED[target] && object.IsFloat32(number):
 			value = uint64(int64(number.GetFloat32()))
-		} else if object.IS_SIGNED[target] && object.IsFloat64(number) {
+		case object.IS_SIGNED[target] && object.IsFloat64(number):
 			value = uint64(int64(number.GetFloat64()))
-		} else if !object.IS_SIGNED[target] && object.IsFloat32(number) {
+		case !object.IS_SIGNED[target] && object.IsFloat32(number):
 			value = uint64(number.GetFloat32())
-		} else if !object.IS_SIGNED[target] && object.IsFloat64(number) {
+		case !object.IS_SIGNED[target] && object.IsFloat64(number):
 			value = uint64(number.GetFloat64())
 		}
-	} else if object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind) { // casting from float to float
+	case object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind):
+		// casting from float to float
 		if number.Type() == object.Float32Kind && target == object.Float64Kind {
 			value = math.Float64bits(float64(number.GetFloat32()))
 		} else if number.Type() == object.Float64Kind && target == object.Float32Kind {
 			value = uint64(math.Float32bits(float32(number.GetFloat64())))
 		}
-	} else { // casting from int to int
+	default:
+		// casting from int to int
 		switch target {
 		case object.Int8Kind:
 			value = object.Int64Bits(int64(int8(number.GetInt64())))
@@ -122,7 +128,7 @@ func numberCast(number *object.Number, target object.ObjectKind, castType CastTy
 		case object.UInt32Kind:
 			value = uint64(uint32(number.GetInt64()))
 		case object.UInt64Kind:
-			value = uint64(uint64(number.GetInt64()))
+			value = uint64(number.GetInt64())
 		}
 	}
 

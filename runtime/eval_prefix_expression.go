@@ -34,11 +34,10 @@ func evalBangPrefixOperatorExpression(right object.Object) (object.Object, error
 }
 
 func (r *Runtime) evalMinusPrefixOperatorExpression(right object.Object) (object.Object, error) {
-	if !object.IsNumber(right) {
+	number, isNumber := right.(*object.Number)
+	if !isNumber {
 		return nil, fmt.Errorf("operator - not defined on type %s", right.Type().Signature())
 	}
-
-	number := right.(*object.Number)
 
 	if object.IsInteger(number) && number.IsUnsigned() {
 		return nil, fmt.Errorf("operator - not defined on unsigned integer type %s", number.Kind.Signature())
@@ -57,10 +56,11 @@ func (r *Runtime) evalMinusPrefixOperatorExpression(right object.Object) (object
 }
 
 func (r *Runtime) evalTildePrefixOperatorExpression(right object.Object) (object.Object, error) {
-	if !object.IsNumber(right) {
+	number, isNumber := right.(*object.Number)
+
+	if !isNumber {
 		return nil, fmt.Errorf("operator ~ not defined on type %s", right.Type().Signature())
 	}
 
-	number := right.(*object.Number)
 	return &object.Number{Value: ^number.Value, Kind: number.Kind}, nil
 }

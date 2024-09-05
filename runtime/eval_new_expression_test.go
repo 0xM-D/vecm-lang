@@ -15,9 +15,9 @@ func TestArrayLiterals(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	result, ok := evaluated.(*object.Array)
+	result, isResultArray := evaluated.(*object.Array)
 
-	if !ok {
+	if !isResultArray {
 		t.Fatalf("object is not Array. got=%T (%+v)", evaluated, evaluated)
 	}
 
@@ -44,8 +44,8 @@ func TestHashLiterals(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	result, ok := evaluated.(*object.Hash)
-	if !ok {
+	result, isResultHash := evaluated.(*object.Hash)
+	if !isResultHash {
 		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
 	}
 
@@ -60,8 +60,8 @@ func TestHashLiterals(t *testing.T) {
 	}
 
 	for expectedKey, expectedValue := range expected {
-		pair, ok := result.Pairs[expectedKey]
-		if !ok {
+		pair, keyExists := result.Pairs[expectedKey]
+		if !keyExists {
 			t.Errorf("no pair for given key in Pairs")
 		}
 

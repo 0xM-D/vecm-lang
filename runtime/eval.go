@@ -1,12 +1,14 @@
 package runtime
 
 import (
+	"errors"
 	"math"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/object"
 )
 
+//nolint:funlen
 func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, error) {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -32,7 +34,7 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 	case *ast.ReturnStatement:
 		return r.evalReturnStatement(node, env)
 	case *ast.LetStatement:
-		return r.evalDeclarationStatement(&(*node).DeclarationStatement, env)
+		return r.evalDeclarationStatement(&node.DeclarationStatement, env)
 	case *ast.Identifier:
 		return r.evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -46,9 +48,9 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 	case *ast.AccessExpression:
 		return r.evalAccessExpression(node, env)
 	case *ast.TypedDeclarationStatement:
-		return r.evalDeclarationStatement(&(*node).DeclarationStatement, env)
+		return r.evalDeclarationStatement(&node.DeclarationStatement, env)
 	case *ast.AssignmentDeclarationStatement:
-		return r.evalDeclarationStatement(&(*node).DeclarationStatement, env)
+		return r.evalDeclarationStatement(&node.DeclarationStatement, env)
 	case *ast.ForStatement:
 		return nil, r.evalForStatement(node, env)
 	case *ast.TernaryExpression:
@@ -63,9 +65,9 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 		return r.evalExportStatement(node, env)
 	case *ast.FunctionDeclarationStatement:
 		return r.evalFunctionDeclarationStatement(node, env)
+	default:
+		return nil, errors.New("unknown node type found in AST")
 	}
-
-	return nil, nil
 }
 
 func (r *Runtime) evalProgram(program *ast.Program, env *object.Environment) (object.Object, error) {
