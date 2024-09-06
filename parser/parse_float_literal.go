@@ -8,11 +8,11 @@ import (
 )
 
 func (p *Parser) parseFloat32Literal() ast.Expression {
-	lit := &ast.Float32Literal{Token: p.curToken}
+	lit := &ast.Float32Literal{Token: p.curToken, Value: 0}
 
 	value, err := strconv.ParseFloat(strings.TrimSuffix(p.curToken.Literal, "f"), 32)
 	if err != nil {
-		p.newError(lit, "could not parse %q as float32", p.curToken.Literal)
+		p.newErrorf(lit, "could not parse %q as float32", p.curToken.Literal)
 		return nil
 	}
 
@@ -22,11 +22,11 @@ func (p *Parser) parseFloat32Literal() ast.Expression {
 }
 
 func (p *Parser) parseFloat64Literal() ast.Expression {
-	lit := &ast.Float64Literal{Token: p.curToken}
+	lit := &ast.Float64Literal{Token: p.curToken, Value: 0}
 
 	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
 	if err != nil {
-		p.newError(lit, "could not parse %q as float64", p.curToken.Literal)
+		p.newErrorf(lit, "could not parse %q as float64", p.curToken.Literal)
 		return nil
 	}
 

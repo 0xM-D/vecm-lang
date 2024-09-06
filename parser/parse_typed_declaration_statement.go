@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDeclarationStatement {
-	stmt := &ast.TypedDeclarationStatement{Token: p.curToken}
+	typedDeclarationStatementToken := p.curToken
 
 	var stmtIsConstant bool
 
@@ -21,18 +21,21 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 	}
 
 	if p.peekTokenIs(token.Semicolon) {
-		ident := p.parseIdentifier().(*ast.Identifier)
+		ident := p.parseIdentifier()
 
-		stmt.DeclarationStatement = ast.DeclarationStatement{
-			Token:      p.curToken,
-			Name:       ident,
-			IsConstant: stmtIsConstant,
-			Type:       stmtType,
-			Value:      nil,
-		}
-
+		declStmtToken := p.curToken
 		p.nextToken() // consume semicolon
-		return stmt
+
+		return &ast.TypedDeclarationStatement{
+			Token: typedDeclarationStatementToken,
+			DeclarationStatement: ast.DeclarationStatement{
+				Token:      declStmtToken,
+				Name:       ident,
+				IsConstant: stmtIsConstant,
+				Type:       stmtType,
+				Value:      nil,
+			},
+		}
 	}
 
 	declStmt := p.parseDeclarationStatement(token.Assign)
@@ -41,9 +44,14 @@ func (p *Parser) parseTypedDeclarationStatement(stmtType ast.Type) *ast.TypedDec
 		return nil
 	}
 
-	stmt.DeclarationStatement = *declStmt
-	stmt.DeclarationStatement.IsConstant = stmtIsConstant
-	stmt.DeclarationStatement.Type = stmtType
-
-	return stmt
+	return &ast.TypedDeclarationStatement{
+		Token: typedDeclarationStatementToken,
+		DeclarationStatement: ast.DeclarationStatement{
+			Token:      declStmt.Token,
+			Name:       declStmt.Name,
+			Value:      declStmt.Value,
+			IsConstant: stmtIsConstant,
+			Type:       stmtType,
+		},
+	}
 }

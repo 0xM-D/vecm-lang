@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"math/big"
@@ -6,13 +6,14 @@ import (
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestForStatement(t *testing.T) {
 	input := `for(int i = 0; i < 10; i+=1) { const int x = i * i; }`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
@@ -67,7 +68,7 @@ func TestEmptyForStatement(t *testing.T) {
 	input := `for(;;) { }`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
@@ -106,7 +107,7 @@ func TestForStatementNoBraces(t *testing.T) {
 	input := `for(int i = 0; i < 10; i+=1) const int x = i * i;`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 

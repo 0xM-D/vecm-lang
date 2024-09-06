@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"math/big"
@@ -6,17 +6,22 @@ import (
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestIndexExpression(t *testing.T) {
 	input := "myArray[1 + 1]"
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+	if !isExpressionStatement {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
 	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
 
 	if !ok {

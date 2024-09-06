@@ -17,15 +17,17 @@ func (p *Parser) parseType() ast.Type {
 		return ast.ArrayType{Token: p.curToken, ElementType: elementType}
 	}
 
+	//nolint:exhaustive // We don't need to handle all token types here
 	switch p.curToken.Type {
 	case token.MapType:
 		result = p.parseMapType()
 	case token.FunctionType:
 		result = p.parseFunctionType()
 	case token.Ident:
-		typeIdentifier := p.parseIdentifier().(*ast.Identifier)
+		typeIdentifier := p.parseIdentifier()
 		result = ast.NamedType{Token: p.curToken, TypeName: *typeIdentifier}
 	default:
+		p.newErrorf(nil, `Expected type. got=%s`, p.curToken.Literal)
 		return nil
 	}
 	return result
@@ -54,11 +56,11 @@ func (p *Parser) parseMapType() ast.Type {
 }
 
 func (p *Parser) parseFunctionType() ast.Type {
-	functionType := ast.FunctionType{Token: p.curToken}
+	functionTypeToken := p.curToken
 
-	functionType.ParameterTypes = p.parseFunctionTypeParameters()
+	parameterTypes := p.parseFunctionTypeParameters()
 
-	if functionType.ParameterTypes == nil {
+	if parameterTypes == nil {
 		return nil
 	}
 
@@ -67,13 +69,17 @@ func (p *Parser) parseFunctionType() ast.Type {
 	}
 	p.nextToken()
 
-	functionType.ReturnType = p.parseType()
+	returnType := p.parseType()
 
-	if functionType.ReturnType == nil {
+	if returnType == nil {
 		return nil
 	}
 
-	return functionType
+	return ast.FunctionType{
+		Token:          functionTypeToken,
+		ParameterTypes: parameterTypes,
+		ReturnType:     returnType,
+	}
 }
 
 func (p *Parser) parseFunctionTypeParameters() []ast.Type {

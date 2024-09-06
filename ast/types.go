@@ -45,7 +45,7 @@ type LetStatement struct {
 
 type ReturnStatement struct {
 	Token       token.Token
-	ReturnValue Expression
+	ReturnValue Expression `exhaustruct:"optional"`
 }
 
 type ExpressionStatement struct {

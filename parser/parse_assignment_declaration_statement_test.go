@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestAssignmentDeclarationStatement(t *testing.T) {
@@ -24,7 +25,7 @@ func TestAssignmentDeclarationStatement(t *testing.T) {
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 

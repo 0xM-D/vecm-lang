@@ -6,33 +6,49 @@ import (
 )
 
 func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationStatement {
-	stmt := &ast.FunctionDeclarationStatement{Token: p.curToken}
+	funcToken := p.curToken
+	p.nextToken() // Swallow "fn" token
 
-	p.nextToken() // "fn"
+	functionName := p.parseIdentifier()
 
-	stmt.Name = p.parseIdentifier().(*ast.Identifier)
-
+	// Swallow "(" token
 	if !p.expectPeek(token.LeftParen) {
 		return nil
 	}
 
-	stmt.Parameters, stmt.Type.ParameterTypes = p.parseFunctionParameters()
+	functionParams, functionParamTypes := p.parseFunctionParameters()
 
+	// Swallow ")" token
 	if !p.expectPeek(token.DashArrow) {
 		return nil
 	}
-	p.nextToken()
 
-	stmt.Type.ReturnType = p.parseType()
-	if stmt.Type.ReturnType == nil {
+	p.nextToken() // Swallow "->" token
+
+	// Parse return type
+	functionReturnType := p.parseType()
+	if functionReturnType == nil {
 		return nil
 	}
 
+	// Swallow "{" token
 	if !p.expectPeek(token.LeftBrace) {
 		return nil
 	}
 
-	stmt.Body = p.parseBlockStatement()
+	functionBody := p.parseBlockStatement()
+
+	stmt := &ast.FunctionDeclarationStatement{
+		Token:      funcToken,
+		Name:       functionName,
+		Body:       functionBody,
+		Parameters: functionParams,
+		Type: ast.FunctionType{
+			Token:          funcToken,
+			ParameterTypes: functionParamTypes,
+			ReturnType:     functionReturnType,
+		},
+	}
 
 	return stmt
 }

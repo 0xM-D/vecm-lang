@@ -6,17 +6,16 @@ import (
 )
 
 func (p *Parser) parseNewExpression() ast.Expression {
-	newExpr := &ast.NewExpression{Token: p.curToken}
-
+	newToken := p.curToken
 	if !p.curTokenIs(token.New) {
-		p.newError(nil, `Expected "new" keyword. got=%s`, p.curToken.Literal)
+		p.newErrorf(nil, `Expected "new" keyword. got=%s`, p.curToken.Literal)
 		return nil
 	}
 
 	p.nextToken()
-	newExpr.Type = p.parseType()
+	newType := p.parseType()
 
-	if newExpr.Type == nil {
+	if newType == nil {
 		return nil
 	}
 
@@ -24,11 +23,14 @@ func (p *Parser) parseNewExpression() ast.Expression {
 		return nil
 	}
 
-	newExpr.InitializationList = p.parseExpressionList(token.RightBrace)
-
-	if newExpr.InitializationList == nil {
+	initializationList := p.parseExpressionList(token.RightBrace)
+	if initializationList == nil {
 		return nil
 	}
 
-	return newExpr
+	return &ast.NewExpression{
+		Token:              newToken,
+		Type:               newType,
+		InitializationList: initializationList,
+	}
 }

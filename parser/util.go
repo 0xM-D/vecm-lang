@@ -5,7 +5,7 @@ import (
 )
 
 func (p *Parser) peekError(t token.Type) {
-	p.newError(nil, "expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	p.newErrorf(nil, "expected next token to be %s, got %s instead", t, p.peekToken.Type)
 }
 
 func (p *Parser) nextToken() {
@@ -17,10 +17,10 @@ func (p *Parser) expectPeek(t token.Type) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
-	} else {
-		p.peekError(t)
-		return false
 	}
+
+	p.peekError(t)
+	return false
 }
 
 func (p *Parser) peekTokenIs(t token.Type) bool {
@@ -35,14 +35,14 @@ func (p *Parser) peekPrecedence() int {
 	if p, ok := precedences[p.peekToken.Type]; ok {
 		return p
 	}
-	return LOWEST
+	return Lowest
 }
 
 func (p *Parser) curPrecedence() int {
 	if p, ok := precedences[p.curToken.Type]; ok {
 		return p
 	}
-	return LOWEST
+	return Lowest
 }
 
 func (p *Parser) getLine(linen int) string {

@@ -7,15 +7,20 @@ import (
 )
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
-	lit := &ast.IntegerLiteral{Token: p.curToken}
+	integerToken := p.curToken
 
+	//nolint:mnd // 10 is the base for parsing the integer
 	value, ok := new(big.Int).SetString(p.curToken.Literal, 10)
-	if !ok {
-		p.newError(lit, "could not parse %q as integer", p.curToken.Literal)
-		return nil
+
+	lit := &ast.IntegerLiteral{
+		Token: integerToken,
+		Value: *value,
 	}
 
-	lit.Value = *value
+	if !ok {
+		p.newErrorf(lit, "could not parse %q as integer", p.curToken.Literal)
+		return nil
+	}
 
 	return lit
 }

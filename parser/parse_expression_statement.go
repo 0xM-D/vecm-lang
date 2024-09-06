@@ -6,9 +6,10 @@ import (
 )
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
-	stmt := &ast.ExpressionStatement{Token: p.curToken}
-
-	stmt.Expression = p.parseExpression(LOWEST)
+	stmt := &ast.ExpressionStatement{
+		Token:      p.curToken,
+		Expression: p.parseExpression(Lowest),
+	}
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
@@ -20,7 +21,11 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
-		p.newError(&ast.ExpressionStatement{Token: p.curToken}, "no prefix parse function for %s found", p.curToken.Literal)
+		p.newErrorf(
+			&ast.ExpressionStatement{Token: p.curToken, Expression: nil},
+			"no prefix parse function for %s found",
+			p.curToken.Literal,
+		)
 		return nil
 	}
 	leftExp := prefix()

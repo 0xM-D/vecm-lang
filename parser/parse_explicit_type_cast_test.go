@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestExplicitTypeCast(t *testing.T) {
@@ -16,12 +17,16 @@ func TestExplicitTypeCast(t *testing.T) {
 		{"8 as uint64", "8", "uint64"},
 		{"(6.0f * 2) as float64", "(6.0f * 2)", "float64"},
 		{"new []int16{1, 2, 3} as []int64", "new []int16{1, 2, 3}", "[]int64"},
-		{`new map{ string -> string }{ 1: "2", 3: "4"} as map{ string -> string }`, `new map{ string -> string }{1: "2", 3: "4"}`, "map{ string -> string }"},
+		{
+			`new map{ string -> string }{ 1: "2", 3: "4"} as map{ string -> string }`,
+			`new map{ string -> string }{1: "2", 3: "4"}`,
+			"map{ string -> string }",
+		},
 	}
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 		if len(program.Statements) != 1 {

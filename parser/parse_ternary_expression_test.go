@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"math/big"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestTernaryOperator(t *testing.T) {
@@ -21,7 +22,7 @@ func TestTernaryOperator(t *testing.T) {
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 
@@ -42,15 +43,24 @@ func TestTernaryOperator(t *testing.T) {
 		}
 
 		if !testLiteralExpression(t, ternaryExpression.Condition, tt.condition) {
-			t.Fatalf("Ternary expression condition is different than expected. want=%s got=%s", ternaryExpression.Condition.String(), tt.condition)
+			t.Fatalf("Ternary expression condition is different than expected. want=%s got=%s",
+				ternaryExpression.Condition.String(),
+				tt.condition,
+			)
 		}
 
 		if !testLiteralExpression(t, ternaryExpression.ValueIfTrue, tt.valueIfTrue) {
-			t.Fatalf("Ternary expression valueIfTrue is different than expected. want=%s got=%s", ternaryExpression.ValueIfTrue.String(), tt.valueIfTrue)
+			t.Fatalf("Ternary expression valueIfTrue is different than expected. want=%s got=%s",
+				ternaryExpression.ValueIfTrue.String(),
+				tt.valueIfTrue,
+			)
 		}
 
 		if !testLiteralExpression(t, ternaryExpression.ValueIfFalse, tt.valueIfFalse) {
-			t.Fatalf("Ternary expression falueIfFalse is different than expected. want=%s got=%s", ternaryExpression.ValueIfFalse.String(), tt.valueIfFalse)
+			t.Fatalf("Ternary expression falueIfFalse is different than expected. want=%s got=%s",
+				ternaryExpression.ValueIfFalse.String(),
+				tt.valueIfFalse,
+			)
 		}
 	}
 }

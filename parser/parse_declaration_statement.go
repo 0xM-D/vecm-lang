@@ -6,19 +6,19 @@ import (
 )
 
 func (p *Parser) parseDeclarationStatement(assignToken token.Type) *ast.DeclarationStatement {
-	stmt := &ast.DeclarationStatement{Token: p.curToken}
+	stmt := &ast.DeclarationStatement{Token: p.curToken, Name: nil, Value: nil, IsConstant: false, Type: nil}
 
-	stmt.Name = p.parseIdentifier().(*ast.Identifier)
+	stmt.Name = p.parseIdentifier()
 
 	if !p.peekTokenIs(assignToken) {
-		p.newError(stmt, "invalid token in declaration statement. expected=%q got=%q", assignToken, p.peekToken.Literal)
+		p.newErrorf(stmt, "invalid token in declaration statement. expected=%q got=%q", assignToken, p.peekToken.Literal)
 		return nil
 	}
 
 	p.nextToken()
 	p.nextToken()
 
-	stmt.Value = p.parseExpression(LOWEST)
+	stmt.Value = p.parseExpression(Lowest)
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()

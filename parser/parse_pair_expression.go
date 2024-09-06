@@ -3,15 +3,18 @@ package parser
 import "github.com/DustTheory/interpreter/ast"
 
 func (p *Parser) prasePairExpression(left ast.Expression) ast.Expression {
-	expr := &ast.PairExpression{Token: p.curToken, Left: left}
-
+	pairToken := p.curToken
 	p.nextToken() // :
 
-	expr.Right = p.parseExpression(LOWEST)
+	right := p.parseExpression(Lowest)
 
-	if expr.Right == nil {
+	if right == nil {
 		return nil
 	}
 
-	return expr
+	return &ast.PairExpression{
+		Token: pairToken,
+		Left:  left,
+		Right: right,
+	}
 }

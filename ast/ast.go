@@ -16,7 +16,7 @@ func (p *Program) TokenValue() token.Token {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenValue()
 	}
-	
+
 	return token.Token{Type: token.EOF, Literal: "", Linen: 0, Coln: 0}
 }
 

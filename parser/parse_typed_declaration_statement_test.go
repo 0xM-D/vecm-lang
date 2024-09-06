@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestTypedDeclaration(t *testing.T) {
@@ -16,19 +17,49 @@ func TestTypedDeclaration(t *testing.T) {
 	}{
 		{"int a = 10;", "a", "int", "10"},
 		{"bool b = true;", "b", "bool", "true"},
-		{"function(int) -> int c = fn(b:int)->int { return b * 2 };", "c", "function(int)->int", "fn(b:int)->int{return (b * 2);}"},
-		{"function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }", "sum", "function(int, int)->int", "fn(a:int,b:int)->int{return (a + b);}"},
-		{"map{ int -> int } d = new map{ int -> int }{1: 2, 2: 3};", "d", "map{ int -> int }", "new map{ int -> int }{1: 2, 2: 3}"},
+		{
+			"function(int) -> int c = fn(b:int)->int { return b * 2 };",
+			"c",
+			"function(int)->int",
+			"fn(b:int)->int{return (b * 2);}",
+		},
+		{
+			"function(int, int)->int sum = fn(a: int, b: int) -> int { return a + b; }",
+			"sum",
+			"function(int, int)->int",
+			"fn(a:int,b:int)->int{return (a + b);}",
+		},
+		{
+			"map{ int -> int } d = new map{ int -> int }{1: 2, 2: 3};",
+			"d",
+			"map{ int -> int }",
+			"new map{ int -> int }{1: 2, 2: 3}",
+		},
 		{"[]int e = new []int{1, 2, 3, 4, 5};", "e", "[]int", "new []int{1, 2, 3, 4, 5}"},
 		{"[][]int e = new [][]int{new []int{1, 2, 3, 4, 5}};", "e", "[][]int", "new [][]int{new []int{1, 2, 3, 4, 5}}"},
-		{`[]map{ string -> int } d = new []map{ string -> int }{new map{ int -> int }{"foo": 2, "bar": 3}};`, "d", "[]map{ string -> int }", `new []map{ string -> int }{new map{ int -> int }{"foo": 2, "bar": 3}}`},
-		{`[]map{ string -> []int } d = new []map{ string -> []int }{new map{ string -> []int }{"foo": new []int{1, 2}, "bar": new []int{3, 4}}};`, "d", "[]map{ string -> []int }", `new []map{ string -> []int }{new map{ string -> []int }{"foo": new []int{1, 2}, "bar": new []int{3, 4}}}`},
+		{
+			`[]map{ string -> int } d = new []map{ string -> int }{new map{ int -> int }{"foo": 2, "bar": 3}};`,
+			"d",
+			"[]map{ string -> int }",
+			`new []map{ string -> int }{new map{ int -> int }{"foo": 2, "bar": 3}}`,
+		},
+		{
+			`[]map{ string -> []int } d = new []map{ string -> []int }{
+				new map{ string -> []int }{
+					"foo": new []int{1, 2},
+					"bar": new []int{3, 4}
+				}
+			};`,
+			"d",
+			"[]map{ string -> []int }",
+			`new []map{ string -> []int }{new map{ string -> []int }{"foo": new []int{1, 2}, "bar": new []int{3, 4}}}`,
+		},
 		{`string f = "string value";`, "f", "string", `"string value"`},
 	}
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 
@@ -79,7 +110,7 @@ func TestConstDeclarationStatement(t *testing.T) {
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 

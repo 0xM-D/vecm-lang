@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestFloat32Literal(t *testing.T) {
@@ -12,7 +13,7 @@ func TestFloat32Literal(t *testing.T) {
 	expected := []float32{5, 5.5, .5, 0.55}
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
@@ -36,7 +37,7 @@ func TestFloat64Literal(t *testing.T) {
 	expected := []float64{5, 5.5, .5, 0.55}
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 

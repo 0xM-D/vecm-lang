@@ -36,7 +36,7 @@ func (l *Lexer) skipWhitespaceAndComments() {
 		case l.commentAhead():
 			l.skipComments()
 		default:
-			break
+			return
 		}
 	}
 }

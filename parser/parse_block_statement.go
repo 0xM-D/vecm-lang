@@ -6,8 +6,7 @@ import (
 )
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {
-	block := &ast.BlockStatement{Token: p.curToken}
-	block.Statements = []ast.Statement{}
+	block := &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{}}
 
 	p.nextToken()
 

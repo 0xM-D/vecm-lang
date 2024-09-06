@@ -7,6 +7,7 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 		Left:     left,
+		Right:    nil,
 	}
 
 	precedence := p.curPrecedence()

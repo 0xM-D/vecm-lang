@@ -6,27 +6,38 @@ import (
 )
 
 func (p *Parser) parseIfStatement() ast.Statement {
-	stmt := &ast.IfStatement{Token: p.curToken}
-
+	// Swallow "if" token
+	ifStatementToken := p.curToken
 	p.nextToken()
-	stmt.Condition = p.parseExpression(LOWEST)
 
-	p.nextToken()
-	if p.curTokenIs(token.LeftBrace) {
-		stmt.Consequence = p.parseBlockStatement()
-	} else {
-		stmt.Consequence = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
+	condition := p.parseExpression(Lowest)
+	consequence := p.parseIfStatementConsequence()
+	alternative := p.parseIfStatementAlternative()
+
+	return &ast.IfStatement{
+		Token:       ifStatementToken,
+		Condition:   condition,
+		Consequence: consequence,
+		Alternative: alternative,
 	}
+}
 
+func (p *Parser) parseIfStatementConsequence() *ast.BlockStatement {
+	p.nextToken() // Swallow "{" token
+	if !p.curTokenIs(token.LeftBrace) {
+		return &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
+	}
+	return p.parseBlockStatement()
+}
+
+func (p *Parser) parseIfStatementAlternative() *ast.BlockStatement {
 	if p.peekTokenIs(token.Else) {
-		p.nextToken()
-		p.nextToken()
-		if p.curTokenIs(token.LeftBrace) {
-			stmt.Alternative = p.parseBlockStatement()
-		} else {
-			stmt.Alternative = &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
+		p.nextToken() // Swallow "else" token
+		p.nextToken() // Swallow "{" token
+		if !p.curTokenIs(token.LeftBrace) {
+			return &ast.BlockStatement{Token: p.curToken, Statements: []ast.Statement{p.parseStatement()}}
 		}
+		return p.parseBlockStatement()
 	}
-
-	return stmt
+	return nil
 }

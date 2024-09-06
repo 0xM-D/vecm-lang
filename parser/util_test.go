@@ -1,15 +1,17 @@
-package parser
+package parser_test
 
 import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
+	"github.com/DustTheory/interpreter/parser"
 )
 
-func checkParserErrors(t *testing.T, p *Parser) {
+func checkParserErrors(t *testing.T, p *parser.Parser) {
 	errors := p.Errors()
 
 	if len(errors) == 0 {
@@ -123,7 +125,7 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 		return false
 	}
 
-	if boolean.TokenLiteral() != fmt.Sprintf("%t", value) {
+	if boolean.TokenLiteral() != strconv.FormatBool(value) {
 		t.Errorf("integ.TokenLiteral not %t. got=%s", value, boolean.TokenLiteral())
 		return false
 	}
@@ -138,9 +140,12 @@ type TestIdentifier struct {
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
 	expectedKind := reflect.TypeOf(expected).Kind()
 	if expectedKind == reflect.Array || expectedKind == reflect.Slice {
-		arrayLiteral := exp.(*ast.NewExpression)
-		expectedElements := expected.([]interface{})
-
+		arrayLiteral, isArrayLiteral := exp.(*ast.NewExpression)
+		if !isArrayLiteral {
+			t.Errorf("exp not *ast.NewExpression. got=%T", exp)
+			return false
+		}
+		expectedElements, _ := expected.([]interface{})
 		for i, exp := range arrayLiteral.InitializationList {
 			if !testLiteralExpression(t, exp, expectedElements[i]) {
 				return false

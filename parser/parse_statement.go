@@ -6,6 +6,7 @@ import (
 )
 
 func (p *Parser) parseStatement() ast.Statement {
+	//nolint:exhaustive // This is exhaustive
 	switch p.curToken.Type {
 	case token.Let:
 		return p.parseLetStatement()
@@ -28,12 +29,12 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.Export:
 		return p.parseExportStatement()
 	case token.Function:
-		switch p.peekToken.Type {
-		case token.Ident:
+		if p.peekToken.Type == token.Ident {
 			return p.parseFunctionDeclarationStatement()
 		}
 		fallthrough
 	case token.Ident:
+		//nolint:exhaustive // This is exhaustive
 		switch p.peekToken.Type {
 		case token.DeclAssign:
 			return p.parseAssignmentDeclarationStatement()

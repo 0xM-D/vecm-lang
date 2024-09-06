@@ -1,17 +1,18 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestFunctionLiteral(t *testing.T) {
 	input := `fn(x: int, y: int) -> int { x + y; }`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
@@ -57,19 +58,33 @@ func TestFunctionLiteralParameters(t *testing.T) {
 	}{
 		{input: "fn()->void {};", expectedParams: []TestIdentifier{}},
 		{input: "fn(x: int)->void {};", expectedParams: []TestIdentifier{{"x"}}},
-		{input: "fn(x: int, y: string, z: map{int -> string})->void {};", expectedParams: []TestIdentifier{{"x"}, {"y"}, {"z"}}},
+		{
+			input:          "fn(x: int, y: string, z: map{int -> string})->void {};",
+			expectedParams: []TestIdentifier{{"x"}, {"y"}, {"z"}},
+		},
 	}
+
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
-		stmt := program.Statements[0].(*ast.ExpressionStatement)
-		function := stmt.Expression.(*ast.FunctionLiteral)
+
+		stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+		if !isExpressionStatement {
+			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+
+		function, isFunctionLiteral := stmt.Expression.(*ast.FunctionLiteral)
+		if !isFunctionLiteral {
+			t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T", stmt.Expression)
+		}
+
 		if len(function.Parameters) != len(tt.expectedParams) {
 			t.Errorf("length parameters wrong. want %d, got=%d\n",
 				len(tt.expectedParams), len(function.Parameters))
 		}
+
 		for i, ident := range tt.expectedParams {
 			testLiteralExpression(t, function.Parameters[i], ident)
 		}

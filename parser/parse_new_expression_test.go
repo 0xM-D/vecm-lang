@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"math/big"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestNewArrayArrayExpression(t *testing.T) {
@@ -19,13 +20,16 @@ func TestNewArrayArrayExpression(t *testing.T) {
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 
-		stmt := program.Statements[0].(*ast.ExpressionStatement)
-		expr, ok := stmt.Expression.(*ast.NewExpression)
+		stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+		if !isExpressionStatement {
+			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
 
+		expr, ok := stmt.Expression.(*ast.NewExpression)
 		if !ok {
 			t.Fatalf("exp not ast.NewExpression. got=%T", stmt.Expression)
 		}
@@ -53,19 +57,21 @@ func TestNewHashExpression(t *testing.T) {
 	input := `new map{ string -> int }{"one": 1, "two": 2, "three": 3}`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	stmt := program.Statements[0].(*ast.ExpressionStatement)
-	hash, ok := stmt.Expression.(*ast.NewExpression)
+	stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+	if !isExpressionStatement {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
 
+	hash, ok := stmt.Expression.(*ast.NewExpression)
 	if !ok {
 		t.Fatalf("exp is not ast.NewExpression. got=%T", stmt.Expression)
 	}
 
 	_, ok = hash.Type.(ast.HashType)
-
 	if !ok {
 		t.Errorf("newExpression.Type is not ast.HashType. got=%T", hash.Type)
 	}
@@ -81,15 +87,13 @@ func TestNewHashExpression(t *testing.T) {
 	}
 
 	for _, expr := range hash.InitializationList {
-		pair, ok := expr.(*ast.PairExpression)
-
-		if !ok {
+		pair, isPairExpression := expr.(*ast.PairExpression)
+		if !isPairExpression {
 			t.Errorf("expr is not ast.PairExpression. got=%T", expr)
 		}
 
-		key, ok := pair.Left.(*ast.StringLiteral)
-
-		if !ok {
+		key, isStringLiteral := pair.Left.(*ast.StringLiteral)
+		if !isStringLiteral {
 			t.Errorf("key is not ast.StringLiteral. got=%T", key)
 		}
 
@@ -102,11 +106,15 @@ func TestNewHashLiteralExpressionEmpty(t *testing.T) {
 	input := "new map{ int -> []int }{}"
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+	if !isExpressionStatement {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
 	hash, ok := stmt.Expression.(*ast.NewExpression)
 
 	if !ok {
@@ -122,14 +130,18 @@ func TestNewHashLiteralExpressionWithExpressions(t *testing.T) {
 	input := `new map{ string -> int }{"one": 0 + 1, "two": 10 - 8, "three": 15 / 5}`
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	stmt := program.Statements[0].(*ast.ExpressionStatement)
-	hash, ok := stmt.Expression.(*ast.NewExpression)
+	stmt, isExpressionStatement := program.Statements[0].(*ast.ExpressionStatement)
+	if !isExpressionStatement {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
 
-	if !ok {
+	hash, isNewExpression := stmt.Expression.(*ast.NewExpression)
+
+	if !isNewExpression {
 		t.Fatalf("exp is not ast.NewExpression. got=%T", stmt.Expression)
 	}
 
@@ -150,15 +162,13 @@ func TestNewHashLiteralExpressionWithExpressions(t *testing.T) {
 	}
 
 	for _, expr := range hash.InitializationList {
-		pair, ok := expr.(*ast.PairExpression)
-
-		if !ok {
+		pair, isPairExpression := expr.(*ast.PairExpression)
+		if !isPairExpression {
 			t.Errorf("expr is not ast.PairExpression. got=%T", expr)
 		}
 
-		literal, ok := pair.Left.(*ast.StringLiteral)
-
-		if !ok {
+		literal, isStringLiteral := pair.Left.(*ast.StringLiteral)
+		if !isStringLiteral {
 			t.Errorf("key is not ast.StringLiteral. got=%T", pair.Left)
 			continue
 		}

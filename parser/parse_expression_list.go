@@ -12,11 +12,11 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 		return list
 	}
 	p.nextToken()
-	list = append(list, p.parseExpression(LOWEST))
+	list = append(list, p.parseExpression(Lowest))
 	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
 		p.nextToken()
-		list = append(list, p.parseExpression(LOWEST))
+		list = append(list, p.parseExpression(Lowest))
 	}
 	if !p.expectPeek(end) {
 		return nil

@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"math/big"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestAccessExpression(t *testing.T) {
@@ -16,14 +17,18 @@ func TestAccessExpression(t *testing.T) {
 	}{
 		{"5.toString", big.NewInt(5), TestIdentifier{"toString"}},
 		{"array.size", TestIdentifier{"array"}, TestIdentifier{"size"}},
-		{"new []int{1, 2, 3, 4}.size", []interface{}{big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)}, TestIdentifier{"size"}},
+		{
+			"new []int{1, 2, 3, 4}.size",
+			[]interface{}{big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)},
+			TestIdentifier{"size"},
+		},
 		{"str.length", TestIdentifier{"str"}, TestIdentifier{"length"}},
 		{`"ABCDEFG".length`, "ABCDEFG", TestIdentifier{"length"}},
 	}
 
 	for _, tt := range infixTests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 

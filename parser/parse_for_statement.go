@@ -6,7 +6,13 @@ import (
 )
 
 func (p *Parser) parseForStatement() ast.Statement {
-	stmt := &ast.ForStatement{Token: p.curToken}
+	stmt := &ast.ForStatement{
+		Token:          p.curToken,
+		Initialization: nil,
+		Condition:      nil,
+		AfterThought:   nil,
+		Body:           nil,
+	}
 
 	if !p.expectPeek(token.LeftParen) {
 		return nil
@@ -20,7 +26,7 @@ func (p *Parser) parseForStatement() ast.Statement {
 	if p.curTokenIs(token.Semicolon) {
 		p.nextToken()
 	} else {
-		p.newError(stmt, "Expected ;")
+		p.newErrorf(stmt, "Expected ;")
 		return nil
 	}
 
@@ -34,7 +40,7 @@ func (p *Parser) parseForStatement() ast.Statement {
 		if p.curTokenIs(token.Semicolon) {
 			p.nextToken()
 		} else {
-			p.newError(stmt, "Expected ;")
+			p.newErrorf(stmt, "Expected ;")
 			return nil
 		}
 		stmt.AfterThought = p.parseStatement()

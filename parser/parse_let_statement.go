@@ -6,22 +6,30 @@ import (
 )
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.DeclarationStatement{Token: p.curToken}
+	declStmtToken := p.curToken
 	if !p.expectPeek(token.Ident) {
 		return nil
 	}
 
-	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	nameIdentifier := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 	if !p.expectPeek(token.Assign) {
 		return nil
 	}
 
 	p.nextToken()
 
-	stmt.Value = p.parseExpression(LOWEST)
+	value := p.parseExpression(Lowest)
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
 	}
 
-	return &ast.LetStatement{DeclarationStatement: *stmt}
+	return &ast.LetStatement{
+		DeclarationStatement: ast.DeclarationStatement{
+			Token:      declStmtToken,
+			Name:       nameIdentifier,
+			Value:      value,
+			IsConstant: false,
+			Type:       nil,
+		},
+	}
 }

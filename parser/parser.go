@@ -23,11 +23,30 @@ type (
 )
 
 func New(l *lexer.Lexer) *Parser {
-	p := &Parser{l: l, errors: []string{}}
+	p := &Parser{
+		l:      l,
+		errors: []string{},
+
+		curToken: token.Token{
+			Type:    token.EOF,
+			Literal: "",
+			Linen:   0,
+			Coln:    0,
+		},
+		peekToken: token.Token{
+			Type:    token.EOF,
+			Literal: "",
+			Linen:   0,
+			Coln:    0,
+		},
+
+		prefixParseFns: make(map[token.Type]prefixParseFn),
+		infixParseFns:  make(map[token.Type]infixParseFn),
+	}
 
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 
-	p.registerPrefix(token.Ident, p.parseIdentifier)
+	p.registerPrefix(token.Ident, p.parseIdentifierAsExpression)
 	p.registerPrefix(token.Int, p.parseIntegerLiteral)
 	p.registerPrefix(token.Float32, p.parseFloat32Literal)
 	p.registerPrefix(token.Float64, p.parseFloat64Literal)
@@ -78,8 +97,9 @@ func New(l *lexer.Lexer) *Parser {
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
-	program := &ast.Program{}
-	program.Statements = []ast.Statement{}
+	program := &ast.Program{
+		Statements: []ast.Statement{},
+	}
 
 	for p.curToken.Type != token.EOF {
 		stmt := p.parseStatement()
@@ -96,7 +116,7 @@ func (p *Parser) Errors() []string {
 	return p.errors
 }
 
-func (p *Parser) newError(node ast.Node, format string, a ...interface{}) {
+func (p *Parser) newErrorf(node ast.Node, format string, a ...interface{}) {
 	var linen, coln int
 	if node == nil {
 		linen, coln = p.l.GetLocation()

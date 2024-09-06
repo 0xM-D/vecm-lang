@@ -6,14 +6,19 @@ import (
 )
 
 func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
-	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
-
+	// Swallow the left bracket
+	indexExpressionToken := p.curToken
 	p.nextToken()
-	exp.Index = p.parseExpression(LOWEST)
+
+	index := p.parseExpression(Lowest)
 
 	if !p.expectPeek(token.RightBracket) {
 		return nil
 	}
 
-	return exp
+	return &ast.IndexExpression{
+		Token: indexExpressionToken,
+		Left:  left,
+		Index: index,
+	}
 }

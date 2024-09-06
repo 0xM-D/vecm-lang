@@ -6,7 +6,12 @@ import (
 )
 
 func (p *Parser) parseFunctionLiteral() ast.Expression {
-	lit := &ast.FunctionLiteral{Token: p.curToken, Type: ast.FunctionType{Token: p.curToken}}
+	lit := &ast.FunctionLiteral{
+		Token:      p.curToken,
+		Type:       ast.FunctionType{Token: p.curToken, ParameterTypes: nil, ReturnType: nil},
+		Parameters: nil,
+		Body:       nil,
+	}
 
 	if !p.expectPeek(token.LeftParen) {
 		return nil
@@ -45,21 +50,21 @@ func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
 		return identifiers, types
 	}
 
-	ident, param_type := p.parseFunctionParameter()
-	if ident == nil || param_type == nil {
+	ident, paramType := p.parseFunctionParameter()
+	if ident == nil || paramType == nil {
 		return nil, nil
 	}
 	identifiers = append(identifiers, ident)
-	types = append(types, param_type)
+	types = append(types, paramType)
 
 	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
-		ident, param_type := p.parseFunctionParameter()
-		if ident == nil || param_type == nil {
+		ident, paramType = p.parseFunctionParameter()
+		if ident == nil || paramType == nil {
 			return nil, nil
 		}
 		identifiers = append(identifiers, ident)
-		types = append(types, param_type)
+		types = append(types, paramType)
 	}
 
 	if !p.expectPeek(token.RightParen) {
@@ -78,7 +83,7 @@ func (p *Parser) parseFunctionParameter() (*ast.Identifier, ast.Type) {
 	}
 
 	p.nextToken()
-	param_type := p.parseType()
+	paramType := p.parseType()
 
-	return ident, param_type
+	return ident, paramType
 }

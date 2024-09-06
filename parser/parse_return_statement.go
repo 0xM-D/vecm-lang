@@ -14,7 +14,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 		return stmt
 	}
 
-	stmt.ReturnValue = p.parseExpression(LOWEST)
+	stmt.ReturnValue = p.parseExpression(Lowest)
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
 	}

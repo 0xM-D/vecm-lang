@@ -3,7 +3,7 @@ package parser
 import "github.com/DustTheory/interpreter/ast"
 
 func (p *Parser) parseExportStatement() ast.Statement {
-	exportStmt := &ast.ExportStatement{Token: p.curToken}
+	exportStmt := &ast.ExportStatement{Token: p.curToken, Statement: nil}
 
 	p.nextToken() // "export"
 	exportStmt.Statement = p.parseStatement()

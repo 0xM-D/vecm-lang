@@ -6,13 +6,12 @@ import (
 )
 
 func (p *Parser) parseTernaryExpression(left ast.Expression) ast.Expression {
-	expr := &ast.TernaryExpression{Token: p.curToken, Condition: left}
-
+	ternaryToken := p.curToken
 	p.nextToken() // Swallow ? token
 
-	expr.ValueIfTrue = p.parseExpression(TERNARY_IF)
+	valueIfTrue := p.parseExpression(TernaryIf)
 
-	if expr.ValueIfTrue == nil {
+	if valueIfTrue == nil {
 		return nil
 	}
 
@@ -21,11 +20,16 @@ func (p *Parser) parseTernaryExpression(left ast.Expression) ast.Expression {
 	}
 	p.nextToken()
 
-	expr.ValueIfFalse = p.parseExpression(LOWEST)
+	valueIfFalse := p.parseExpression(Lowest)
 
-	if expr.ValueIfFalse == nil {
+	if valueIfFalse == nil {
 		return nil
 	}
 
-	return expr
+	return &ast.TernaryExpression{
+		Token:        ternaryToken,
+		Condition:    left,
+		ValueIfTrue:  valueIfTrue,
+		ValueIfFalse: valueIfFalse,
+	}
 }

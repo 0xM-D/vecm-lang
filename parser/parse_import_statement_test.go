@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/lexer"
+	"github.com/DustTheory/interpreter/parser"
 )
 
 func TestImportStatement(t *testing.T) {
@@ -21,7 +22,7 @@ func TestImportStatement(t *testing.T) {
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
-		p := New(l)
+		p := parser.New(l)
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 
@@ -49,7 +50,10 @@ func TestImportStatement(t *testing.T) {
 		}
 
 		if len(importStmt.ImportedIdentifiers) != len(tt.expectedImportIdentifiers) {
-			t.Fatalf("Expected import statement to import %d identifiers. got=%d", len(tt.expectedImportIdentifiers), len(importStmt.ImportedIdentifiers))
+			t.Fatalf("Expected import statement to import %d identifiers. got=%d",
+				len(tt.expectedImportIdentifiers),
+				len(importStmt.ImportedIdentifiers),
+			)
 		}
 
 		for i, identifier := range importStmt.ImportedIdentifiers {

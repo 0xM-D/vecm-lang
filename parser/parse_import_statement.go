@@ -6,18 +6,12 @@ import (
 )
 
 func (p *Parser) parseImportStatement() *ast.ImportStatement {
-	importStatement := &ast.ImportStatement{Token: p.curToken}
+	importStatementToken := p.curToken
 
-	importStatement.ImportAll = p.peekTokenIs(token.Asterisk)
+	importIdentifiers, importAll := p.parseImportIdentifiers()
 
-	if importStatement.ImportAll {
-		p.nextToken()
-		p.nextToken()
-	} else {
-		importStatement.ImportedIdentifiers = p.parseImportLst()
-		if importStatement.ImportedIdentifiers == nil {
-			return nil
-		}
+	if importIdentifiers == nil && !importAll {
+		return nil
 	}
 
 	p.nextToken() // "from"
@@ -26,13 +20,32 @@ func (p *Parser) parseImportStatement() *ast.ImportStatement {
 	if importPathString == nil {
 		return nil
 	}
-	importStatement.ImportPath = importPathString.(*ast.StringLiteral).Value
+
+	importPath := importPathString.(*ast.StringLiteral).Value
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
 	}
 
-	return importStatement
+	return &ast.ImportStatement{
+		Token:               importStatementToken,
+		ImportPath:          importPath,
+		ImportAll:           importAll,
+		ImportedIdentifiers: importIdentifiers,
+	}
+}
+
+func (p *Parser) parseImportIdentifiers() ([]*ast.Identifier, bool) {
+	importAll := p.peekTokenIs(token.Asterisk)
+
+	if importAll {
+		p.nextToken() // Swallow "import"
+		p.nextToken() // Swallow "*"
+		return nil, true
+	}
+
+	importIdentifiers := p.parseImportLst()
+	return importIdentifiers, false
 }
 
 func (p *Parser) parseImportLst() []*ast.Identifier {
@@ -43,18 +56,18 @@ func (p *Parser) parseImportLst() []*ast.Identifier {
 	}
 	p.nextToken()
 	if !p.curTokenIs(token.Ident) {
-		p.newError(nil, "Expected identifier in import statement. got=%T", p.curToken)
+		p.newErrorf(nil, "Expected identifier in import statement. got=%T", p.curToken)
 		return nil
 	}
-	list = append(list, p.parseIdentifier().(*ast.Identifier))
+	list = append(list, p.parseIdentifier())
 	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
 		p.nextToken()
 		if !p.curTokenIs(token.Ident) {
-			p.newError(nil, "Expected identifier in import statement. got=%T", p.curToken)
+			p.newErrorf(nil, "Expected identifier in import statement. got=%T", p.curToken)
 			return nil
 		}
-		list = append(list, p.parseIdentifier().(*ast.Identifier))
+		list = append(list, p.parseIdentifier())
 	}
 	if !p.expectPeek(token.From) {
 		return nil
