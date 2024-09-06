@@ -7,6 +7,7 @@ import (
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/object"
 	"github.com/DustTheory/interpreter/token"
+	"github.com/pkg/errors"
 )
 
 type OperatorFnSignature struct {
@@ -135,17 +136,27 @@ func numberAddition(left *object.Number, right *object.Number) (object.Object, e
 
 	var sum *object.Number
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
-		sum = &object.Number{Value: object.Int64Bits(leftNum.GetInt64() + rightNum.GetInt64()), Kind: object.Int64Kind}
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
-		sum = &object.Number{Value: leftNum.GetUInt64() + rightNum.GetUInt64(), Kind: object.UInt64Kind}
-	} else if object.IsFloat32(leftNum) {
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		sum = &object.Number{
+			Value: object.Int64Bits(leftNum.GetInt64() + rightNum.GetInt64()),
+			Kind:  object.Int64Kind,
+		}
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		sum = &object.Number{
+			Value: leftNum.GetUInt64() + rightNum.GetUInt64(),
+			Kind:  object.UInt64Kind,
+		}
+	case object.IsFloat32(leftNum):
 		sum = &object.Number{
 			Value: uint64(math.Float32bits(leftNum.GetFloat32() + rightNum.GetFloat32())),
 			Kind:  object.Float32Kind,
 		}
-	} else if object.IsFloat64(leftNum) {
-		sum = &object.Number{Value: math.Float64bits(leftNum.GetFloat64() + rightNum.GetFloat64()), Kind: object.Float64Kind}
+	case object.IsFloat64(leftNum):
+		sum = &object.Number{
+			Value: math.Float64bits(leftNum.GetFloat64() + rightNum.GetFloat64()),
+			Kind:  object.Float64Kind,
+		}
 	}
 
 	castedSum, err := numberCast(sum, leftNum.Kind, EXPLICIT_CAST)
@@ -166,14 +177,27 @@ func numberSubtraction(left *object.Number, right *object.Number, _ *object.Envi
 
 	var difference *object.Number
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
-		difference = &object.Number{Value: object.Int64Bits(leftNum.GetInt64() - rightNum.GetInt64()), Kind: object.Int64Kind}
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
-		difference = &object.Number{Value: leftNum.GetUInt64() - rightNum.GetUInt64(), Kind: object.UInt64Kind}
-	} else if object.IsFloat32(leftNum) {
-		difference = &object.Number{Value: uint64(math.Float32bits(leftNum.GetFloat32() - rightNum.GetFloat32())), Kind: object.Float32Kind}
-	} else if object.IsFloat64(leftNum) {
-		difference = &object.Number{Value: math.Float64bits(leftNum.GetFloat64() - rightNum.GetFloat64()), Kind: object.Float64Kind}
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		difference = &object.Number{
+			Value: object.Int64Bits(leftNum.GetInt64() - rightNum.GetInt64()),
+			Kind:  object.Int64Kind,
+		}
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		difference = &object.Number{
+			Value: leftNum.GetUInt64() - rightNum.GetUInt64(),
+			Kind:  object.UInt64Kind,
+		}
+	case object.IsFloat32(leftNum):
+		difference = &object.Number{
+			Value: uint64(math.Float32bits(leftNum.GetFloat32() - rightNum.GetFloat32())),
+			Kind:  object.Float32Kind,
+		}
+	case object.IsFloat64(leftNum):
+		difference = &object.Number{
+			Value: math.Float64bits(leftNum.GetFloat64() - rightNum.GetFloat64()),
+			Kind:  object.Float64Kind,
+		}
 	}
 
 	castedDiffrence, err := numberCast(difference, leftNum.Kind, EXPLICIT_CAST)
@@ -184,7 +208,7 @@ func numberSubtraction(left *object.Number, right *object.Number, _ *object.Envi
 	return castedDiffrence, nil
 }
 
-func numberMultiplication(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberMultiplication(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {
@@ -193,14 +217,27 @@ func numberMultiplication(left *object.Number, right *object.Number, env *object
 
 	var product *object.Number
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
-		product = &object.Number{Value: object.Int64Bits(leftNum.GetInt64() * rightNum.GetInt64()), Kind: object.Int64Kind}
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
-		product = &object.Number{Value: leftNum.GetUInt64() * rightNum.GetUInt64(), Kind: object.UInt64Kind}
-	} else if object.IsFloat32(leftNum) {
-		product = &object.Number{Value: uint64(math.Float32bits(leftNum.GetFloat32() * rightNum.GetFloat32())), Kind: object.Float32Kind}
-	} else if object.IsFloat64(leftNum) {
-		product = &object.Number{Value: math.Float64bits(leftNum.GetFloat64() * rightNum.GetFloat64()), Kind: object.Float64Kind}
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		product = &object.Number{
+			Value: object.Int64Bits(leftNum.GetInt64() * rightNum.GetInt64()),
+			Kind:  object.Int64Kind,
+		}
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		product = &object.Number{
+			Value: leftNum.GetUInt64() * rightNum.GetUInt64(),
+			Kind:  object.UInt64Kind,
+		}
+	case object.IsFloat32(leftNum):
+		product = &object.Number{
+			Value: uint64(math.Float32bits(leftNum.GetFloat32() * rightNum.GetFloat32())),
+			Kind:  object.Float32Kind,
+		}
+	case object.IsFloat64(leftNum):
+		product = &object.Number{
+			Value: math.Float64bits(leftNum.GetFloat64() * rightNum.GetFloat64()),
+			Kind:  object.Float64Kind,
+		}
 	}
 
 	castedProduct, err := numberCast(product, leftNum.Kind, EXPLICIT_CAST)
@@ -212,7 +249,7 @@ func numberMultiplication(left *object.Number, right *object.Number, env *object
 	return castedProduct, nil
 }
 
-func numberDivision(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberDivision(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {
@@ -221,14 +258,27 @@ func numberDivision(left *object.Number, right *object.Number, env *object.Envir
 
 	var quotient *object.Number
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
-		quotient = &object.Number{Value: object.Int64Bits(leftNum.GetInt64() / rightNum.GetInt64()), Kind: object.Int64Kind}
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
-		quotient = &object.Number{Value: leftNum.GetUInt64() / rightNum.GetUInt64(), Kind: object.UInt64Kind}
-	} else if object.IsFloat32(leftNum) {
-		quotient = &object.Number{Value: uint64(math.Float32bits(leftNum.GetFloat32() / rightNum.GetFloat32())), Kind: object.Float32Kind}
-	} else if object.IsFloat64(leftNum) {
-		quotient = &object.Number{Value: math.Float64bits(leftNum.GetFloat64() / rightNum.GetFloat64()), Kind: object.Float64Kind}
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		quotient = &object.Number{
+			Value: object.Int64Bits(leftNum.GetInt64() / rightNum.GetInt64()),
+			Kind:  object.Int64Kind,
+		}
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		quotient = &object.Number{
+			Value: leftNum.GetUInt64() / rightNum.GetUInt64(),
+			Kind:  object.UInt64Kind,
+		}
+	case object.IsFloat32(leftNum):
+		quotient = &object.Number{
+			Value: uint64(math.Float32bits(leftNum.GetFloat32() / rightNum.GetFloat32())),
+			Kind:  object.Float32Kind,
+		}
+	case object.IsFloat64(leftNum):
+		quotient = &object.Number{
+			Value: math.Float64bits(leftNum.GetFloat64() / rightNum.GetFloat64()),
+			Kind:  object.Float64Kind,
+		}
 	}
 
 	castedQuotient, err := numberCast(quotient, leftNum.Kind, EXPLICIT_CAST)
@@ -240,92 +290,95 @@ func numberDivision(left *object.Number, right *object.Number, env *object.Envir
 	return castedQuotient, nil
 }
 
-func numberBitwiseShiftLeft(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberBitwiseShiftLeft(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	if object.IsFloat32(right) || object.IsFloat64(right) {
 		return nil, fmt.Errorf("operator << not defined for %s and %s", left.Kind, right.Kind)
 	} else if right.IsSigned() && right.GetInt64() < 0 {
-		return nil, fmt.Errorf("operator << not defined on negative shift amount")
+		return nil, errors.New("operator << not defined on negative shift amount")
 	}
 
 	return &object.Number{Value: left.Value << right.GetUInt64(), Kind: left.Kind}, nil
 }
 
-func numberBitwiseShiftRight(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberBitwiseShiftRight(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	if object.IsFloat32(right) || object.IsFloat64(right) {
 		return nil, fmt.Errorf("operator >> not defined for %s and %s", left.Kind, right.Kind)
 	} else if right.IsSigned() && right.GetInt64() < 0 {
-		return nil, fmt.Errorf("operator >> not defined on negative shift amount")
+		return nil, errors.New("operator >> not defined on negative shift amount")
 	}
 
 	return &object.Number{Value: left.Value >> right.GetUInt64(), Kind: left.Kind}, nil
 }
 
-func numberBitwiseAnd(left *object.Number, right *object.Number, env *object.Environment) object.Object {
+func numberBitwiseAnd(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value & right.GetUInt64(), Kind: left.Kind}
 }
 
-func numberBitwiseOr(left *object.Number, right *object.Number, env *object.Environment) object.Object {
+func numberBitwiseOr(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value | right.GetUInt64(), Kind: left.Kind}
 }
 
-func numberBitwiseXor(left *object.Number, right *object.Number, env *object.Environment) object.Object {
+func numberBitwiseXor(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value ^ right.GetUInt64(), Kind: left.Kind}
 }
 
-func numberLessThan(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberLessThan(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
 		return nativeBoolToBooleanObject(leftNum.GetInt64() < rightNum.GetInt64()), nil
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
 		return nativeBoolToBooleanObject(leftNum.GetUInt64() < rightNum.GetUInt64()), nil
-	} else if object.IsFloat32(leftNum) {
+	case object.IsFloat32(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat32() < rightNum.GetFloat32()), nil
-	} else if object.IsFloat64(leftNum) {
+	case object.IsFloat64(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() < rightNum.GetFloat64()), nil
 	}
 
 	return NULL, nil
 }
 
-func numberGreaterThan(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberGreaterThan(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
 		return nativeBoolToBooleanObject(leftNum.GetInt64() > rightNum.GetInt64()), nil
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
 		return nativeBoolToBooleanObject(leftNum.GetUInt64() > rightNum.GetUInt64()), nil
-	} else if object.IsFloat32(leftNum) {
+	case object.IsFloat32(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat32() > rightNum.GetFloat32()), nil
-	} else if object.IsFloat64(leftNum) {
+	case object.IsFloat64(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() > rightNum.GetFloat64()), nil
 	}
 
 	return NULL, nil
 }
 
-func numberEquals(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
+func numberEquals(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	leftNum, rightNum, err := arithmeticCast(left, right)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if object.IsInteger(leftNum) && leftNum.IsSigned() {
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
 		return nativeBoolToBooleanObject(leftNum.GetInt64() == rightNum.GetInt64()), nil
-	} else if object.IsInteger(leftNum) && leftNum.IsUnsigned() {
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
 		return nativeBoolToBooleanObject(leftNum.GetUInt64() == rightNum.GetUInt64()), nil
-	} else if object.IsFloat32(leftNum) {
+	case object.IsFloat32(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat32() == rightNum.GetFloat32()), nil
-	} else if object.IsFloat64(leftNum) {
+	case object.IsFloat64(leftNum):
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() == rightNum.GetFloat64()), nil
 	}
 
@@ -388,7 +441,7 @@ func numberDivideEquals(left object.Object, right *object.Number, env *object.En
 	return assignment(left, quotient, env)
 }
 
-func assignment(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
+func assignment(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	lvalue, ok := left.(object.Reference)
 	rvalue := object.UnwrapReferenceObject(right)
 	lvalueType := object.UnwrapReferenceType(lvalue.GetValue().Type())
@@ -398,7 +451,7 @@ func assignment(left object.Object, right object.Object, env *object.Environment
 		return nil, fmt.Errorf("invalid lvalue %s", left.Inspect())
 	}
 	if lvalue.Type().IsConstant() {
-		return nil, fmt.Errorf("cannot assign to const variable")
+		return nil, errors.New("cannot assign to const variable")
 	}
 
 	if lvalueType.Signature() != rvalueType.Signature() {
@@ -411,43 +464,43 @@ func assignment(left object.Object, right object.Object, env *object.Environment
 
 	_, err := lvalue.UpdateValue(rvalue)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to update lvalue")
 	}
 
 	return lvalue, nil
 }
 
-func booleanEquals(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
-	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value == rightBool.Value), nil
 }
 
-func booleanNotEquals(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
-	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanNotEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value != rightBool.Value), nil
 }
 
-func booleanAnd(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
-	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanAnd(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value && rightBool.Value), nil
 }
 
-func booleanOr(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	leftBool := object.UnwrapReferenceObject(left).(*object.Boolean)
-	rightBool := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanOr(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value || rightBool.Value), nil
 }
 
-func stringAddition(left object.Object, right object.Object, env *object.Environment) (object.Object, error) {
-	leftStr := object.UnwrapReferenceObject(left).(*object.String)
-	rightStr := object.UnwrapReferenceObject(right).(*object.String)
+func stringAddition(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftStr, _ := object.UnwrapReferenceObject(left).(*object.String)
+	rightStr, _ := object.UnwrapReferenceObject(right).(*object.String)
 
 	return &object.String{Value: leftStr.Value + rightStr.Value}, nil
 }

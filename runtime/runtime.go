@@ -77,6 +77,8 @@ func (r *Runtime) loadModule(moduleKey string, code string) (*module.Module, boo
 
 	r.Modules[moduleKey] = module
 
+	// Purpose of eval is to get the module's exports into the root environment
+	// TODO: We should probably have a separate function for this
 	r.Eval(module.Program, &module.RootEnvironment)
 
 	return module, false

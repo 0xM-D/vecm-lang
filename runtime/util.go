@@ -22,11 +22,7 @@ func isTruthy(obj object.Object) bool {
 	}
 
 	if object.IsBoolean(obj) {
-		if object.UnwrapReferenceObject(obj).(*object.Boolean).Value {
-			return true
-		} else {
-			return false
-		}
+		return object.UnwrapReferenceObject(obj).(*object.Boolean).Value
 	}
 
 	return true

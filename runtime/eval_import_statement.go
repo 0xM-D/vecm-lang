@@ -16,12 +16,6 @@ func (r *Runtime) evalImportStatement(node *ast.ImportStatement, env *object.Env
 
 	store := module.RootEnvironment.GetStore()
 
-	// print store
-	println(len(store))
-	for key, value := range store {
-		fmt.Printf("key: %s, value: %v\n", key, value)
-	}
-
 	for _, identifier := range node.ImportedIdentifiers {
 		storeEntry, found := store[identifier.Value]
 		if !found || !storeEntry.IsExported {

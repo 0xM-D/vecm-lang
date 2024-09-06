@@ -112,6 +112,7 @@ func numberCast(number *object.Number, target object.Kind, castType CastType) (*
 		}
 	default:
 		// casting from int to int
+		//nolint:exhaustive // we are handling all cases
 		switch target {
 		case object.Int8Kind:
 			value = object.Int64Bits(int64(int8(number.GetInt64())))
@@ -169,11 +170,11 @@ func arithmeticCast(first, second *object.Number) (*object.Number, *object.Numbe
 			return nil, nil, err
 		}
 		return castedFirst, second, nil
-	} else {
-		castedSecond, err := numberCast(second, first.Kind, EXPLICIT_CAST)
-		if err != nil {
-			return nil, nil, err
-		}
-		return first, castedSecond, nil
 	}
+
+	castedSecond, err := numberCast(second, first.Kind, EXPLICIT_CAST)
+	if err != nil {
+		return nil, nil, err
+	}
+	return first, castedSecond, nil
 }
