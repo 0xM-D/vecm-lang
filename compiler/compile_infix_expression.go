@@ -67,7 +67,10 @@ func (c *Compiler) compileInfixExpression(infixExpr *ast.InfixExpression, b *con
 	}
 }
 
-func (c *Compiler) compileAssignmentInfixExpression(infixExpr *ast.InfixExpression, b *context.BlockContext) value.Value {
+func (c *Compiler) compileAssignmentInfixExpression(
+	infixExpr *ast.InfixExpression,
+	b *context.BlockContext,
+) value.Value {
 	left, leftType := c.compileLValue(infixExpr.Left, b)
 	right := c.compileExpression(infixExpr.Right, b)
 

@@ -6,9 +6,13 @@ import (
 	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
+	"github.com/pkg/errors"
 )
 
-func (c *Compiler) compileDeclarationStatement(stmt *ast.DeclarationStatement, b *context.BlockContext) *context.BlockContext {
+func (c *Compiler) compileDeclarationStatement(
+	stmt *ast.DeclarationStatement,
+	b *context.BlockContext,
+) *context.BlockContext {
 	var t types.Type
 	var value value.Value
 
@@ -18,9 +22,9 @@ func (c *Compiler) compileDeclarationStatement(stmt *ast.DeclarationStatement, b
 	}
 
 	// If the type is specified, get the type
-	decoratorType, error := getDecoratorType(stmt)
-	if error != nil {
-		c.newCompilerError(stmt, error.Error())
+	decoratorType, err := getDecoratorType(stmt)
+	if err != nil {
+		c.newCompilerError(stmt, "%e", err)
 		return nil
 	}
 
@@ -50,8 +54,10 @@ func (c *Compiler) compileDeclarationStatement(stmt *ast.DeclarationStatement, b
 
 func getDecoratorType(stmt *ast.DeclarationStatement) (types.Type, error) {
 	if stmt.Type != nil {
-		return util.GetLLVMType(stmt.Type)
+		t, err := util.GetLLVMType(stmt.Type)
+		return t, errors.Wrap(err, "Failed to get LLVM type")
 	}
 
+	//nolint:nilnil // nil is a valid return value
 	return nil, nil
 }

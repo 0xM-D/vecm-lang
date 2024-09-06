@@ -7,7 +7,10 @@ import (
 	"github.com/llir/llvm/ir/value"
 )
 
-func (c *Compiler) compileIdentifierLValue(identifier *ast.Identifier, ctx *context.BlockContext) (value.Value, types.Type) {
+func (c *Compiler) compileIdentifierLValue(
+	identifier *ast.Identifier,
+	ctx *context.BlockContext,
+) (value.Value, types.Type) {
 	ident, ok := ctx.LookUpIdentifier(identifier.Value)
 
 	if !ok {

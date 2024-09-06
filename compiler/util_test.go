@@ -1,9 +1,10 @@
-package compiler
+package compiler_test
 
 import (
 	"os"
 	"testing"
 
+	"github.com/DustTheory/interpreter/compiler"
 	"github.com/llir/llvm/asm"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
@@ -12,8 +13,8 @@ import (
 )
 
 func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
-	c, _ := InitializeCompiler()
-	_, hasParserErrors := c.loadModule("code", code)
+	c, _ := compiler.InitializeCompiler()
+	_, hasParserErrors := c.LoadModule("code", code)
 
 	if hasParserErrors {
 		t.Fatalf("Expected no parser errors, got some")
@@ -22,14 +23,13 @@ func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
 	ir, hasCompilerErrors := c.CompileModule("code")
 
 	if hasCompilerErrors {
-		c.printCompilerErrors()
+		c.PrintCompilerErrors()
 		t.Fatalf("Expected no compiler errors, got some")
 	}
 
-	irModule, error := asm.ParseString("", ir)
-
-	if error != nil {
-		t.Fatalf("Generated IR is invalid: %s", error)
+	irModule, err := asm.ParseString("", ir)
+	if err != nil {
+		t.Fatalf("Generated IR is invalid: %e", err)
 	}
 
 	return irModule
@@ -80,7 +80,13 @@ func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.E
 	return engine
 }
 
-func expectFunctionExists(module *ir.Module, funcName string, paramTypes []types.Type, returnType types.Type, t *testing.T) *ir.Func {
+func expectFunctionExists(
+	module *ir.Module,
+	funcName string,
+	paramTypes []types.Type,
+	returnType types.Type,
+	t *testing.T,
+) *ir.Func {
 	fn, found := findFunction(module, funcName)
 
 	if !found {

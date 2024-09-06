@@ -5,7 +5,10 @@ import (
 	"github.com/DustTheory/interpreter/context"
 )
 
-func (c *Compiler) compileForStatement(forStatement *ast.ForStatement, block *context.BlockContext) *context.BlockContext {
+func (c *Compiler) compileForStatement(
+	forStatement *ast.ForStatement,
+	block *context.BlockContext,
+) *context.BlockContext {
 	functionContext := block.GetParentFunctionContext()
 
 	// Create a new block for the for loop

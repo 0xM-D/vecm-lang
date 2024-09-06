@@ -5,7 +5,10 @@ import (
 	"github.com/DustTheory/interpreter/context"
 )
 
-func (c *Compiler) compileBlockStatement(blockStatement *ast.BlockStatement, block *context.BlockContext) *context.BlockContext {
+func (c *Compiler) compileBlockStatement(
+	blockStatement *ast.BlockStatement,
+	block *context.BlockContext,
+) *context.BlockContext {
 	currentBlockContext := block
 
 	for i, stmt := range blockStatement.Statements {

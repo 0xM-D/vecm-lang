@@ -18,7 +18,6 @@ import (
 func nativeBoolToLLVMBool(b bool) *constant.Int {
 	if b {
 		return constant.True
-	} else {
-		return constant.False
 	}
+	return constant.False
 }

@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/DustTheory/interpreter/module"
 )
@@ -18,8 +18,8 @@ func (c *Compiler) loadModule(moduleKey, code string) (*module.Module, bool) {
 }
 
 func printParserErrors(errors []string) {
-	fmt.Printf("parser has %d errors\n", len(errors))
+	log.Printf("parser has %d errors\n", len(errors))
 	for _, msg := range errors {
-		fmt.Printf("parser error: %s", msg)
+		log.Printf("parser error: %s", msg)
 	}
 }

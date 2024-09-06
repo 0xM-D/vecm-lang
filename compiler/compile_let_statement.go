@@ -11,9 +11,9 @@ func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockC
 	t := value.Type()
 
 	if stmt.Type != nil {
-		decoratorType, error := util.GetLLVMType(stmt.Type)
-		if error != nil {
-			c.newCompilerError(stmt, error.Error())
+		decoratorType, err := util.GetLLVMType(stmt.Type)
+		if err != nil {
+			c.newCompilerError(stmt, "%e", err)
 			return
 		}
 		if !t.Equal(decoratorType) {

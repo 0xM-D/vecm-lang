@@ -1,4 +1,4 @@
-package compiler
+package compiler_test
 
 import (
 	"testing"
@@ -24,9 +24,8 @@ func TestMinusPrefixExpression(t *testing.T) {
 		t.Fatalf("Expected 1 instruction, got %d", len(block.Insts))
 	}
 
-	inst := block.Insts[0].(*ir.InstMul)
-
-	if inst == nil {
+	inst, isMul := block.Insts[0].(*ir.InstMul)
+	if !isMul {
 		t.Fatalf("Expected instruction to be a multiplication, got %v", block.Insts[0])
 	}
 
@@ -66,7 +65,10 @@ func TestMinusPrefixExpression(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)})
+		result := executionEngine.RunFunction(
+			executableFn,
+			[]llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)},
+		)
 		if result.Int(true) != uint64(test.expected) {
 			t.Fatalf("Expected %d, got %d", test.expected, int32(result.Int(false)))
 		}
@@ -89,9 +91,8 @@ func TestBangPrefixExpression(t *testing.T) {
 	}
 
 	// Expect compare with false finstruction
-	inst := block.Insts[0].(*ir.InstICmp)
-
-	if inst == nil {
+	inst, isCmp := block.Insts[0].(*ir.InstICmp)
+	if !isCmp {
 		t.Fatalf("Expected instruction to be a comparison, got %v", block.Insts[0])
 	}
 
@@ -131,7 +132,10 @@ func TestBangPrefixExpression(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int1Type(), uint64(boolToInt(test.input)), true)})
+		result := executionEngine.RunFunction(
+			executableFn,
+			[]llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int1Type(), uint64(boolToInt(test.input)), true)},
+		)
 		if result.Int(false) != uint64(boolToInt(test.expected)) {
 			t.Fatalf("Expected %v, got %v", test.expected, result.Int(false))
 		}
@@ -154,9 +158,8 @@ func TestTildePrefixExpression(t *testing.T) {
 		t.Fatalf("Expected 1 instruction, got %d", len(block.Insts))
 	}
 
-	inst := block.Insts[0].(*ir.InstXor)
-
-	if inst == nil {
+	inst, isXor := block.Insts[0].(*ir.InstXor)
+	if !isXor {
 		t.Fatalf("Expected instruction to be a XOR, got %s", block.Insts[0].LLString())
 	}
 
@@ -195,7 +198,10 @@ func TestTildePrefixExpression(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := executionEngine.RunFunction(executableFn, []llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)})
+		result := executionEngine.RunFunction(
+			executableFn,
+			[]llvm.GenericValue{llvm.NewGenericValueFromInt(ctx.Int32Type(), uint64(test.input), true)},
+		)
 		if result.Int(true) != uint64(test.expected) {
 			t.Fatalf("Expected %d, got %d", test.expected, result.Int(true))
 		}

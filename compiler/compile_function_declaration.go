@@ -6,24 +6,34 @@ import (
 	"github.com/DustTheory/interpreter/object"
 	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir"
+	"github.com/pkg/errors"
 )
 
 func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationStatement, ctx *context.GlobalContext) {
 	retType, err := util.GetLLVMType(stmt.Type.ReturnType)
 	if err != nil {
-		c.newCompilerError(stmt, err.Error())
+		c.newCompilerError(stmt, "%e", err)
 		return
 	}
 
 	paramTypes, err := getFunctionParamTypes(stmt)
 	if err != nil {
-		c.newCompilerError(stmt, err.Error())
+		c.newCompilerError(stmt, "%e", err)
 		return
 	}
 
 	name := stmt.Name.Value
 
-	fn := context.NewFunctionContext(ctx, ctx.DeclareFunction(name, retType, paramTypes...), stmt.Parameters, stmt.Type.ParameterTypes)
+	fn := context.NewFunctionContext(
+		ctx,
+		ctx.DeclareFunction(
+			name,
+			retType,
+			paramTypes...,
+		),
+		stmt.Parameters,
+		stmt.Type.ParameterTypes,
+	)
 	c.compileFunctionBody(stmt, fn)
 }
 
@@ -46,7 +56,7 @@ func getFunctionParamTypes(stmt *ast.FunctionDeclarationStatement) ([]*ir.Param,
 		paramName := stmt.Parameters[i].Value
 		paramType, err := util.GetLLVMType(param)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "Failed to get LLVM type")
 		}
 		params[i] = &ir.Param{LocalIdent: ir.NewLocalIdent(paramName), Typ: paramType}
 	}

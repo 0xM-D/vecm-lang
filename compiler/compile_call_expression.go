@@ -9,8 +9,8 @@ import (
 
 func (c *Compiler) compileCallExpression(expr *ast.CallExpression, b *context.BlockContext) value.Value {
 	// Evaluate parameters and their types
-	var paramValues []value.Value
-	var paramTypes []*ir.Param
+	var paramValues = make([]value.Value, 0, len(expr.Arguments))
+	var paramTypes = make([]*ir.Param, 0, len(expr.Arguments))
 	for _, param := range expr.Arguments {
 		paramValue := c.compileExpression(param, b)
 		paramValues = append(paramValues, paramValue)

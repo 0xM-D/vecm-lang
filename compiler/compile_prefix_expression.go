@@ -41,11 +41,12 @@ func (c *Compiler) compileMinusPrefixExpression(expr *ast.PrefixExpression, b *c
 		return nil
 	}
 
-	if types.IsInt(right.Type()) {
+	switch {
+	case types.IsInt(right.Type()):
 		return b.NewMul(right, constant.NewInt(right.Type().(*types.IntType), -1))
-	} else if types.IsFloat(right.Type()) {
+	case types.IsFloat(right.Type()):
 		return b.NewFMul(right, constant.NewFloat(right.Type().(*types.FloatType), -1))
-	} else {
+	default:
 		c.newCompilerError(expr, "operator - not defined for type: %s", right.Type().LLString())
 		return nil
 	}
@@ -57,8 +58,14 @@ func (c *Compiler) compileTildePrefixExpression(expr *ast.PrefixExpression, b *c
 	var bitmaskType *types.IntType
 
 	if types.IsInt(right.Type()) {
-		bitmaskType = right.Type().(*types.IntType)
+		var isIntType bool
+		bitmaskType, isIntType = right.Type().(*types.IntType)
+		if !isIntType {
+			c.newCompilerError(expr, "operator ~ not defined for type %s", right.Type().LLString())
+			return nil
+		}
 	} else {
+		//nolint:mnd // magic numbers are fine here
 		switch right.Type() {
 		case types.Float:
 			bitmaskType = &types.IntType{BitSize: 32}

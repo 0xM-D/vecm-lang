@@ -8,10 +8,11 @@ type Compiler struct {
 	Modules map[string]*module.Module
 
 	EntryModule *module.Module
-	Errors      []CompilerError
+	Errors      []Error
 }
 
 func InitializeCompiler() (*Compiler, error) {
+	// TODO: Initialization shouldn't return incomplete objects
 	return &Compiler{Modules: map[string]*module.Module{}}, nil
 }
 
