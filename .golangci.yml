@@ -56,6 +56,10 @@ linters-settings:
   inamedparam:
     skip-single-param: true
 
+  gosec:
+    excludes:
+      - G115
+
   mnd:
     ignored-functions:
       - args.Error

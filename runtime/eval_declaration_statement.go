@@ -33,7 +33,7 @@ func (r *Runtime) evalDeclarationStatement(
 	}
 
 	if expectedType != nil {
-		cast, castErr := typeCast(val, expectedType, EXPLICIT_CAST)
+		cast, castErr := typeCast(val, expectedType, ExplicitCast)
 		if castErr == nil {
 			val = cast
 		}

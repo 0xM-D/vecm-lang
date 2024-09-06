@@ -18,7 +18,7 @@ func testEval(input string) (object.Object, error) {
 }
 
 func testNullObject(t *testing.T, obj object.Object) {
-	if obj != runtime.NULL {
+	if obj != runtime.Null {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
 	}
 }

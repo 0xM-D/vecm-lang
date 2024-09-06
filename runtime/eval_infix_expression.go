@@ -159,7 +159,7 @@ func numberAddition(left *object.Number, right *object.Number) (object.Object, e
 		}
 	}
 
-	castedSum, err := numberCast(sum, leftNum.Kind, EXPLICIT_CAST)
+	castedSum, err := numberCast(sum, leftNum.Kind, ExplicitCast)
 
 	if err != nil {
 		return nil, err
@@ -200,7 +200,7 @@ func numberSubtraction(left *object.Number, right *object.Number, _ *object.Envi
 		}
 	}
 
-	castedDiffrence, err := numberCast(difference, leftNum.Kind, EXPLICIT_CAST)
+	castedDiffrence, err := numberCast(difference, leftNum.Kind, ExplicitCast)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func numberMultiplication(left *object.Number, right *object.Number, _ *object.E
 		}
 	}
 
-	castedProduct, err := numberCast(product, leftNum.Kind, EXPLICIT_CAST)
+	castedProduct, err := numberCast(product, leftNum.Kind, ExplicitCast)
 
 	if err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ func numberDivision(left *object.Number, right *object.Number, _ *object.Environ
 		}
 	}
 
-	castedQuotient, err := numberCast(quotient, leftNum.Kind, EXPLICIT_CAST)
+	castedQuotient, err := numberCast(quotient, leftNum.Kind, ExplicitCast)
 
 	if err != nil {
 		return nil, err
@@ -340,7 +340,7 @@ func numberLessThan(left *object.Number, right *object.Number, _ *object.Environ
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() < rightNum.GetFloat64()), nil
 	}
 
-	return NULL, nil
+	return Null, nil
 }
 
 func numberGreaterThan(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
@@ -361,7 +361,7 @@ func numberGreaterThan(left *object.Number, right *object.Number, _ *object.Envi
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() > rightNum.GetFloat64()), nil
 	}
 
-	return NULL, nil
+	return Null, nil
 }
 
 func numberEquals(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
@@ -382,7 +382,7 @@ func numberEquals(left *object.Number, right *object.Number, _ *object.Environme
 		return nativeBoolToBooleanObject(leftNum.GetFloat64() == rightNum.GetFloat64()), nil
 	}
 
-	return NULL, nil
+	return Null, nil
 }
 
 func numberLessThanEqual(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
@@ -455,7 +455,7 @@ func assignment(left object.Object, right object.Object, _ *object.Environment) 
 	}
 
 	if lvalueType.Signature() != rvalueType.Signature() {
-		cast, err := typeCast(rvalue, lvalueType, EXPLICIT_CAST)
+		cast, err := typeCast(rvalue, lvalueType, ExplicitCast)
 		if err != nil {
 			return nil, err
 		}

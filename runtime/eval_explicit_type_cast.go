@@ -16,7 +16,7 @@ func (r *Runtime) evalExplicitTypeCast(node *ast.TypeCastExpression, env *object
 		return nil, err
 	}
 
-	casted, err := typeCast(left, castToType, EXPLICIT_CAST)
+	casted, err := typeCast(left, castToType, ExplicitCast)
 	if err != nil {
 		return nil, err
 	}

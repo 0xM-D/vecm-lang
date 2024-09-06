@@ -30,7 +30,7 @@ func (r *Runtime) evalIndexExpression(node *ast.IndexExpression, env *object.Env
 }
 
 func (r *Runtime) evalArrayIndexExpression(array *object.Array, index object.Object) (object.Object, error) {
-	idxObj, err := typeCast(index, object.Int64Kind, EXPLICIT_CAST)
+	idxObj, err := typeCast(index, object.Int64Kind, ExplicitCast)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (r *Runtime) evalArrayIndexExpression(array *object.Array, index object.Obj
 	maxIndex := int64(len(array.Elements) - 1)
 
 	if idx < 0 || idx > maxIndex {
-		return NULL, nil
+		return Null, nil
 	}
 
 	return &object.ArrayElementReference{
@@ -60,7 +60,7 @@ func (r *Runtime) evalHashIndexExpression(hash *object.Hash, index object.Object
 
 	_, exists := hash.Pairs[key.HashKey()]
 	if !exists {
-		return NULL, nil
+		return Null, nil
 	}
 
 	return &object.HashElementReference{

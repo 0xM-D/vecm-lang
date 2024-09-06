@@ -16,6 +16,6 @@ func (r *Runtime) evalIfExpression(ie *ast.IfStatement, env *object.Environment)
 	case ie.Alternative != nil:
 		return r.Eval(ie.Alternative, env)
 	default:
-		return NULL, nil
+		return Null, nil
 	}
 }

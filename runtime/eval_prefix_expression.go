@@ -28,9 +28,9 @@ func (r *Runtime) evalPrefixExpression(node *ast.PrefixExpression, env *object.E
 
 func evalBangPrefixOperatorExpression(right object.Object) (object.Object, error) {
 	if isTruthy(right) {
-		return FALSE, nil
+		return False, nil
 	}
-	return TRUE, nil
+	return True, nil
 }
 
 func (r *Runtime) evalMinusPrefixOperatorExpression(right object.Object) (object.Object, error) {

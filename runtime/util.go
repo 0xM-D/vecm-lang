@@ -11,9 +11,9 @@ import (
 
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
-		return TRUE
+		return True
 	}
-	return FALSE
+	return False
 }
 
 func isTruthy(obj object.Object) bool {
