@@ -53,6 +53,7 @@ func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Env
 	operator := node.Operator
 
 	if operator == string(token.Assign) {
+	if operator == string(token.Assign) {
 		return assignment(left, right, env)
 	}
 
@@ -68,6 +69,10 @@ func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Env
 	}
 
 	if evalFn == nil {
+		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
+			operatorFnSignature.Operator,
+			operatorFnSignature.LType,
+			operatorFnSignature.RType)
 		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
 			operatorFnSignature.Operator,
 			operatorFnSignature.LType,
@@ -91,46 +96,84 @@ func (r *Runtime) evalNumberInfixExpression(
 	if !ok {
 		return nil, fmt.Errorf("invalid right operand type: expected *object.Number, got %T", left)
 	}
+func (r *Runtime) evalNumberInfixExpression(
+	left object.Object,
+	right object.Object,
+	operator string,
+	env *object.Environment,
+) (object.Object, error) {
+	leftNum, ok := object.UnwrapReferenceObject(left).(*object.Number)
+	if !ok {
+		return nil, fmt.Errorf("invalid left operand type: expected *object.Number, got %T", left)
+	}
+	rightNum, ok := object.UnwrapReferenceObject(right).(*object.Number)
+	if !ok {
+		return nil, fmt.Errorf("invalid right operand type: expected *object.Number, got %T", left)
+	}
 	switch operator {
+	case string(token.Plus):
+		return numberAddition(leftNum, rightNum)
+	case string(token.Minus):
 	case string(token.Plus):
 		return numberAddition(leftNum, rightNum)
 	case string(token.Minus):
 		return numberSubtraction(leftNum, rightNum, env)
 	case string(token.Asterisk):
+	case string(token.Asterisk):
 		return numberMultiplication(leftNum, rightNum, env)
+	case string(token.Slash):
 	case string(token.Slash):
 		return numberDivision(leftNum, rightNum, env)
 	case string(token.BitwiseShiftL):
+	case string(token.BitwiseShiftL):
 		return numberBitwiseShiftLeft(leftNum, rightNum, env)
+	case string(token.BitwiseShiftR):
 	case string(token.BitwiseShiftR):
 		return numberBitwiseShiftRight(leftNum, rightNum, env)
 	case string(token.BitwiseAnd):
+	case string(token.BitwiseAnd):
 		return numberBitwiseAnd(leftNum, rightNum, env), nil
+	case string(token.BitwiseOr):
 	case string(token.BitwiseOr):
 		return numberBitwiseOr(leftNum, rightNum, env), nil
 	case string(token.BitwiseXor):
+	case string(token.BitwiseXor):
 		return numberBitwiseXor(leftNum, rightNum, env), nil
+	case string(token.Eq):
 	case string(token.Eq):
 		return numberEquals(leftNum, rightNum, env)
 	case string(token.NotEq):
+	case string(token.NotEq):
 		return numberNotEquals(leftNum, rightNum, env)
+	case string(token.Gt):
 	case string(token.Gt):
 		return numberGreaterThan(leftNum, rightNum, env)
 	case string(token.Lt):
+	case string(token.Lt):
 		return numberLessThan(leftNum, rightNum, env)
+	case string(token.Lte):
 	case string(token.Lte):
 		return numberLessThanEqual(leftNum, rightNum, env)
 	case string(token.Gte):
+	case string(token.Gte):
 		return numberGreaterThanEqual(leftNum, rightNum, env)
+	case string(token.PlusAssign):
 	case string(token.PlusAssign):
 		return numberPlusEquals(left, rightNum, env)
 	case string(token.MinusAssign):
+	case string(token.MinusAssign):
 		return numberMinusEquals(left, rightNum, env)
+	case string(token.AsteriskAssing):
 	case string(token.AsteriskAssing):
 		return numberTimesEquals(left, rightNum, env)
 	case string(token.SlashAssign):
+	case string(token.SlashAssign):
 		return numberDivideEquals(left, rightNum, env)
 	default:
+		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
+			operator,
+			left.Type().Signature(),
+			right.Type().Signature())
 		return nil, fmt.Errorf("operator %s not defined on types %s and %s",
 			operator,
 			left.Type().Signature(),
@@ -179,9 +222,11 @@ func numberDivision(left *object.Number, right *object.Number, _ *object.Environ
 }
 
 func numberBitwiseShiftLeft(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
+func numberBitwiseShiftLeft(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	if object.IsFloat32(right) || object.IsFloat64(right) {
 		return nil, fmt.Errorf("operator << not defined for %s and %s", left.Kind, right.Kind)
 	} else if right.IsSigned() && right.GetInt64() < 0 {
+		return nil, errors.New("operator << not defined on negative shift amount")
 		return nil, errors.New("operator << not defined on negative shift amount")
 	}
 
@@ -189,9 +234,11 @@ func numberBitwiseShiftLeft(left *object.Number, right *object.Number, _ *object
 }
 
 func numberBitwiseShiftRight(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
+func numberBitwiseShiftRight(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
 	if object.IsFloat32(right) || object.IsFloat64(right) {
 		return nil, fmt.Errorf("operator >> not defined for %s and %s", left.Kind, right.Kind)
 	} else if right.IsSigned() && right.GetInt64() < 0 {
+		return nil, errors.New("operator >> not defined on negative shift amount")
 		return nil, errors.New("operator >> not defined on negative shift amount")
 	}
 
@@ -199,13 +246,16 @@ func numberBitwiseShiftRight(left *object.Number, right *object.Number, _ *objec
 }
 
 func numberBitwiseAnd(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
+func numberBitwiseAnd(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value & right.GetUInt64(), Kind: left.Kind}
 }
 
 func numberBitwiseOr(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
+func numberBitwiseOr(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value | right.GetUInt64(), Kind: left.Kind}
 }
 
+func numberBitwiseXor(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 func numberBitwiseXor(left *object.Number, right *object.Number, _ *object.Environment) object.Object {
 	return &object.Number{Value: left.Value ^ right.GetUInt64(), Kind: left.Kind}
 }
@@ -266,6 +316,7 @@ func numberNotEquals(left *object.Number, right *object.Number, env *object.Envi
 
 func numberPlusEquals(left object.Object, right *object.Number, env *object.Environment) (object.Object, error) {
 	sum, err := numberAddition(object.UnwrapReferenceObject(left).(*object.Number), right)
+	sum, err := numberAddition(object.UnwrapReferenceObject(left).(*object.Number), right)
 	if err != nil {
 		return nil, err
 	}
@@ -298,6 +349,8 @@ func numberDivideEquals(left object.Object, right *object.Number, env *object.En
 
 func assignment(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	lvalue, ok := left.(object.Reference)
+func assignment(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	lvalue, ok := left.(object.Reference)
 	rvalue := object.UnwrapReferenceObject(right)
 	lvalueType := object.UnwrapReferenceType(lvalue.GetValue().Type())
 	rvalueType := object.UnwrapReferenceType(rvalue.Type())
@@ -306,6 +359,7 @@ func assignment(left object.Object, right object.Object, _ *object.Environment) 
 		return nil, fmt.Errorf("invalid lvalue %s", left.Inspect())
 	}
 	if lvalue.Type().IsConstant() {
+		return nil, errors.New("cannot assign to const variable")
 		return nil, errors.New("cannot assign to const variable")
 	}
 
@@ -320,11 +374,15 @@ func assignment(left object.Object, right object.Object, _ *object.Environment) 
 	_, err := lvalue.UpdateValue(rvalue)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update lvalue")
+		return nil, errors.Wrap(err, "failed to update lvalue")
 	}
 
 	return lvalue, nil
 }
 
+func booleanEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 func booleanEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
 	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
@@ -335,10 +393,16 @@ func booleanEquals(left object.Object, right object.Object, _ *object.Environmen
 func booleanNotEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
 	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanNotEquals(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value != rightBool.Value), nil
 }
 
+func booleanAnd(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 func booleanAnd(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
 	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
@@ -349,10 +413,16 @@ func booleanAnd(left object.Object, right object.Object, _ *object.Environment) 
 func booleanOr(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
 	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
+func booleanOr(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftBool, _ := object.UnwrapReferenceObject(left).(*object.Boolean)
+	rightBool, _ := object.UnwrapReferenceObject(right).(*object.Boolean)
 
 	return nativeBoolToBooleanObject(leftBool.Value || rightBool.Value), nil
 }
 
+func stringAddition(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
+	leftStr, _ := object.UnwrapReferenceObject(left).(*object.String)
+	rightStr, _ := object.UnwrapReferenceObject(right).(*object.String)
 func stringAddition(left object.Object, right object.Object, _ *object.Environment) (object.Object, error) {
 	leftStr, _ := object.UnwrapReferenceObject(left).(*object.String)
 	rightStr, _ := object.UnwrapReferenceObject(right).(*object.String)

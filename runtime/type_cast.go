@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/DustTheory/interpreter/object"
+	"github.com/DustTheory/interpreter/object"
 )
 
 type CastType = int
@@ -44,6 +45,7 @@ var numberCastWeight = map[object.Kind]uint8{
 }
 
 func typeCast(obj object.Object, targetType object.Type, castType CastType) (object.Object, error) {
+func typeCast(obj object.Object, targetType object.Type, castType CastType) (object.Object, error) {
 	if obj.Type().Signature() == targetType.Signature() {
 		return obj, nil
 	}
@@ -67,6 +69,7 @@ func typeCast(obj object.Object, targetType object.Type, castType CastType) (obj
 	return nil, fmt.Errorf("type cast from %s to %s is not defined", obj.Type().Signature(), targetType.Signature())
 }
 
+func numberCast(number *object.Number, target object.Kind, castType CastType) (*object.Number, error) {
 func numberCast(number *object.Number, target object.Kind, castType CastType) (*object.Number, error) {
 	if number.Kind == target {
 		return number, nil

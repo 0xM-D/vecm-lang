@@ -34,6 +34,11 @@ func (r *Runtime) ApplyFunction(fn object.Object, args []object.Object) (object.
 				function.Type().Signature(), len(function.ParameterTypes), len(args))
 		}
 
+		if len(function.ParameterTypes) != len(args) {
+			return nil, fmt.Errorf("incorrect parameter count for %s fun. expected=%d, got=%d",
+				function.Type().Signature(), len(function.ParameterTypes), len(args))
+		}
+
 		extendedEnv, err := passParameterValuesToFunction(function, args)
 		if err != nil {
 			return nil, err
