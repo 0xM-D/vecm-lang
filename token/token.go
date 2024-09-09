@@ -1,10 +1,8 @@
 package token
 
 type Type string
-type Type string
 
 type Token struct {
-	Type    Type
 	Type    Type
 	Literal string
 	Linen   int
@@ -14,8 +12,6 @@ type Token struct {
 const (
 	Illegal Type = "ILLEGAL"
 	EOF     Type = "EOF"
-	Illegal Type = "ILLEGAL"
-	EOF     Type = "EOF"
 
 	// Identifiers + literals.
 	Ident   Type = "IDENT"
@@ -23,20 +19,7 @@ const (
 	Float32 Type = "FLOAT32"
 	Float64 Type = "FLOAT64"
 	String  Type = "STRING"
-	// Identifiers + literals.
-	Ident   Type = "IDENT"
-	Int     Type = "INT"
-	Float32 Type = "FLOAT32"
-	Float64 Type = "FLOAT64"
-	String  Type = "STRING"
 
-	// Operators.
-	Plus     Type = "+"
-	Minus    Type = "-"
-	Bang     Type = "!"
-	Asterisk Type = "*"
-	Slash    Type = "/"
-	Access   Type = "."
 	// Operators.
 	Plus     Type = "+"
 	Minus    Type = "-"
@@ -52,21 +35,7 @@ const (
 	MinusAssign    Type = "-="
 	AsteriskAssing Type = "*="
 	SlashAssign    Type = "/="
-	// Assignment operators.
-	Assign         Type = "="
-	DeclAssign     Type = ":="
-	PlusAssign     Type = "+="
-	MinusAssign    Type = "-="
-	AsteriskAssing Type = "*="
-	SlashAssign    Type = "/="
 
-	// Comparison operators.
-	Lt    = "<"
-	Gt    = ">"
-	Lte   = "<="
-	Gte   = ">="
-	Eq    = "=="
-	NotEq = "!="
 	// Comparison operators.
 	Lt    = "<"
 	Gt    = ">"
@@ -78,17 +47,7 @@ const (
 	// Boolean operators.
 	And = "&&"
 	Or  = "||"
-	// Boolean operators.
-	And = "&&"
-	Or  = "||"
 
-	// Bitwise operators.
-	BitwiseAnd    = "&"
-	BitwiseOr     = "|"
-	BitwiseXor    = "^"
-	BitwiseInv    = "~"
-	BitwiseShiftL = "<<"
-	BitwiseShiftR = ">>"
 	// Bitwise operators.
 	BitwiseAnd    = "&"
 	BitwiseOr     = "|"
@@ -102,11 +61,6 @@ const (
 	Semicolon    Type = ";"
 	Colon        Type = ":"
 	Questionmark Type = "?"
-	// Delimiters.
-	Comma        Type = ","
-	Semicolon    Type = ";"
-	Colon        Type = ":"
-	Questionmark Type = "?"
 
 	LeftParen    Type = "("
 	RightParen   Type = ")"
@@ -114,24 +68,7 @@ const (
 	RightBrace   Type = "}"
 	LeftBracket  Type = "["
 	RightBracket Type = "]"
-	LeftParen    Type = "("
-	RightParen   Type = ")"
-	LeftBrace    Type = "{"
-	RightBrace   Type = "}"
-	LeftBracket  Type = "["
-	RightBracket Type = "]"
 
-	// Keywords.
-	Function Type = "FUNCTION"
-	Let      Type = "LET"
-	True     Type = "TRUE"
-	False    Type = "FALSE"
-	If       Type = "IF"
-	Else     Type = "ELSE"
-	Return   Type = "RETURN"
-	Const    Type = "CONST"
-	For      Type = "FOR"
-	As       Type = "AS"
 	// Keywords.
 	Function Type = "FUNCTION"
 	Let      Type = "LET"
@@ -151,18 +88,7 @@ const (
 	MapType      Type = "map"
 	ArrayType    Type = "[]"
 	FunctionType Type = "function"
-	// Type tokens.
-	DashArrow    Type = "->"
-	EqualsArrow  Type = "=>"
-	New          Type = "new"
-	MapType      Type = "map"
-	ArrayType    Type = "[]"
-	FunctionType Type = "function"
 
-	// import / export.
-	Import Type = "import"
-	From   Type = "from"
-	Export Type = "export"
 	// import / export.
 	Import Type = "import"
 	From   Type = "from"
@@ -190,10 +116,8 @@ var keywords = map[string]Type{
 }
 
 func LookupIdent(ident string) Type {
-func LookupIdent(ident string) Type {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
-	return Ident
 	return Ident
 }
