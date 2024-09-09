@@ -9,7 +9,11 @@ func (c *Compiler) compileForStatement(
 	forStatement *ast.ForStatement,
 	block *context.BlockContext,
 ) *context.BlockContext {
-	functionContext := block.GetParentFunctionContext()
+	functionContext, err := block.GetParentFunctionContext()
+	if err != nil {
+		c.newCompilerError(forStatement, "%e", err)
+		return nil
+	}
 
 	// Create a new block for the for loop
 	forBlock := context.NewBlockContext(block, functionContext.NewBlock(""))

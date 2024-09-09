@@ -11,10 +11,10 @@ func (c *Compiler) compileIdentifierLValue(
 	identifier *ast.Identifier,
 	ctx *context.BlockContext,
 ) (value.Value, types.Type) {
-	ident, ok := ctx.LookUpIdentifier(identifier.Value)
+	ident, err := ctx.LookUpIdentifier(identifier.Value)
 
-	if !ok {
-		c.newCompilerError(identifier, "Undefined identifier: %s", identifier.Value)
+	if err != nil {
+		c.newCompilerError(identifier, "%e", err)
 		return nil, nil
 	}
 
@@ -22,10 +22,10 @@ func (c *Compiler) compileIdentifierLValue(
 }
 
 func (c *Compiler) compileIdentifierRValue(identifier *ast.Identifier, ctx *context.BlockContext) value.Value {
-	ident, ok := ctx.LookUpIdentifier(identifier.Value)
+	ident, err := ctx.LookUpIdentifier(identifier.Value)
 
-	if !ok {
-		c.newCompilerError(identifier, "Undefined identifier: %s", identifier.Value)
+	if err != nil {
+		c.newCompilerError(identifier, "%e", err)
 		return nil
 	}
 

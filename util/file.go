@@ -3,6 +3,8 @@ package util
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
 type File struct {
@@ -13,12 +15,12 @@ type File struct {
 func ReadFile(filePath string) (*File, error) {
 	absolutePath, err := filepath.Abs(filePath)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get absolute path")
 	}
 
 	code, err := os.ReadFile(absolutePath)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to read file")
 	}
 
 	return &File{absolutePath, code}, nil

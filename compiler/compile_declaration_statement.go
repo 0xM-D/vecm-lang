@@ -43,7 +43,11 @@ func (c *Compiler) compileDeclarationStatement(
 		t = decoratorType
 	}
 
-	variable := b.DeclareLocalVariable(stmt.Name.Value, t)
+	variable, err := b.DeclareLocalVariable(stmt.Name.Value, t)
+	if err != nil {
+		c.newCompilerError(stmt, "%e", err)
+		return nil
+	}
 
 	if stmt.Value != nil {
 		b.Block.NewStore(value, variable)

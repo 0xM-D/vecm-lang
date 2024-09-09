@@ -5,6 +5,7 @@ import (
 	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
+	"github.com/pkg/errors"
 )
 
 type FunctionContext struct {
@@ -13,8 +14,11 @@ type FunctionContext struct {
 	*ir.Func
 }
 
-func (ctx *FunctionContext) GetParentContext() Context {
-	return ctx.sharedContextProperties.parentContext
+func (ctx *FunctionContext) GetParentContext() (Context, error) {
+	if ctx.sharedContextProperties.parentContext == nil {
+		return nil, errors.New("Reached the top of the context chain")
+	}
+	return ctx.sharedContextProperties.parentContext, nil
 }
 
 func NewFunctionContext(
@@ -45,27 +49,53 @@ func NewFunctionContext(
 	return ctx
 }
 
-func (ctx *FunctionContext) LookUpIdentifier(name string) (Variable, bool) {
+func (ctx *FunctionContext) LookUpIdentifier(name string) (Variable, error) {
 	variable, ok := ctx.functionParams.LookUpVariable(name)
 	if ok {
-		return variable, ok
+		return variable, nil
 	}
 
-	if ctx.GetParentContext() == nil {
-		return nil, false
+	parentContext, err := ctx.GetParentContext()
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to look up identifier")
 	}
 
-	return ctx.GetParentContext().LookUpIdentifier(name)
+	identifier, err := parentContext.LookUpIdentifier(name)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to look up identifier")
+	}
+
+	return identifier, nil
 }
 
-func (ctx *FunctionContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
-	return ctx.GetParentContext().GetFunction(name, params...)
+func (ctx *FunctionContext) GetFunction(name string, params ...*ir.Param) (*ir.Func, error) {
+	parentContext, err := ctx.GetParentContext()
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to get function")
+	}
+
+	function, err := parentContext.GetFunction(name, params...)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to get function")
+	}
+
+	return function, nil
 }
 
-func (ctx *FunctionContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {
-	return ctx.GetParentContext().DeclareFunction(name, retType, params...)
+func (ctx *FunctionContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) (*ir.Func, error) {
+	parentContext, err := ctx.GetParentContext()
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to declare function")
+	}
+
+	function, err := parentContext.DeclareFunction(name, retType, params...)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to declare function")
+	}
+
+	return function, nil
 }
 
-func (ctx *FunctionContext) DeclareLocalVariable(_ string, _ types.Type) *ir.InstAlloca {
-	return nil // TODO: Throw error
+func (ctx *FunctionContext) DeclareLocalVariable(_ string, _ types.Type) (*ir.InstAlloca, error) {
+	return nil, errors.New("Cannot declare local variable in function context")
 }

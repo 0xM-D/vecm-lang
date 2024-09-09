@@ -10,6 +10,26 @@ import (
 	"github.com/pkg/errors"
 )
 
+type InfixEvalSettings struct {
+	InfixEvalFns map[OperatorFnSignature]InfixEvalFn
+}
+
+var infixEvalSettings = newInfixEvalSettings()
+
+func newInfixEvalSettings() *InfixEvalSettings {
+	return &InfixEvalSettings{
+		InfixEvalFns: map[OperatorFnSignature]InfixEvalFn{
+			{"==", string(object.BooleanKind), string(object.BooleanKind)}: booleanEquals,
+			{"!=", string(object.BooleanKind), string(object.BooleanKind)}: booleanNotEquals,
+			{"&&", string(object.BooleanKind), string(object.BooleanKind)}: booleanAnd,
+			{"||", string(object.BooleanKind), string(object.BooleanKind)}: booleanOr,
+
+			{"+", string(object.StringKind), string(object.StringKind)}:  stringAddition,
+			{"+=", string(object.StringKind), string(object.StringKind)}: stringPlusEquals,
+		},
+	}
+}
+
 type OperatorFnSignature struct {
 	Operator string
 	LType    string
@@ -17,16 +37,6 @@ type OperatorFnSignature struct {
 }
 
 type InfixEvalFn func(object.Object, object.Object, *object.Environment) (object.Object, error)
-
-var infixEvalFns = map[OperatorFnSignature]InfixEvalFn{
-	{"==", string(object.BooleanKind), string(object.BooleanKind)}: booleanEquals,
-	{"!=", string(object.BooleanKind), string(object.BooleanKind)}: booleanNotEquals,
-	{"&&", string(object.BooleanKind), string(object.BooleanKind)}: booleanAnd,
-	{"||", string(object.BooleanKind), string(object.BooleanKind)}: booleanOr,
-
-	{"+", string(object.StringKind), string(object.StringKind)}:  stringAddition,
-	{"+=", string(object.StringKind), string(object.StringKind)}: stringPlusEquals,
-}
 
 func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Environment) (object.Object, error) {
 	left, err := r.Eval(node.Left, env)
@@ -51,7 +61,7 @@ func (r *Runtime) evalInfixExpression(node *ast.InfixExpression, env *object.Env
 		LType:    object.UnwrapReferenceType(left.Type()).Signature(),
 		RType:    object.UnwrapReferenceType(right.Type()).Signature(),
 	}
-	evalFn := infixEvalFns[operatorFnSignature]
+	evalFn := infixEvalSettings.InfixEvalFns[operatorFnSignature]
 
 	if evalFn == nil && object.IsNumber(left) && object.IsNumber(right) {
 		return r.evalNumberInfixExpression(left, right, operator, env)

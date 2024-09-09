@@ -22,7 +22,11 @@ func (c *Compiler) compileCallExpression(expr *ast.CallExpression, b *context.Bl
 	fnName := expr.Function.(*ast.Identifier).Value
 
 	// Generate llvm function signature from function name and argument types
-	fnPtr := b.GetFunction(fnName, paramTypes...)
+	fnPtr, err := b.GetFunction(fnName, paramTypes...)
+	if err != nil {
+		c.newCompilerError(expr, "%e", err)
+		return nil
+	}
 
 	// Generate call instruction - this doesn't seem to change the block terminator
 	result := b.NewCall(fnPtr, paramValues...)

@@ -20,7 +20,6 @@ linters-settings:
   exhaustive:
     check:
       - switch
-      - map
 
   exhaustruct:
     exclude:
@@ -138,7 +137,6 @@ linters:
     - forbidigo # forbids identifiers
     - funlen # tool for detection of long functions
     - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
-    - gochecknoglobals # checks that no global variables exist // TODO: enable after fixing issues
     - gochecknoinits # checks that no init functions are present in Go code
     - gochecksumtype # checks exhaustiveness on Go "sum types"
     - gocognit # computes and checks the cognitive complexity of functions

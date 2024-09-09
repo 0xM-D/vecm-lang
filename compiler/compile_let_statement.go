@@ -24,7 +24,11 @@ func (c *Compiler) compileLetStatement(stmt *ast.LetStatement, b *context.BlockC
 		t = decoratorType
 	}
 
-	variable := b.DeclareLocalVariable(stmt.Name.Value, t)
+	variable, err := b.DeclareLocalVariable(stmt.Name.Value, t)
+	if err != nil {
+		c.newCompilerError(stmt, "%e", err)
+		return
+	}
 
 	b.Block.NewStore(value, variable)
 }

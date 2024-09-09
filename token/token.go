@@ -95,6 +95,7 @@ const (
 	Export Type = "export"
 )
 
+// Mapping of keywords to their respective token types.
 var keywords = map[string]Type{
 	"fn":       Function,
 	"let":      Let,

@@ -11,8 +11,8 @@ func (b *Boolean) HashKey() HashKey {
 	return 0
 }
 
-func (i Number) HashKey() HashKey {
-	return HashKey(i.Value)
+func (n Number) HashKey() HashKey {
+	return HashKey(n.Value)
 }
 
 func (s *String) HashKey() HashKey {

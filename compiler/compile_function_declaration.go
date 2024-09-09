@@ -24,17 +24,25 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 
 	name := stmt.Name.Value
 
-	fn := context.NewFunctionContext(
+	function, err := ctx.DeclareFunction(
+		name,
+		retType,
+		paramTypes...,
+	)
+
+	if err != nil {
+		c.newCompilerError(stmt, "%e", err)
+		return
+	}
+
+	fnCtx := context.NewFunctionContext(
 		ctx,
-		ctx.DeclareFunction(
-			name,
-			retType,
-			paramTypes...,
-		),
+		function,
 		stmt.Parameters,
 		stmt.Type.ParameterTypes,
 	)
-	c.compileFunctionBody(stmt, fn)
+
+	c.compileFunctionBody(stmt, fnCtx)
 }
 
 func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *context.FunctionContext) {

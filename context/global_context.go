@@ -1,8 +1,11 @@
 package context
 
 import (
+	"fmt"
+
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
+	"github.com/pkg/errors"
 )
 
 type GlobalContext struct {
@@ -17,34 +20,34 @@ func NewGlobalContext() *GlobalContext {
 	}
 }
 
-func (ctx *GlobalContext) GetParentContext() Context {
-	return nil
+func (ctx *GlobalContext) GetParentContext() (Context, error) {
+	return nil, errors.New("global context has no parent context")
 }
 
-func (ctx GlobalContext) GetFunction(name string, params ...*ir.Param) *ir.Func {
+func (ctx GlobalContext) GetFunction(name string, _ ...*ir.Param) (*ir.Func, error) {
 	funcs := ctx.Module.Funcs
 	for _, f := range funcs {
 		if f.Name() == name {
-			return f
+			return f, nil
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("function %s not found", name)
 }
 
-func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) *ir.Func {
+func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) (*ir.Func, error) {
 	fn := ctx.Module.NewFunc(name, retType, params...)
-	return fn
+	return fn, nil
 }
 
-func (ctx *GlobalContext) DeclareLocalVariable(name string, t types.Type) *ir.InstAlloca {
-	return nil // TODO: Throw error
+func (ctx *GlobalContext) DeclareLocalVariable(_ string, _ types.Type) (*ir.InstAlloca, error) {
+	return nil, errors.New("cannot declare local variable in global context")
 }
 
-func (ctx *GlobalContext) LookUpIdentifier(name string) (Variable, bool) {
+func (ctx *GlobalContext) LookUpIdentifier(name string) (Variable, error) {
 	variable, ok := ctx.variableStore.LookUpVariable(name)
 	if ok {
-		return variable, ok
+		return variable, nil
 	}
 
-	return nil, false
+	return nil, fmt.Errorf("identifier %s not found", name)
 }

@@ -23,8 +23,21 @@ func (c *Compiler) compileBlockStatement(
 				break
 			}
 
-			newBlock := currentBlockContext.GetParentFunctionContext().NewBlock("")
-			currentBlockContext = context.NewBlockContext(currentBlockContext.GetParentContext(), newBlock)
+			parentFunctionContext, err := currentBlockContext.GetParentFunctionContext()
+			if err != nil {
+				c.newCompilerError(blockStatement, "%e", err)
+				return nil
+			}
+
+			newBlock := parentFunctionContext.NewBlock("")
+
+			parentContext, err := currentBlockContext.GetParentContext()
+			if err != nil {
+				c.newCompilerError(blockStatement, "%e", err)
+				return nil
+			}
+
+			currentBlockContext = context.NewBlockContext(parentContext, newBlock)
 		} else {
 			currentBlockContext = nextBlockContext
 		}

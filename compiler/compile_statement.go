@@ -12,7 +12,18 @@ func (c *Compiler) compileStatement(stmt ast.Statement, b *context.BlockContext)
 	case *ast.IfStatement:
 		return c.compileIfStatement(stmt, b)
 	case *ast.BlockStatement:
-		newBlock := context.NewBlockContext(b.GetParentContext(), b.GetParentFunctionContext().NewBlock(""))
+		parentContext, err := b.GetParentContext()
+		if err != nil {
+			c.newCompilerError(stmt, "%e", err)
+			return nil
+		}
+		parentFunctionContext, err := b.GetParentFunctionContext()
+		if err != nil {
+			c.newCompilerError(stmt, "%e", err)
+			return nil
+		}
+
+		newBlock := context.NewBlockContext(parentContext, parentFunctionContext.NewBlock(""))
 		return c.compileBlockStatement(stmt, newBlock)
 	case *ast.ExpressionStatement:
 		c.compileExpression(stmt.Expression, b)

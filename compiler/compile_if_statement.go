@@ -12,11 +12,17 @@ func (c *Compiler) compileIfStatement(expr *ast.IfStatement, block *context.Bloc
 	var alternativeBlock *context.BlockContext
 	var continueBlock *context.BlockContext
 
-	consequenceBlock = context.NewBlockContext(block.GetParentContext(), block.Parent.NewBlock(""))
+	parentContext, err := block.GetParentContext()
+	if err != nil {
+		c.newCompilerError(expr, "%e", err)
+		return nil
+	}
+
+	consequenceBlock = context.NewBlockContext(parentContext, block.Parent.NewBlock(""))
 	c.compileBlockStatement(expr.Consequence, consequenceBlock)
 
 	if expr.Alternative != nil {
-		alternativeBlock = context.NewBlockContext(block.GetParentContext(), block.Parent.NewBlock(""))
+		alternativeBlock = context.NewBlockContext(parentContext, block.Parent.NewBlock(""))
 		c.compileBlockStatement(expr.Alternative, alternativeBlock)
 	}
 
@@ -26,7 +32,7 @@ func (c *Compiler) compileIfStatement(expr *ast.IfStatement, block *context.Bloc
 	if consequenceBlockHasTerm && alternativeBlockHasTerm {
 		block.NewCondBr(condition, consequenceBlock.Block, alternativeBlock.Block)
 	} else {
-		continueBlock = context.NewBlockContext(block.GetParentContext(), block.Parent.NewBlock(""))
+		continueBlock = context.NewBlockContext(parentContext, block.Parent.NewBlock(""))
 		block.NewCondBr(condition, consequenceBlock.Block, continueBlock.Block)
 
 		if !consequenceBlockHasTerm && consequenceBlock != nil {
