@@ -6,13 +6,6 @@ import (
 	"github.com/llir/llvm/ir/types"
 )
 
-// TODO: Test these later
-// c := fn(b: int) -> int { return b * 2 };
-// d := new map{int -> int}{1: 2, 2: 3};
-// e := new []int{1, 2, 3, 4, 5};
-// f := "string value";
-// fun := fn()->void {};
-
 func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 	code := `fn main() -> void { a := 10; }`
 

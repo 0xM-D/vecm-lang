@@ -13,7 +13,7 @@ import (
 )
 
 func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
-	c, _ := compiler.InitializeCompiler()
+	c, _ := compiler.New()
 	_, hasParserErrors := c.LoadModule("code", code)
 
 	if hasParserErrors {

@@ -11,9 +11,12 @@ type Compiler struct {
 	Errors      []Error
 }
 
-func InitializeCompiler() (*Compiler, error) {
-	// TODO: Initialization shouldn't return incomplete objects
-	return &Compiler{Modules: map[string]*module.Module{}}, nil
+func New() (*Compiler, error) {
+	return &Compiler{
+		Modules:     map[string]*module.Module{},
+		EntryModule: nil,
+		Errors:      []Error{},
+	}, nil
 }
 
 func (c *Compiler) LoadModule(moduleKey, code string) (*module.Module, bool) {

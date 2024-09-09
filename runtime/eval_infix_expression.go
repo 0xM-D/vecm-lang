@@ -139,165 +139,43 @@ func (r *Runtime) evalNumberInfixExpression(
 }
 
 func numberAddition(left *object.Number, right *object.Number) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-	if err != nil {
-		return nil, err
-	}
-
-	var sum *object.Number
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		sum = &object.Number{
-			Value: object.Int64Bits(leftNum.GetInt64() + rightNum.GetInt64()),
-			Kind:  object.Int64Kind,
-		}
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		sum = &object.Number{
-			Value: leftNum.GetUInt64() + rightNum.GetUInt64(),
-			Kind:  object.UInt64Kind,
-		}
-	case object.IsFloat32(leftNum):
-		sum = &object.Number{
-			Value: uint64(math.Float32bits(leftNum.GetFloat32() + rightNum.GetFloat32())),
-			Kind:  object.Float32Kind,
-		}
-	case object.IsFloat64(leftNum):
-		sum = &object.Number{
-			Value: math.Float64bits(leftNum.GetFloat64() + rightNum.GetFloat64()),
-			Kind:  object.Float64Kind,
-		}
-	}
-
-	castedSum, err := numberCast(sum, leftNum.Kind, ExplicitCast)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return castedSum, nil
+	return performArithmeticOperation(
+		left, right,
+		func(a, b int64) int64 { return a + b },
+		func(a, b uint64) uint64 { return a + b },
+		func(a, b float32) float32 { return a + b },
+		func(a, b float64) float64 { return a + b },
+	)
 }
 
 func numberSubtraction(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var difference *object.Number
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		difference = &object.Number{
-			Value: object.Int64Bits(leftNum.GetInt64() - rightNum.GetInt64()),
-			Kind:  object.Int64Kind,
-		}
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		difference = &object.Number{
-			Value: leftNum.GetUInt64() - rightNum.GetUInt64(),
-			Kind:  object.UInt64Kind,
-		}
-	case object.IsFloat32(leftNum):
-		difference = &object.Number{
-			Value: uint64(math.Float32bits(leftNum.GetFloat32() - rightNum.GetFloat32())),
-			Kind:  object.Float32Kind,
-		}
-	case object.IsFloat64(leftNum):
-		difference = &object.Number{
-			Value: math.Float64bits(leftNum.GetFloat64() - rightNum.GetFloat64()),
-			Kind:  object.Float64Kind,
-		}
-	}
-
-	castedDiffrence, err := numberCast(difference, leftNum.Kind, ExplicitCast)
-	if err != nil {
-		return nil, err
-	}
-
-	return castedDiffrence, nil
+	return performArithmeticOperation(
+		left, right,
+		func(a, b int64) int64 { return a - b },
+		func(a, b uint64) uint64 { return a - b },
+		func(a, b float32) float32 { return a - b },
+		func(a, b float64) float64 { return a - b },
+	)
 }
 
 func numberMultiplication(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var product *object.Number
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		product = &object.Number{
-			Value: object.Int64Bits(leftNum.GetInt64() * rightNum.GetInt64()),
-			Kind:  object.Int64Kind,
-		}
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		product = &object.Number{
-			Value: leftNum.GetUInt64() * rightNum.GetUInt64(),
-			Kind:  object.UInt64Kind,
-		}
-	case object.IsFloat32(leftNum):
-		product = &object.Number{
-			Value: uint64(math.Float32bits(leftNum.GetFloat32() * rightNum.GetFloat32())),
-			Kind:  object.Float32Kind,
-		}
-	case object.IsFloat64(leftNum):
-		product = &object.Number{
-			Value: math.Float64bits(leftNum.GetFloat64() * rightNum.GetFloat64()),
-			Kind:  object.Float64Kind,
-		}
-	}
-
-	castedProduct, err := numberCast(product, leftNum.Kind, ExplicitCast)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return castedProduct, nil
+	return performArithmeticOperation(
+		left, right,
+		func(a, b int64) int64 { return a * b },
+		func(a, b uint64) uint64 { return a * b },
+		func(a, b float32) float32 { return a * b },
+		func(a, b float64) float64 { return a * b },
+	)
 }
 
 func numberDivision(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var quotient *object.Number
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		quotient = &object.Number{
-			Value: object.Int64Bits(leftNum.GetInt64() / rightNum.GetInt64()),
-			Kind:  object.Int64Kind,
-		}
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		quotient = &object.Number{
-			Value: leftNum.GetUInt64() / rightNum.GetUInt64(),
-			Kind:  object.UInt64Kind,
-		}
-	case object.IsFloat32(leftNum):
-		quotient = &object.Number{
-			Value: uint64(math.Float32bits(leftNum.GetFloat32() / rightNum.GetFloat32())),
-			Kind:  object.Float32Kind,
-		}
-	case object.IsFloat64(leftNum):
-		quotient = &object.Number{
-			Value: math.Float64bits(leftNum.GetFloat64() / rightNum.GetFloat64()),
-			Kind:  object.Float64Kind,
-		}
-	}
-
-	castedQuotient, err := numberCast(quotient, leftNum.Kind, ExplicitCast)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return castedQuotient, nil
+	return performArithmeticOperation(
+		left, right,
+		func(a, b int64) int64 { return a / b },
+		func(a, b uint64) uint64 { return a / b },
+		func(a, b float32) float32 { return a / b },
+		func(a, b float64) float64 { return a / b },
+	)
 }
 
 func numberBitwiseShiftLeft(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
@@ -333,66 +211,33 @@ func numberBitwiseXor(left *object.Number, right *object.Number, _ *object.Envir
 }
 
 func numberLessThan(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		return nativeBoolToBooleanObject(leftNum.GetInt64() < rightNum.GetInt64()), nil
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		return nativeBoolToBooleanObject(leftNum.GetUInt64() < rightNum.GetUInt64()), nil
-	case object.IsFloat32(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat32() < rightNum.GetFloat32()), nil
-	case object.IsFloat64(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat64() < rightNum.GetFloat64()), nil
-	}
-
-	return Null, nil
+	return performComparisonOperation(
+		left, right,
+		func(a, b int64) bool { return a < b },
+		func(a, b uint64) bool { return a < b },
+		func(a, b float32) bool { return a < b },
+		func(a, b float64) bool { return a < b },
+	)
 }
 
 func numberGreaterThan(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		return nativeBoolToBooleanObject(leftNum.GetInt64() > rightNum.GetInt64()), nil
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		return nativeBoolToBooleanObject(leftNum.GetUInt64() > rightNum.GetUInt64()), nil
-	case object.IsFloat32(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat32() > rightNum.GetFloat32()), nil
-	case object.IsFloat64(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat64() > rightNum.GetFloat64()), nil
-	}
-
-	return Null, nil
+	return performComparisonOperation(
+		left, right,
+		func(a, b int64) bool { return a > b },
+		func(a, b uint64) bool { return a > b },
+		func(a, b float32) bool { return a > b },
+		func(a, b float64) bool { return a > b },
+	)
 }
 
 func numberEquals(left *object.Number, right *object.Number, _ *object.Environment) (object.Object, error) {
-	leftNum, rightNum, err := arithmeticCast(left, right)
-
-	if err != nil {
-		return nil, err
-	}
-
-	switch {
-	case object.IsInteger(leftNum) && leftNum.IsSigned():
-		return nativeBoolToBooleanObject(leftNum.GetInt64() == rightNum.GetInt64()), nil
-	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
-		return nativeBoolToBooleanObject(leftNum.GetUInt64() == rightNum.GetUInt64()), nil
-	case object.IsFloat32(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat32() == rightNum.GetFloat32()), nil
-	case object.IsFloat64(leftNum):
-		return nativeBoolToBooleanObject(leftNum.GetFloat64() == rightNum.GetFloat64()), nil
-	}
-
-	return Null, nil
+	return performComparisonOperation(
+		left, right,
+		func(a, b int64) bool { return a == b },
+		func(a, b uint64) bool { return a == b },
+		func(a, b float32) bool { return a == b },
+		func(a, b float64) bool { return a == b },
+	)
 }
 
 func numberLessThanEqual(left *object.Number, right *object.Number, env *object.Environment) (object.Object, error) {
@@ -521,4 +366,79 @@ func stringPlusEquals(left object.Object, right object.Object, env *object.Envir
 		return nil, err
 	}
 	return assignment(left, added, env)
+}
+
+func performArithmeticOperation(
+	left *object.Number,
+	right *object.Number,
+	operation func(int64, int64) int64,
+	unsignedOperation func(uint64, uint64) uint64,
+	float32Operation func(float32, float32) float32,
+	float64Operation func(float64, float64) float64,
+) (*object.Number, error) {
+	leftNum, rightNum, err := arithmeticCast(left, right)
+	if err != nil {
+		return nil, err
+	}
+
+	var result *object.Number
+
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		result = &object.Number{
+			Value: object.Int64Bits(operation(leftNum.GetInt64(), rightNum.GetInt64())),
+			Kind:  object.Int64Kind,
+		}
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		result = &object.Number{
+			Value: unsignedOperation(leftNum.GetUInt64(), rightNum.GetUInt64()),
+			Kind:  object.UInt64Kind,
+		}
+	case object.IsFloat32(leftNum):
+		result = &object.Number{
+			Value: uint64(math.Float32bits(float32Operation(leftNum.GetFloat32(), rightNum.GetFloat32()))),
+			Kind:  object.Float32Kind,
+		}
+	case object.IsFloat64(leftNum):
+		result = &object.Number{
+			Value: math.Float64bits(float64Operation(leftNum.GetFloat64(), rightNum.GetFloat64())),
+			Kind:  object.Float64Kind,
+		}
+	}
+
+	castedResult, err := numberCast(result, leftNum.Kind, ExplicitCast)
+	if err != nil {
+		return nil, err
+	}
+
+	return castedResult, nil
+}
+
+func performComparisonOperation(
+	left *object.Number,
+	right *object.Number,
+	operation func(int64, int64) bool,
+	unsignedOperation func(uint64, uint64) bool,
+	float32Operation func(float32, float32) bool,
+	float64Operation func(float64, float64) bool,
+) (object.Object, error) {
+	leftNum, rightNum, err := arithmeticCast(left, right)
+	if err != nil {
+		return nil, err
+	}
+
+	var result bool
+
+	switch {
+	case object.IsInteger(leftNum) && leftNum.IsSigned():
+		result = operation(leftNum.GetInt64(), rightNum.GetInt64())
+	case object.IsInteger(leftNum) && leftNum.IsUnsigned():
+		result = unsignedOperation(leftNum.GetUInt64(), rightNum.GetUInt64())
+	case object.IsFloat32(leftNum):
+		result = float32Operation(leftNum.GetFloat32(), rightNum.GetFloat32())
+	case object.IsFloat64(leftNum):
+		result = float64Operation(leftNum.GetFloat64(), rightNum.GetFloat64())
+	}
+
+	return nativeBoolToBooleanObject(result), nil
 }

@@ -68,17 +68,18 @@ func getMinimumIntegerType(number *big.Int) (object.Kind, error) {
 	}
 }
 
-func extendFunctionEnv(
+func passParameterValuesToFunction(
 	fn *object.Function,
 	args []object.Object,
-) *object.Environment {
+) (*object.Environment, error) {
 	env := object.NewEnclosedEnvironment(fn.Env)
 	for paramIdx, param := range fn.Parameters {
-		// TODO: Handle error
-		//nolint:errcheck // I noticed this error, but now is not the time to fix it
-		env.Declare(param.Value, false, object.UnwrapReferenceObject(args[paramIdx]))
+		_, err := env.Declare(param.Value, false, object.UnwrapReferenceObject(args[paramIdx]))
+		if err != nil {
+			return nil, errors.New("failed to pass parameter values to function")
+		}
 	}
-	return env
+	return env, nil
 }
 
 func unwrapReturnValue(obj object.Object) object.Object {

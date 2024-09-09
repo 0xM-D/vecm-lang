@@ -26,7 +26,6 @@ const (
 	Typecast     // 3 as uint8
 )
 
-//
 var precedences = map[token.Type]int{
 	token.BitwiseInv:     Prefix,
 	token.BitwiseAnd:     BitwiseAnd,

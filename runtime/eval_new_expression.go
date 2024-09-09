@@ -10,9 +10,9 @@ import (
 
 func (r *Runtime) evalNewExpression(exp *ast.NewExpression,
 	env *object.Environment) (object.Object, error) {
-	_, isArray := exp.Type.(ast.ArrayType)
+	arrayType, isArray := exp.Type.(ast.ArrayType)
 	if isArray {
-		return r.evalNewArrayExpression(exp, env)
+		return r.evalNewArrayExpression(arrayType, exp.InitializationList, env)
 	}
 
 	_, isHash := exp.Type.(ast.HashType)
@@ -23,14 +23,15 @@ func (r *Runtime) evalNewExpression(exp *ast.NewExpression,
 	return nil, fmt.Errorf("new operator not yet supported on type: %s", exp.Type.String())
 }
 
-func (r *Runtime) evalNewArrayExpression(exp *ast.NewExpression, env *object.Environment) (object.Object, error) {
-	elements, err := r.evalExpressionsArray(exp.InitializationList, env)
+func (r *Runtime) evalNewArrayExpression(
+	arrayType ast.ArrayType,
+	initializationList []ast.Expression,
+	env *object.Environment,
+) (object.Object, error) {
+	elements, err := r.evalExpressionsArray(initializationList, env)
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO: Resolve this with proprer typing of NewExpression statements
-	arrayType := exp.Type.(ast.ArrayType)
 
 	elementType, err := r.evalType(arrayType.ElementType, env)
 	if err != nil {

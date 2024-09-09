@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"errors"
 	"fmt"
 	"math"
 
@@ -77,63 +78,91 @@ func numberCast(number *object.Number, target object.Kind, castType CastType) (*
 	if numberWeight > targetWeight && castType == ImplicitCast {
 		return nil, fmt.Errorf("cannot implicitly cast %s into %s", number.Type().Kind(), target.Kind())
 	}
+
 	var value uint64
+	var err error
+
 	switch {
 	case object.IsInteger(number) && !object.IsIntegerKind(target):
-		// Casting from int to float
-		switch {
-		case number.IsSigned() && target.Kind() == object.Float64Kind:
-			value = math.Float64bits(float64(number.GetInt64()))
-		case number.IsSigned() && target.Kind() == object.Float32Kind:
-			value = uint64(math.Float32bits(float32(number.GetInt64())))
-		case number.IsUnsigned() && target.Kind() == object.Float64Kind:
-			value = math.Float64bits(float64(number.GetUInt64()))
-		case number.IsUnsigned() && target.Kind() == object.Float32Kind:
-			value = uint64(math.Float32bits(float32(number.GetUInt64())))
-		}
+		value, err = castIntToFloat(number, target)
 	case object.IsFloat(number) && object.IsIntegerKind(target):
-		// casting from float to int
-		switch {
-		case object.IsSigned[target] && object.IsFloat32(number):
-			value = uint64(int64(number.GetFloat32()))
-		case object.IsSigned[target] && object.IsFloat64(number):
-			value = uint64(int64(number.GetFloat64()))
-		case !object.IsSigned[target] && object.IsFloat32(number):
-			value = uint64(number.GetFloat32())
-		case !object.IsSigned[target] && object.IsFloat64(number):
-			value = uint64(number.GetFloat64())
-		}
+		value, err = castFloatToInt(number, target)
 	case object.IsFloat(number) && (target == object.Float32Kind || target == object.Float64Kind):
-		// casting from float to float
-		if number.Type() == object.Float32Kind && target == object.Float64Kind {
-			value = math.Float64bits(float64(number.GetFloat32()))
-		} else if number.Type() == object.Float64Kind && target == object.Float32Kind {
-			value = uint64(math.Float32bits(float32(number.GetFloat64())))
-		}
+		value, err = castFloatToFloat(number, target)
 	default:
-		// casting from int to int
-		//nolint:exhaustive // we are handling all cases
-		switch target {
-		case object.Int8Kind:
-			value = object.Int64Bits(int64(int8(number.GetInt64())))
-		case object.Int16Kind:
-			value = object.Int64Bits(int64(int16(number.GetInt64())))
-		case object.Int32Kind:
-			value = object.Int64Bits(int64(int32(number.GetInt64())))
-		case object.Int64Kind:
-			value = object.Int64Bits(number.GetInt64())
-		case object.UInt8Kind:
-			value = uint64(uint8(number.GetInt64()))
-		case object.UInt16Kind:
-			value = uint64(uint16(number.GetInt64()))
-		case object.UInt32Kind:
-			value = uint64(uint32(number.GetInt64()))
-		case object.UInt64Kind:
-			value = uint64(number.GetInt64())
-		}
+		value, err = castIntToInt(number, target)
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &object.Number{Value: value, Kind: target}, nil
+}
+
+func castIntToFloat(number *object.Number, target object.Kind) (uint64, error) {
+	switch {
+	case number.IsSigned() && target == object.Float64Kind:
+		return math.Float64bits(float64(number.GetInt64())), nil
+	case number.IsSigned() && target == object.Float32Kind:
+		return uint64(math.Float32bits(float32(number.GetInt64()))), nil
+	case number.IsUnsigned() && target == object.Float64Kind:
+		return math.Float64bits(float64(number.GetUInt64())), nil
+	case number.IsUnsigned() && target == object.Float32Kind:
+		return uint64(math.Float32bits(float32(number.GetUInt64()))), nil
+	default:
+		return 0, errors.New("unsupported cast from int to float")
+	}
+}
+
+func castFloatToInt(number *object.Number, target object.Kind) (uint64, error) {
+	switch {
+	case object.IsSigned[target] && object.IsFloat32(number):
+		return uint64(int64(number.GetFloat32())), nil
+	case object.IsSigned[target] && object.IsFloat64(number):
+		return uint64(int64(number.GetFloat64())), nil
+	case !object.IsSigned[target] && object.IsFloat32(number):
+		return uint64(number.GetFloat32()), nil
+	case !object.IsSigned[target] && object.IsFloat64(number):
+		return uint64(number.GetFloat64()), nil
+	default:
+		return 0, errors.New("unsupported cast from float to int")
+	}
+}
+
+func castFloatToFloat(number *object.Number, target object.Kind) (uint64, error) {
+	switch {
+	case number.Type() == object.Float32Kind && target == object.Float64Kind:
+		return math.Float64bits(float64(number.GetFloat32())), nil
+	case number.Type() == object.Float64Kind && target == object.Float32Kind:
+		return uint64(math.Float32bits(float32(number.GetFloat64()))), nil
+	default:
+		return 0, errors.New("unsupported cast from float to float")
+	}
+}
+
+func castIntToInt(number *object.Number, target object.Kind) (uint64, error) {
+	//nolint:exhaustive // All integer types are handled
+	switch target {
+	case object.Int8Kind:
+		return object.Int64Bits(int64(int8(number.GetInt64()))), nil
+	case object.Int16Kind:
+		return object.Int64Bits(int64(int16(number.GetInt64()))), nil
+	case object.Int32Kind:
+		return object.Int64Bits(int64(int32(number.GetInt64()))), nil
+	case object.Int64Kind:
+		return object.Int64Bits(number.GetInt64()), nil
+	case object.UInt8Kind:
+		return uint64(uint8(number.GetInt64())), nil
+	case object.UInt16Kind:
+		return uint64(uint16(number.GetInt64())), nil
+	case object.UInt32Kind:
+		return uint64(uint32(number.GetInt64())), nil
+	case object.UInt64Kind:
+		return uint64(number.GetInt64()), nil
+	default:
+		return 0, errors.New("unsupported cast from int to int")
+	}
 }
 
 func arrayCast(array *object.Array, targetType *object.ArrayObjectType, castType CastType) (object.Object, error) {

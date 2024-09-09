@@ -15,7 +15,6 @@ func (c *Compiler) compileBlockStatement(
 		nextBlockContext := c.compileStatement(stmt, currentBlockContext)
 		if nextBlockContext == nil {
 			// Anything after here will be unreachable code
-			// TODO: Throw a warning
 			// Create a new unreachable block
 
 			if i == len(blockStatement.Statements)-1 {

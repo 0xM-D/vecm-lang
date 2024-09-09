@@ -34,7 +34,10 @@ func (r *Runtime) ApplyFunction(fn object.Object, args []object.Object) (object.
 				function.Type().Signature(), len(function.ParameterTypes), len(args))
 		}
 
-		extendedEnv := extendFunctionEnv(function, args)
+		extendedEnv, err := passParameterValuesToFunction(function, args)
+		if err != nil {
+			return nil, err
+		}
 		evaluated, err := r.Eval(function.Body, extendedEnv)
 		if err != nil {
 			return nil, err
