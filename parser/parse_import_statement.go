@@ -14,7 +14,13 @@ func (p *Parser) parseImportStatement() *ast.ImportStatement {
 		return nil
 	}
 
+	if !p.curTokenIs(token.From) {
+		p.newErrorf(nil, "Expected 'from' in import statement. got=%s", p.peekToken.Literal)
+		return nil
+	}
 	p.nextToken() // "from"
+
+	importType := p.parseImportType()
 
 	importPathString := p.parseStringLiteral()
 	if importPathString == nil {
@@ -32,6 +38,7 @@ func (p *Parser) parseImportStatement() *ast.ImportStatement {
 		ImportPath:          importPath,
 		ImportAll:           importAll,
 		ImportedIdentifiers: importIdentifiers,
+		ImportType:          importType,
 	}
 }
 

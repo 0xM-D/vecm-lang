@@ -18,6 +18,10 @@ func TestImportStatement(t *testing.T) {
 		{`import a, b, c from "./file.vec"`, "./file.vec", false, []string{"a", "b", "c"}},
 		{`import * from "../../file.vec"`, "../../file.vec", true, []string{}},
 		{`import math from "./math.vec"`, "./math.vec", false, []string{"math"}},
+		{`import func from C "./lib.h"`, "./lib.h", false, []string{"func"}},
+		{`import * from C "./lib.h"`, "./lib.h", true, []string{}},
+		{`import func from LLVM "./lib.ll"`, "./lib.ll", false, []string{"func"}},
+		{`import * from LLVM "./lib.ll"`, "./lib.ll", true, []string{}},
 	}
 
 	for _, tt := range tests {
@@ -27,6 +31,7 @@ func TestImportStatement(t *testing.T) {
 		checkParserErrors(t, p)
 
 		if len(program.Statements) != 1 {
+			println(program.Statements[1].String())
 			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
 				len(program.Statements))
 		}

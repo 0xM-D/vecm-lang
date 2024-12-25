@@ -213,11 +213,17 @@ type PairExpression struct {
 	Right Expression
 }
 
+type ImportType struct {
+	Token token.Token
+	Value string
+}
+
 type ImportStatement struct {
 	Token               token.Token
 	ImportPath          string
 	ImportAll           bool
 	ImportedIdentifiers []*Identifier
+	*ImportType
 }
 
 type ExportStatement struct {
