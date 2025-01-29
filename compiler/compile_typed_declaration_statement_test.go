@@ -12,7 +12,7 @@ func TestTypedDeclarationStatementInteger(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
+	fn := expectFunctionExists(module.CoreModule, "main", []types.Type{}, types.Void, t)
 
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 

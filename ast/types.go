@@ -232,3 +232,8 @@ type FunctionDeclarationStatement struct {
 	Body       *BlockStatement
 	Type       FunctionType
 }
+
+type CLangStatement struct {
+	Token     token.Token
+	CLangCode string
+}

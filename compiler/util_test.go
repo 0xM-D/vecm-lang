@@ -5,14 +5,13 @@ import (
 	"testing"
 
 	"github.com/DustTheory/interpreter/compiler"
-	"github.com/llir/llvm/asm"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 	llvm "tinygo.org/x/go-llvm"
 )
 
-func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
+func compileAndVerifyCode(code string, t *testing.T) compiler.IrModule {
 	c, _ := compiler.New()
 	_, hasParserErrors := c.LoadModule("code", code)
 
@@ -20,28 +19,52 @@ func compileAndVerifyCode(code string, t *testing.T) *ir.Module {
 		t.Fatalf("Expected no parser errors, got some")
 	}
 
-	ir, hasCompilerErrors := c.CompileModule("code")
+	irModule, hasCompilerErrors := c.CompileModule("code")
 
 	if hasCompilerErrors {
 		c.PrintCompilerErrors()
 		t.Fatalf("Expected no compiler errors, got some")
 	}
 
-	irModule, err := asm.ParseString("", ir)
-	if err != nil {
-		t.Fatalf("Generated IR is invalid: %e", err)
-	}
-
 	return irModule
 }
 
-func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.ExecutionEngine {
+func compileModuleForExecution(ctx llvm.Context, module compiler.IrModule, t *testing.T) llvm.ExecutionEngine {
 	// Initialize LLVM
 	llvm.InitializeAllTargets()
 	llvm.InitializeAllAsmPrinters()
 	// llvm.InitializeAllAsmParsers()
 	// llvm.InitializeAllTargetInfos()
 
+	llvmModule := CompileLLIRToLLVMModule(ctx, module.CoreModule, t)
+
+	// Compile and Link LinkedModules
+	for _, linkedModule := range module.LinkedModules {
+		llvmLinkedModule := CompileLLIRToLLVMModule(ctx, linkedModule, t)
+
+		err := llvm.LinkModules(llvmModule, llvmLinkedModule)
+
+		if err != nil {
+			t.Fatalf("Failed to link modules")
+		}
+	}
+
+	llvmModule.Dump()
+
+	llvm.LinkInInterpreter()
+	llvm.LinkInMCJIT()
+
+	// Create a new execution engine
+	engine, err := llvm.NewExecutionEngine(llvmModule)
+
+	if err != nil {
+		t.Fatalf("Failed to create execution engine")
+	}
+
+	return engine
+}
+
+func CompileLLIRToLLVMModule(ctx llvm.Context, module *ir.Module, t *testing.T) llvm.Module {
 	// Open file on os
 	file, err := os.CreateTemp("", "ir")
 	if err != nil {
@@ -51,7 +74,7 @@ func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.E
 
 	// Write IR to file
 
-	_, err = file.WriteString(ir)
+	_, err = file.WriteString(module.String())
 
 	if err != nil {
 		t.Fatalf("Failed to write IR to file")
@@ -64,20 +87,13 @@ func compileModuleForExecution(ctx llvm.Context, ir string, t *testing.T) llvm.E
 		t.Fatalf("Failed to create memory buffer from file")
 	}
 
-	module, err := ctx.ParseIR(memoryBuffer)
+	llvmModule, err := ctx.ParseIR(memoryBuffer)
 
 	if err != nil {
 		t.Fatalf("Failed to parse IR: %s", err)
 	}
 
-	// Create a new execution engine
-	engine, err := llvm.NewExecutionEngine(module)
-
-	if err != nil {
-		t.Fatalf("Failed to create execution engine")
-	}
-
-	return engine
+	return llvmModule
 }
 
 func expectFunctionExists(

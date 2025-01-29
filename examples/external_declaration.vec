@@ -1,0 +1,14 @@
+CLang {
+        #include <stdio.h>
+
+        void printHelloWorld() {
+                printf("Hello, World!\n");
+        }
+}
+
+fn printHelloWorld() -> void;
+
+export fn main() -> int {
+        printHelloWorld();
+        return 0;
+}

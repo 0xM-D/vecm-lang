@@ -65,6 +65,8 @@ func (r *Runtime) Eval(node ast.Node, env *object.Environment) (object.Object, e
 		return r.evalExportStatement(node, env)
 	case *ast.FunctionDeclarationStatement:
 		return r.evalFunctionDeclarationStatement(node, env)
+	case *ast.CLangStatement:
+		return r.evalCLangStatement(node, env)
 	default:
 		return nil, errors.New("unknown node type found in AST")
 	}
