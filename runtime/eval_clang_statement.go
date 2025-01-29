@@ -7,6 +7,7 @@ import (
 	"github.com/DustTheory/interpreter/object"
 )
 
-func (r *Runtime) evalCLangStatement(node *ast.CLangStatement, env *object.Environment) (object.Object, error) {
+func (r *Runtime) evalCLangStatement(_ *ast.CLangStatement, _ *object.Environment) (object.Object, error) {
 	return nil, errors.New("not implemented")
+
 }

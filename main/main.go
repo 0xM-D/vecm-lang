@@ -92,7 +92,13 @@ func compileFile(filePath string) {
 		return
 	}
 
-	fmt.Println("Compiled module to:", finalExecutablePath)
+	// Copy the final executable to the current directory as "a.out"
+	err = os.Rename(finalExecutablePath, "a.out")
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
 }
 
 type ModuleType string
@@ -117,6 +123,7 @@ func compileLLIR(ir string, moduleType ModuleType, tmpDir string) (string, error
 	}
 	objFile.Close()
 
+	//nolint:gosec // This is a toy project, security is not a concern
 	cmd := exec.Command("llc", "-filetype=obj", "-o", objFile.Name(), sourceFile)
 
 	var stderr bytes.Buffer
@@ -185,8 +192,6 @@ func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir strin
 		sourceFilesStr += fmt.Sprintf("%s ", linkedModulePath)
 	}
 
-	println(sourceFilesStr, len(linkedModulePaths))
-
 	//nolint:mnd // 8 is not a magic number
 	linkedModulePath := fmt.Sprintf("%s/linked_module_%s.o", tmpDir, generateRandomString(8))
 
@@ -194,9 +199,13 @@ func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir strin
 	sourceFilesArgs := strings.Fields(sourceFilesStr)
 
 	// Create the command with the correct arguments
+	for _, arg := range sourceFilesArgs {
+		if strings.Contains(arg, ";") || strings.Contains(arg, "&") {
+			return "", errors.New("invalid character in source file argument")
+		}
+	}
+	//nolint:gosec // This is a command that is being run
 	cmd := exec.Command("clang", append([]string{"-o", linkedModulePath}, sourceFilesArgs...)...)
-
-	println(cmd.String())
 
 	// Capture and print any errors from the command execution
 	output, err := cmd.CombinedOutput()
@@ -204,7 +213,6 @@ func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir strin
 		return "", errors.Wrap(err, fmt.Sprintf("error running ld for linked module: %v\n%s", err, string(output)))
 	}
 
-	fmt.Printf("Command executed successfully: %s\n", string(output))
 	return linkedModulePath, nil
 }
 
