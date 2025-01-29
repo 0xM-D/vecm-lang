@@ -9,5 +9,4 @@ import (
 
 func (r *Runtime) evalCLangStatement(_ *ast.CLangStatement, _ *object.Environment) (object.Object, error) {
 	return nil, errors.New("not implemented")
-
 }
