@@ -39,6 +39,8 @@ func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.
 
 	clangSnippetName := fmt.Sprintf("clang_snippet_%d-%d", node.Token.Linen, node.Token.Coln)
 
+	println("CLANG OUTPUT:", output.String())
+
 	clangSnippetModule, err := asm.ParseBytes(clangSnippetName, output.Bytes())
 
 	if err != nil {
