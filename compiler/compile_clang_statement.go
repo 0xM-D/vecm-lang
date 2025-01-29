@@ -23,7 +23,13 @@ func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	err := cmd.Start()
+	if err != nil {
+		c.newCompilerError(node, "error running clang for LLVM IR: %v\n%s", err, stderr.String())
+		return
+	}
+
+	err = cmd.Wait()
 	if err != nil {
 		c.newCompilerError(node, "error running clang for LLVM IR: %v\n%s", err, stderr.String())
 		return
