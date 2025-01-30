@@ -14,7 +14,7 @@ type Compiler struct {
 
 type IrModule struct {
 	CoreModule    *ir.Module
-	LinkedModules []*ir.Module
+	LinkedModules []string
 }
 
 func New() (*Compiler, error) {

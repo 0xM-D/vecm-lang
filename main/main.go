@@ -152,7 +152,7 @@ func compileModule(compiler *compiler.Compiler, mod *module.Module, tmpDir strin
 
 	linkModuleFiles := make([]string, 0, len(irModule.LinkedModules))
 	for _, linkedModule := range irModule.LinkedModules {
-		linkedIRFilePath, linkedFileCompileError := compileLLIR(linkedModule.String(), "linked_module", tmpDir)
+		linkedIRFilePath, linkedFileCompileError := compileLLIR(linkedModule, "linked_module", tmpDir)
 		if linkedFileCompileError != nil {
 			return "", errors.Wrap(linkedFileCompileError, "Failed to write linked module to temporary file")
 		}

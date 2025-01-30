@@ -10,14 +10,14 @@ import (
 
 type GlobalContext struct {
 	Module        *ir.Module
-	LinkedModules []*ir.Module
+	LinkedModules []string
 	variableStore *VariableStore
 }
 
 func NewGlobalContext() *GlobalContext {
 	return &GlobalContext{
 		Module:        ir.NewModule(),
-		LinkedModules: make([]*ir.Module, 0),
+		LinkedModules: make([]string, 0),
 		variableStore: NewVariableStore(),
 	}
 }

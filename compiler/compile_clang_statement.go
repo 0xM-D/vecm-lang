@@ -2,12 +2,10 @@ package compiler
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 
 	"github.com/DustTheory/interpreter/ast"
 	"github.com/DustTheory/interpreter/context"
-	"github.com/llir/llvm/asm"
 )
 
 func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.GlobalContext) {
@@ -23,28 +21,20 @@ func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
-	err := cmd.Start()
+	err := cmd.Run()
 	if err != nil {
 		c.newCompilerError(node, "error running clang for LLVM IR: %v\n%s", err, stderr.String())
 		return
 	}
 
-	err = cmd.Wait()
-	if err != nil {
-		c.newCompilerError(node, "error running clang for LLVM IR: %v\n%s", err, stderr.String())
-		return
-	}
+	// clangSnippetName := fmt.Sprintf("clang_snippet_%d-%d", node.Token.Linen, node.Token.Coln)
 
-	// Add the llvm ir to the context
+	// clangSnippetModule, err := asm.ParseBytes(clangSnippetName, output.Bytes())
 
-	clangSnippetName := fmt.Sprintf("clang_snippet_%d-%d", node.Token.Linen, node.Token.Coln)
+	// if err != nil {
+	// 	c.newCompilerError(node, "error parsing clang output: %v", err)
+	// 	return
+	// }
 
-	clangSnippetModule, err := asm.ParseString(clangSnippetName, output.String())
-
-	if err != nil {
-		c.newCompilerError(node, "error parsing clang output: %v", err)
-		return
-	}
-
-	ctx.LinkedModules = append(ctx.LinkedModules, clangSnippetModule)
+	ctx.LinkedModules = append(ctx.LinkedModules, output.String())
 }

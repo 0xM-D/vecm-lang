@@ -36,7 +36,7 @@ func compileModuleForExecution(ctx llvm.Context, module compiler.IrModule, t *te
 	// llvm.InitializeAllAsmParsers()
 	// llvm.InitializeAllTargetInfos()
 
-	llvmModule := CompileLLIRToLLVMModule(ctx, module.CoreModule, t)
+	llvmModule := CompileLLIRToLLVMModule(ctx, module.CoreModule.String(), t)
 
 	// Compile and Link LinkedModules
 	for _, linkedModule := range module.LinkedModules {
@@ -64,7 +64,7 @@ func compileModuleForExecution(ctx llvm.Context, module compiler.IrModule, t *te
 	return engine
 }
 
-func CompileLLIRToLLVMModule(ctx llvm.Context, module *ir.Module, t *testing.T) llvm.Module {
+func CompileLLIRToLLVMModule(ctx llvm.Context, module string, t *testing.T) llvm.Module {
 	// Open file on os
 	file, err := os.CreateTemp("", "ir")
 	if err != nil {
@@ -74,7 +74,7 @@ func CompileLLIRToLLVMModule(ctx llvm.Context, module *ir.Module, t *testing.T) 
 
 	// Write IR to file
 
-	_, err = file.WriteString(module.String())
+	_, err = file.WriteString(module)
 
 	if err != nil {
 		t.Fatalf("Failed to write IR to file")
