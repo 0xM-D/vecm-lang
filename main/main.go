@@ -101,14 +101,14 @@ func compileFile(filePath string) {
 	}
 }
 
-type ModuleType string
+type IRModuleType string
 
 const (
-	CoreModule   ModuleType = "core_module"
-	LinkedModule ModuleType = "linked_module"
+	CoreModuleIR   IRModuleType = "core_module"
+	LinkedModuleIR IRModuleType = "linked_module"
 )
 
-func compileLLIR(ir string, moduleType ModuleType, tmpDir string) (string, error) {
+func compileLLIR(ir string, moduleType IRModuleType, tmpDir string) (string, error) {
 	pattern := getTempFilePattern(moduleType, "ll")
 
 	sourceFile, err := writeToTemporaryFile(ir, pattern, tmpDir)
@@ -145,27 +145,27 @@ func compileModule(compiler *compiler.Compiler, mod *module.Module, tmpDir strin
 		return "", errors.New("Expected no compiler errors, got some")
 	}
 
-	coreIRFilePath, coreFileCompileError := compileLLIR(irModule.CoreModule.String(), "core_module", tmpDir)
-	if coreFileCompileError != nil {
-		return "", errors.Wrap(coreFileCompileError, "Failed to write core module to temporary file")
+	coreObjFilePath, coreObjCompileError := compileLLIR(irModule.CoreModule.String(), "core_module", tmpDir)
+	if coreObjCompileError != nil {
+		return "", errors.Wrap(coreObjCompileError, "Failed to write core module to temporary file")
 	}
 
-	linkModuleFiles := make([]string, 0, len(irModule.LinkedModules))
-	for _, linkedModule := range irModule.LinkedModules {
-		linkedIRFilePath, linkedFileCompileError := compileLLIR(linkedModule, "linked_module", tmpDir)
-		if linkedFileCompileError != nil {
-			return "", errors.Wrap(linkedFileCompileError, "Failed to write linked module to temporary file")
+	linkedObjFilePaths := make([]string, 0, len(irModule.LinkedModulesIR))
+	for _, ir := range irModule.LinkedModulesIR {
+		objFilePath, linkedObjCompileError := compileLLIR(ir, "linked_module", tmpDir)
+		if linkedObjCompileError != nil {
+			return "", errors.Wrap(linkedObjCompileError, "Failed to write linked module to temporary file")
 		}
-		linkModuleFiles = append(linkModuleFiles, linkedIRFilePath)
+		linkedObjFilePaths = append(linkedObjFilePaths, objFilePath)
 	}
 
-	linkedModulePath, err := linkModules(coreIRFilePath, linkModuleFiles, tmpDir)
+	linkedExecutableFilePath, err := linkModules(coreObjFilePath, linkedObjFilePaths, tmpDir)
 
 	if err != nil {
 		return "", errors.Wrap(err, "Failed to link modules")
 	}
 
-	return linkedModulePath, nil
+	return linkedExecutableFilePath, nil
 }
 
 func writeToTemporaryFile(contents string, pattern string, tmpDir string) (string, error) {
@@ -185,15 +185,15 @@ func writeToTemporaryFile(contents string, pattern string, tmpDir string) (strin
 	return tempFile.Name(), nil
 }
 
-func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir string) (string, error) {
+func linkModules(coreObjPath string, linkedObjPaths []string, tmpDir string) (string, error) {
 	// Link core module with linked modules
-	sourceFilesStr := fmt.Sprintf("%s ", coreModulePath)
-	for _, linkedModulePath := range linkedModulePaths {
-		sourceFilesStr += fmt.Sprintf("%s ", linkedModulePath)
+	sourceFilesStr := fmt.Sprintf("%s ", coreObjPath)
+	for _, objPath := range linkedObjPaths {
+		sourceFilesStr += fmt.Sprintf("%s ", objPath)
 	}
 
 	//nolint:mnd // 8 is not a magic number
-	linkedModulePath := fmt.Sprintf("%s/linked_module_%s.o", tmpDir, generateRandomString(8))
+	outputExecutableFilePath := fmt.Sprintf("%s/linked_module_%s.o", tmpDir, generateRandomString(8))
 
 	// Split the sourceFilesStr into individual arguments
 	sourceFilesArgs := strings.Fields(sourceFilesStr)
@@ -205,7 +205,7 @@ func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir strin
 		}
 	}
 	//nolint:gosec // This is a command that is being run
-	cmd := exec.Command("clang", append([]string{"-o", linkedModulePath}, sourceFilesArgs...)...)
+	cmd := exec.Command("clang", append([]string{"-o", outputExecutableFilePath}, sourceFilesArgs...)...)
 
 	// Capture and print any errors from the command execution
 	output, err := cmd.CombinedOutput()
@@ -213,14 +213,14 @@ func linkModules(coreModulePath string, linkedModulePaths []string, tmpDir strin
 		return "", errors.Wrap(err, fmt.Sprintf("error running ld for linked module: %v\n%s", err, string(output)))
 	}
 
-	return linkedModulePath, nil
+	return outputExecutableFilePath, nil
 }
 
-func getTempFilePattern(moduleType ModuleType, ext string) string {
+func getTempFilePattern(moduleType IRModuleType, ext string) string {
 	switch moduleType {
-	case CoreModule:
+	case CoreModuleIR:
 		return "core_module_*." + ext
-	case LinkedModule:
+	case LinkedModuleIR:
 		return "linked_module_*." + ext
 	default:
 		return ""

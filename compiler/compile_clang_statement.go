@@ -27,14 +27,5 @@ func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.
 		return
 	}
 
-	// clangSnippetName := fmt.Sprintf("clang_snippet_%d-%d", node.Token.Linen, node.Token.Coln)
-
-	// clangSnippetModule, err := asm.ParseBytes(clangSnippetName, output.Bytes())
-
-	// if err != nil {
-	// 	c.newCompilerError(node, "error parsing clang output: %v", err)
-	// 	return
-	// }
-
-	ctx.LinkedModules = append(ctx.LinkedModules, output.String())
+	ctx.LinkedModulesIR = append(ctx.LinkedModulesIR, output.String())
 }

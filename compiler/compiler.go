@@ -13,8 +13,8 @@ type Compiler struct {
 }
 
 type IrModule struct {
-	CoreModule    *ir.Module
-	LinkedModules []string
+	CoreModule      *ir.Module
+	LinkedModulesIR []string
 }
 
 func New() (*Compiler, error) {
@@ -35,8 +35,8 @@ func (c *Compiler) CompileModule(moduleKey string) (IrModule, bool) {
 	ctx := c.compileProgram(module.Program)
 
 	return IrModule{
-		CoreModule:    ctx.Module,
-		LinkedModules: ctx.LinkedModules,
+		CoreModule:      ctx.Module,
+		LinkedModulesIR: ctx.LinkedModulesIR,
 	}, c.hasCompilerErrors()
 }
 

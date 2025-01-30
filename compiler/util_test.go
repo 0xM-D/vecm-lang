@@ -39,8 +39,8 @@ func compileModuleForExecution(ctx llvm.Context, module compiler.IrModule, t *te
 	llvmModule := CompileLLIRToLLVMModule(ctx, module.CoreModule.String(), t)
 
 	// Compile and Link LinkedModules
-	for _, linkedModule := range module.LinkedModules {
-		llvmLinkedModule := CompileLLIRToLLVMModule(ctx, linkedModule, t)
+	for _, ir := range module.LinkedModulesIR {
+		llvmLinkedModule := CompileLLIRToLLVMModule(ctx, ir, t)
 
 		err := llvm.LinkModules(llvmModule, llvmLinkedModule)
 
