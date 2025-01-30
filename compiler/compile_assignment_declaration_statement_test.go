@@ -11,7 +11,7 @@ func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
+	fn := expectFunctionExists(module.CoreModule, "main", []types.Type{}, types.Void, t)
 
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 
@@ -21,12 +21,12 @@ func TestIntegerAssignmentDeclarationStatement(t *testing.T) {
 	}
 
 	// expect alloca instruction
-	if blocks[0].Insts[0].LLString() != "%1 = alloca i32" {
+	if blocks[0].Insts[0].LLString() != "%0 = alloca i32" {
 		t.Fatalf("Expected alloca instruction, got %s", blocks[0].Insts[0].LLString())
 	}
 
 	// expect store instruction
-	if blocks[0].Insts[1].LLString() != "store i32 10, i32* %1" {
+	if blocks[0].Insts[1].LLString() != "store i32 10, i32* %0" {
 		t.Fatalf("Expected store instruction, got %s", blocks[0].Insts[1].LLString())
 	}
 }
@@ -36,7 +36,7 @@ func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
+	fn := expectFunctionExists(module.CoreModule, "main", []types.Type{}, types.Void, t)
 
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 
@@ -46,12 +46,12 @@ func TestBooleanAssignmentDeclarationStatement(t *testing.T) {
 	}
 
 	// expect alloca instruction
-	if blocks[0].Insts[0].LLString() != "%1 = alloca i1" {
+	if blocks[0].Insts[0].LLString() != "%0 = alloca i1" {
 		t.Fatalf("Expected alloca instruction, got %s", blocks[0].Insts[0].LLString())
 	}
 
 	// expect store instruction
-	if blocks[0].Insts[1].LLString() != "store i1 true, i1* %1" {
+	if blocks[0].Insts[1].LLString() != "store i1 true, i1* %0" {
 		t.Fatalf("Expected store instruction, got %s", blocks[0].Insts[1].LLString())
 	}
 }

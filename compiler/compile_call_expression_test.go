@@ -18,7 +18,7 @@ func TestCallExpression(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("main")
@@ -47,7 +47,7 @@ func TestCallExpressionWithArguments(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("main")

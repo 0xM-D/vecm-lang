@@ -31,12 +31,18 @@ func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationSta
 		return nil
 	}
 
-	// Swallow "{" token
-	if !p.expectPeek(token.LeftBrace) {
-		return nil
-	}
+	var functionBody *ast.BlockStatement
+	if p.peekTokenIs(token.Semicolon) {
+		// Swallow ";" token
+		p.nextToken()
+	} else {
+		// Swallow "{" token
+		if !p.expectPeek(token.LeftBrace) {
+			return nil
+		}
 
-	functionBody := p.parseBlockStatement()
+		functionBody = p.parseBlockStatement()
+	}
 
 	stmt := &ast.FunctionDeclarationStatement{
 		Token:      funcToken,

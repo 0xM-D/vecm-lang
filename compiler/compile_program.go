@@ -21,6 +21,8 @@ func (c *Compiler) compileTopLevelStatement(statement ast.Statement, ctx *contex
 		c.compileFunctionDeclaration(statement, ctx)
 	case *ast.ExportStatement:
 		c.compileExportStatement(statement, ctx)
+	case *ast.CLangStatement:
+		c.compileCLangStatement(statement, ctx)
 	default:
 		c.newCompilerError(statement, "Invalid statement on top level: %T", statement)
 	}

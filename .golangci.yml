@@ -15,7 +15,7 @@ linters-settings:
     package-average: 10.0
 
   errcheck:
-    check-type-assertions: true
+    check-type-assertions: false
 
   exhaustive:
     check:

@@ -9,11 +9,11 @@ func TestEmptyFunctionDeclaration(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Blocks) != 1 {
 		t.Fatalf("Expected 1 block, got %d", len(fn.Blocks))
@@ -31,7 +31,7 @@ func TestFunctionDeclarationWithIntegerReturn(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Blocks) != 1 {
 		t.Fatalf("Expected 1 block, got %d", len(fn.Blocks))
@@ -48,11 +48,11 @@ func TestFunctionDeclarationWithNoParameters(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Params) != 0 {
 		t.Fatalf("Expected 0 parameters, got %d", len(fn.Params))
@@ -64,11 +64,11 @@ func TestFunctionDeclarationWithOneParameter(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Params) != 1 {
 		t.Fatalf("Expected 1 parameter, got %d", len(fn.Params))
@@ -86,11 +86,11 @@ func TestFunctionDeclarationWithMultipleParameters(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Params) != 2 {
 		t.Fatalf("Expected 2 parameters, got %d", len(fn.Params))
@@ -113,11 +113,11 @@ func TestFunctionDeclarationWithDifferentReturnTypes(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if fn.Sig.RetType.LLString() != "i1" {
 		t.Fatalf("Expected return type i1, got %s", fn.Typ.LLString())

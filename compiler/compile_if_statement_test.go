@@ -21,7 +21,7 @@ func TestIfStatement(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "main", []types.Type{}, types.Void, t)
+	fn := expectFunctionExists(module.CoreModule, "main", []types.Type{}, types.Void, t)
 
 	blocks := expectFunctionHasNBlocks(fn, 3, t)
 
@@ -62,7 +62,7 @@ func TestEarlyExit(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "conditional2", []types.Type{types.I32}, types.I32, t)
+	fn := expectFunctionExists(module.CoreModule, "conditional2", []types.Type{types.I32}, types.I32, t)
 
 	blocks := expectFunctionHasNBlocks(fn, 3, t)
 
@@ -81,7 +81,7 @@ func TestEarlyExit(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("conditional2")
@@ -120,13 +120,13 @@ func TestIfElseStatement(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	expectFunctionExists(module, "max", []types.Type{types.I32, types.I32}, types.I32, t)
+	expectFunctionExists(module.CoreModule, "max", []types.Type{types.I32, types.I32}, types.I32, t)
 
 	// Create an LLVM context
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("max")
@@ -177,13 +177,19 @@ func TestNestedConditionals(t *testing.T) {
 
 	module := compileAndVerifyCode(code, t)
 
-	expectFunctionExists(module, "nestedConditionals", []types.Type{types.I32, types.I32, types.I32}, types.I32, t)
+	expectFunctionExists(
+		module.CoreModule,
+		"nestedConditionals",
+		[]types.Type{types.I32, types.I32, types.I32},
+		types.I32,
+		t,
+	)
 
 	// Create an LLVM context
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("nestedConditionals")

@@ -6,6 +6,7 @@ import (
 	"github.com/DustTheory/interpreter/object"
 	"github.com/DustTheory/interpreter/util"
 	"github.com/llir/llvm/ir"
+	"github.com/llir/llvm/ir/enum"
 	"github.com/pkg/errors"
 )
 
@@ -42,7 +43,11 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 		stmt.Type.ParameterTypes,
 	)
 
-	c.compileFunctionBody(stmt, fnCtx)
+	if stmt.Body == nil {
+		function.Linkage = enum.LinkageExternal
+	} else {
+		c.compileFunctionBody(stmt, fnCtx)
+	}
 }
 
 func (c *Compiler) compileFunctionBody(stmt *ast.FunctionDeclarationStatement, fn *context.FunctionContext) {

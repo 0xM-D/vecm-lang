@@ -3,6 +3,7 @@ package ast
 import (
 	"bytes"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/DustTheory/interpreter/token"
@@ -493,8 +494,16 @@ func (fd *FunctionDeclarationStatement) String() string {
 	var out bytes.Buffer
 
 	params := []string{}
-	for _, p := range fd.Parameters {
-		params = append(params, p.String())
+	for i, p := range fd.Parameters {
+		var paramOut bytes.Buffer
+		if len(p.String()) == 0 {
+			paramOut.WriteString("unnamedArg" + strconv.Itoa(i))
+		} else {
+			paramOut.WriteString(p.String())
+		}
+		paramOut.WriteString(": ")
+		paramOut.WriteString(fd.Type.ParameterTypes[i].String())
+		params = append(params, paramOut.String())
 	}
 
 	out.WriteString("fn ")
@@ -503,9 +512,20 @@ func (fd *FunctionDeclarationStatement) String() string {
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(")->")
 	out.WriteString(fd.Type.ReturnType.String())
-	out.WriteString("{")
-	out.WriteString(fd.Body.String())
-	out.WriteString("}")
+	if fd.Body != nil {
+		out.WriteString("{")
+		out.WriteString(fd.Body.String())
+		out.WriteString("}")
+	} else {
+		out.WriteString(";")
+	}
 
 	return out.String()
+}
+
+func (cs *CLangStatement) statementNode()          {}
+func (cs *CLangStatement) TokenLiteral() string    { return cs.Token.Literal }
+func (cs *CLangStatement) TokenValue() token.Token { return cs.Token }
+func (cs *CLangStatement) String() string {
+	return "CLang { " + cs.CLangCode + " }"
 }
