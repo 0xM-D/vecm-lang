@@ -27,8 +27,13 @@ func (c *Compiler) compileFunctionDeclaration(stmt *ast.FunctionDeclarationState
 	function, err := ctx.DeclareFunction(
 		name,
 		retType,
+		stmt.IsVariadic,
 		paramTypes...,
 	)
+
+	if stmt.IsVariadic {
+		function.Sig.Variadic = true
+	}
 
 	if err != nil {
 		c.newCompilerError(stmt, "%e", err)

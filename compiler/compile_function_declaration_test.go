@@ -123,3 +123,22 @@ func TestFunctionDeclarationWithDifferentReturnTypes(t *testing.T) {
 		t.Fatalf("Expected return type i1, got %s", fn.Typ.LLString())
 	}
 }
+func TestVariadicFunctionDeclaration(t *testing.T) {
+	code := `fn add(x: int, ...) -> int { return x; }`
+
+	module := compileAndVerifyCode(code, t)
+
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
+	}
+
+	fn := module.CoreModule.Funcs[0]
+
+	if !fn.Sig.Variadic {
+		t.Fatalf("Expected function to be variadic")
+	}
+
+	if len(fn.Params) != 1 {
+		t.Fatalf("Expected 1 parameter, got %d", len(fn.Params))
+	}
+}

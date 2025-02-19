@@ -16,7 +16,7 @@ func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationSta
 		return nil
 	}
 
-	functionParams, functionParamTypes := p.parseFunctionParameters()
+	functionParams, functionParamTypes, isVariadic := p.parseFunctionParameters()
 
 	// Swallow ")" token
 	if !p.expectPeek(token.DashArrow) {
@@ -43,6 +43,7 @@ func (p *Parser) parseFunctionDeclarationStatement() *ast.FunctionDeclarationSta
 		Name:       functionName,
 		Body:       functionBody,
 		Parameters: functionParams,
+		IsVariadic: isVariadic,
 		Type: ast.FunctionType{
 			Token:          funcToken,
 			ParameterTypes: functionParamTypes,

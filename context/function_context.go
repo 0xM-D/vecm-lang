@@ -82,13 +82,18 @@ func (ctx *FunctionContext) GetFunction(name string, params ...*ir.Param) (*ir.F
 	return function, nil
 }
 
-func (ctx *FunctionContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) (*ir.Func, error) {
+func (ctx *FunctionContext) DeclareFunction(
+	name string,
+	retType types.Type,
+	isVariadic bool,
+	params ...*ir.Param,
+) (*ir.Func, error) {
 	parentContext, err := ctx.GetParentContext()
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to declare function")
 	}
 
-	function, err := parentContext.DeclareFunction(name, retType, params...)
+	function, err := parentContext.DeclareFunction(name, retType, isVariadic, params...)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to declare function")
 	}
