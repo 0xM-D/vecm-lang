@@ -181,6 +181,11 @@ type FunctionType struct {
 	ReturnType     Type
 }
 
+type PointerType struct {
+	Token       token.Token
+	PointeeType Type
+}
+
 type ForStatement struct {
 	Token          token.Token
 	Initialization Statement

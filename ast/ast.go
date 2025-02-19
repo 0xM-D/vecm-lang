@@ -358,6 +358,12 @@ func (at ArrayType) TokenValue() token.Token { return at.Token }
 
 func (at ArrayType) String() string { return "[]" + at.ElementType.String() }
 
+func (pt PointerType) typeNode()               {}
+func (pt PointerType) TokenLiteral() string    { return pt.Token.Literal }
+func (pt PointerType) TokenValue() token.Token { return pt.Token }
+
+func (pt PointerType) String() string { return "*" + pt.PointeeType.String() }
+
 func (nt NamedType) typeNode()               {}
 func (nt NamedType) TokenLiteral() string    { return nt.Token.Literal }
 func (nt NamedType) TokenValue() token.Token { return nt.Token }

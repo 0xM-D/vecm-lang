@@ -14,6 +14,12 @@ func GetLLVMType(t ast.Type) (types.Type, error) {
 		return GetIntrinsicLLVMType(t)
 	case ast.VoidType:
 		return &types.VoidType{}, nil
+	case ast.PointerType:
+		pointeeType, err := GetLLVMType(t.PointeeType)
+		if err != nil {
+			return nil, err
+		}
+		return &types.PointerType{ElemType: pointeeType}, nil
 	}
 
 	return nil, fmt.Errorf("type %s cannot be converted to appropriate LLVM type", t.String())
@@ -51,6 +57,8 @@ func GetIntrinsicLLVMType(t ast.NamedType) (types.Type, error) {
 		return &types.FloatType{Kind: types.FloatKindDouble}, nil
 	case object.VoidKind:
 		return &types.VoidType{}, nil
+	case object.ByteKind:
+		return types.NewInt(8), nil
 	}
 	return nil, fmt.Errorf("type %s (%T) cannot be converted to appropriate LLVM type", t.String(), t.TypeName)
 }

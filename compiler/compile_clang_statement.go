@@ -11,7 +11,7 @@ import (
 func (c *Compiler) compileCLangStatement(node *ast.CLangStatement, ctx *context.GlobalContext) {
 	// Use clang to compile c code to llvm ir, then add it to the context
 
-	cmd := exec.Command("clang", "-x", "c", "-emit-llvm", "-S", "-o", "-", "-")
+	cmd := exec.Command("clang", "-x", "c", "-emit-llvm", "-fPIC", "-S", "-o", "-", "-")
 
 	cmd.Stdin = bytes.NewReader([]byte(node.CLangCode))
 

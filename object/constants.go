@@ -30,6 +30,7 @@ const (
 	NullKind            Kind = "null"
 	VoidKind            Kind = "void"
 	AnyKind             Kind = "any"
+	ByteKind            Kind = "byte"
 )
 
 func initIntrinsicTypeBuiltins() map[Kind]*FunctionRepository {

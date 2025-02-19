@@ -17,6 +17,15 @@ func (p *Parser) parseType() ast.Type {
 		return ast.ArrayType{Token: p.curToken, ElementType: elementType}
 	}
 
+	if p.curToken.Type == token.Asterisk {
+		p.nextToken()
+		elementType := p.parseType()
+		if elementType == nil {
+			return nil
+		}
+		return ast.PointerType{Token: p.curToken, PointeeType: elementType}
+	}
+
 	//nolint:exhaustive // We don't need to handle all token types here
 	switch p.curToken.Type {
 	case token.MapType:
