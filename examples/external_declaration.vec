@@ -1,14 +1,23 @@
 CLang {
-        #include <stdio.h>
-
-        void printHelloWorld() {
-                printf("Hello, World!\n");
+        #include <stdarg.h>
+        int max(int number1, ...) {
+                va_list args;
+                int max = number1;
+                va_start(args, number1);
+                int arg;
+                while ((arg = va_arg(args, int)) != 0) {
+                        if (arg > max) {
+                                max = arg;
+                        }
+                }
+                va_end(args);
+                return max;
         }
 }
 
-fn printHelloWorld() -> void;
+fn max(number1: int, ...) -> int;
 
 export fn main() -> int {
-        printHelloWorld();
+        max(1, 2, 3);
         return 0;
 }

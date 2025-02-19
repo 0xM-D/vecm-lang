@@ -62,6 +62,9 @@ const (
 	Colon        Type = ":"
 	Questionmark Type = "?"
 
+	// Unpack operator.
+	Unpack Type = "..."
+
 	LeftParen    Type = "("
 	RightParen   Type = ")"
 	LeftBrace    Type = "{"

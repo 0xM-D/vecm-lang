@@ -107,6 +107,7 @@ type FunctionLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier
 	Body       *BlockStatement
+	IsVariadic bool
 	Type       FunctionType
 }
 
@@ -229,6 +230,7 @@ type FunctionDeclarationStatement struct {
 	Token      token.Token
 	Name       *Identifier
 	Parameters []*Identifier
+	IsVariadic bool
 	Body       *BlockStatement
 	Type       FunctionType
 }

@@ -60,6 +60,7 @@ x + /* test */ y
 line
   comment */
 condition ? true : false
+...
 `
 	tests := []struct {
 		expectedType    token.Type
@@ -242,6 +243,7 @@ condition ? true : false
 		{token.True, "true"},
 		{token.Colon, ":"},
 		{token.False, "false"},
+		{token.Unpack, "..."},
 		{token.EOF, ""},
 	}
 

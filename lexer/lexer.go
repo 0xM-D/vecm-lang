@@ -74,9 +74,18 @@ func (l *Lexer) NextToken() token.Token {
 	case ']':
 		tok = l.newToken(token.RightBracket, string(l.ch))
 	case '.':
-		if isDigit(l.peekChar()) {
+		switch {
+		case isDigit(l.peekChar()):
 			tok.Type, tok.Literal = l.readNumber()
-		} else {
+		case l.peekChar() == '.':
+			l.readChar()
+			if l.peekChar() == '.' {
+				l.readChar()
+				tok = l.newToken(token.Unpack, "...")
+			} else {
+				tok = l.newToken(token.Access, string(l.ch))
+			}
+		default:
 			tok = l.newToken(token.Access, string(l.ch))
 		}
 	case ':':

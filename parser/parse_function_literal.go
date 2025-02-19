@@ -10,6 +10,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		Token:      p.curToken,
 		Type:       ast.FunctionType{Token: p.curToken, ParameterTypes: nil, ReturnType: nil},
 		Parameters: nil,
+		IsVariadic: false,
 		Body:       nil,
 	}
 
@@ -17,7 +18,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		return nil
 	}
 
-	lit.Parameters, lit.Type.ParameterTypes = p.parseFunctionParameters()
+	lit.Parameters, lit.Type.ParameterTypes, lit.IsVariadic = p.parseFunctionParameters()
 	if lit.Parameters == nil || lit.Type.ParameterTypes == nil {
 		return nil
 	}
@@ -41,37 +42,46 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	return lit
 }
 
-func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type) {
+func (p *Parser) parseFunctionParameters() ([]*ast.Identifier, []ast.Type, bool) {
 	identifiers := []*ast.Identifier{}
 	types := []ast.Type{}
+	isVariadic := false
 
 	if p.peekTokenIs(token.RightParen) {
 		p.nextToken()
-		return identifiers, types
+		return identifiers, types, false
 	}
 
 	ident, paramType := p.parseFunctionParameter()
 	if ident == nil || paramType == nil {
-		return nil, nil
+		return nil, nil, false
 	}
 	identifiers = append(identifiers, ident)
 	types = append(types, paramType)
 
 	for p.peekTokenIs(token.Comma) {
 		p.nextToken()
+		if p.peekTokenIs(token.Unpack) {
+			p.nextToken()
+			isVariadic = true
+			break
+		}
 		ident, paramType = p.parseFunctionParameter()
 		if ident == nil || paramType == nil {
-			return nil, nil
+			return nil, nil, false
 		}
 		identifiers = append(identifiers, ident)
 		types = append(types, paramType)
 	}
 
 	if !p.expectPeek(token.RightParen) {
-		return nil, nil
+		if isVariadic {
+			p.newErrorf(nil, "Variadic function parameters must be the last parameter")
+		}
+		return nil, nil, isVariadic
 	}
 
-	return identifiers, types
+	return identifiers, types, isVariadic
 }
 
 func (p *Parser) parseFunctionParameter() (*ast.Identifier, ast.Type) {

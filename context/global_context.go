@@ -36,8 +36,14 @@ func (ctx GlobalContext) GetFunction(name string, _ ...*ir.Param) (*ir.Func, err
 	return nil, fmt.Errorf("function %s not found", name)
 }
 
-func (ctx GlobalContext) DeclareFunction(name string, retType types.Type, params ...*ir.Param) (*ir.Func, error) {
+func (ctx GlobalContext) DeclareFunction(
+	name string,
+	retType types.Type,
+	isVariadic bool,
+	params ...*ir.Param,
+) (*ir.Func, error) {
 	fn := ctx.Module.NewFunc(name, retType, params...)
+	fn.Sig.Variadic = isVariadic
 	return fn, nil
 }
 
