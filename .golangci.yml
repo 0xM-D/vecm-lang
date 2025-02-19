@@ -1,14 +1,6 @@
 run:
   timeout: 3m
 
-include:
-  - ast
-  - lexer
-  - parser
-  - runtime
-  - object
-  - compiler
-  
 linters-settings:
   cyclop:
     max-complexity: 30
