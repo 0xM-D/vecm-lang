@@ -1,0 +1,36 @@
+name: Test coverage check
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+      
+      - name: Install LLVM
+        run: |
+          echo 'deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends llvm-18-dev
+
+      - name: Build
+        run: go build -v ./...
+        
+      - name: generate test coverage
+        run: go test ./ast ./lexer ./parser ./runtime ./compiler -coverprofile=./cover.out -coverpkg=./...
+
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          profile: cover.out
+          local-prefix: github.com/DustTheory/interpreter/
+          threshold-file: 80
+          threshold-package: 80
+          threshold-total: 95

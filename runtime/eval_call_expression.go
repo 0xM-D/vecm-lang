@@ -29,6 +29,10 @@ func (r *Runtime) ApplyFunction(fn object.Object, args []object.Object) (object.
 			return nil, fmt.Errorf("object is not a function: %s", fn.Inspect())
 		}
 
+		if function.Body == nil {
+			return nil, fmt.Errorf("function body is nil: %s", fn.Inspect())
+		}
+
 		if len(function.ParameterTypes) != len(args) {
 			return nil, fmt.Errorf("incorrect parameter count for %s fun. expected=%d, got=%d",
 				function.Type().Signature(), len(function.ParameterTypes), len(args))

@@ -96,6 +96,9 @@ const (
 	Import Type = "import"
 	From   Type = "from"
 	Export Type = "export"
+
+	// CLang.
+	CLang Type = "CLang"
 )
 
 // Mapping of keywords to their respective token types.
@@ -116,6 +119,7 @@ var keywords = map[string]Type{
 	"import":   Import,
 	"from":     From,
 	"export":   Export,
+	"CLang":    CLang,
 }
 
 func LookupIdent(ident string) Type {

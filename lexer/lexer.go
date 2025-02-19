@@ -119,3 +119,25 @@ func (l *Lexer) NextToken() token.Token {
 	l.readChar()
 	return tok
 }
+
+func (l *Lexer) ExternCode() string {
+	position := l.position
+
+	// Skip the first character which is the opening brace
+	l.readChar()
+
+	braceCount := 1
+	for braceCount > 0 {
+		switch l.ch {
+		case '{':
+			braceCount++
+		case '}':
+			braceCount--
+		case 0:
+			return ""
+		}
+		l.readChar()
+	}
+
+	return l.input[position : l.position-1]
+}

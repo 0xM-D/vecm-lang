@@ -16,7 +16,7 @@ func TestMinusPrefixExpression(t *testing.T) {
 	`
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "negate", []types.Type{types.I32}, types.I32, t)
+	fn := expectFunctionExists(module.CoreModule, "negate", []types.Type{types.I32}, types.I32, t)
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 	block := blocks[0]
 
@@ -43,7 +43,7 @@ func TestMinusPrefixExpression(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("negate")
@@ -82,7 +82,7 @@ func TestBangPrefixExpression(t *testing.T) {
 	`
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "negate", []types.Type{types.I1}, types.I1, t)
+	fn := expectFunctionExists(module.CoreModule, "negate", []types.Type{types.I1}, types.I1, t)
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 	block := blocks[0]
 
@@ -114,7 +114,7 @@ func TestBangPrefixExpression(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("negate")
@@ -150,7 +150,7 @@ func TestTildePrefixExpression(t *testing.T) {
 	`
 	module := compileAndVerifyCode(code, t)
 
-	fn := expectFunctionExists(module, "invert", []types.Type{types.I32}, types.I32, t)
+	fn := expectFunctionExists(module.CoreModule, "invert", []types.Type{types.I32}, types.I32, t)
 	blocks := expectFunctionHasNBlocks(fn, 1, t)
 	block := blocks[0]
 
@@ -177,7 +177,7 @@ func TestTildePrefixExpression(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("invert")

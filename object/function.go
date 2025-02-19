@@ -47,8 +47,14 @@ func (f *Function) Inspect() string {
 	}
 	out.WriteString("fn(")
 	out.WriteString(strings.Join(params, ", "))
-	out.WriteString(") {\n")
-	out.WriteString(f.Body.String())
-	out.WriteString("\n}")
+	out.WriteString(")")
+	if f.Body != nil {
+		out.WriteString(" {\n")
+		out.WriteString(f.Body.String())
+		out.WriteString("\n}")
+	} else {
+		out.WriteString(";")
+	}
+
 	return out.String()
 }

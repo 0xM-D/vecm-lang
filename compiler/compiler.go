@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"github.com/DustTheory/interpreter/module"
+	"github.com/llir/llvm/ir"
 )
 
 type Compiler struct {
@@ -9,6 +10,11 @@ type Compiler struct {
 
 	EntryModule *module.Module
 	Errors      []Error
+}
+
+type IrModule struct {
+	CoreModule      *ir.Module
+	LinkedModulesIR []string
 }
 
 func New() (*Compiler, error) {
@@ -24,9 +30,16 @@ func (c *Compiler) LoadModule(moduleKey, code string) (*module.Module, bool) {
 	return module, failedToLoad
 }
 
-func (c *Compiler) CompileModule(moduleKey string) (string, bool) {
+func (c *Compiler) CompileModule(moduleKey string) (IrModule, bool) {
 	module := c.Modules[moduleKey]
 	ctx := c.compileProgram(module.Program)
 
-	return ctx.Module.String(), c.hasCompilerErrors()
+	return IrModule{
+		CoreModule:      ctx.Module,
+		LinkedModulesIR: ctx.LinkedModulesIR,
+	}, c.hasCompilerErrors()
+}
+
+func (c *Compiler) AddModule(moduleKey string, module *module.Module) {
+	c.Modules[moduleKey] = module
 }

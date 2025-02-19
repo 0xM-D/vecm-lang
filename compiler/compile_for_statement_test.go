@@ -48,7 +48,7 @@ func TestForLoopCounter(t *testing.T) {
 	ctx := llvm.NewContext()
 	defer ctx.Dispose()
 
-	executionEngine := compileModuleForExecution(ctx, module.String(), t)
+	executionEngine := compileModuleForExecution(ctx, module, t)
 
 	// Find the function
 	executableFn := executionEngine.FindFunction("counter")

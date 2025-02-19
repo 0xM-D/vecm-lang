@@ -7,11 +7,11 @@ func TestAddExpression(t *testing.T) {
 	code := `fn main() -> int { return 5 + 5; }`
 	module := compileAndVerifyCode(code, t)
 
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	if len(fn.Blocks) != 1 {
 		t.Fatalf("Expected 1 block, got %d", len(fn.Blocks))
@@ -25,7 +25,7 @@ func TestAddExpression(t *testing.T) {
 
 	inst := block.Insts[0]
 
-	if inst.LLString() != "%1 = add i32 5, 5" {
+	if inst.LLString() != "%0 = add i32 5, 5" {
 		t.Fatalf("Expected add i32 5, 5, got %s", inst.LLString())
 	}
 }
@@ -36,11 +36,11 @@ func TestSubtractExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -57,7 +57,7 @@ func TestSubtractExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = sub i32 10, 5" {
+	if inst.LLString() != "%0 = sub i32 10, 5" {
 		t.Fatalf("Expected sub i32 10, 5, got %s", inst.LLString())
 	}
 }
@@ -68,11 +68,11 @@ func TestMultiplyExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -89,7 +89,7 @@ func TestMultiplyExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = mul i32 2, 3" {
+	if inst.LLString() != "%0 = mul i32 2, 3" {
 		t.Fatalf("Expected mul i32 2, 3, got %s", inst.LLString())
 	}
 }
@@ -100,11 +100,11 @@ func TestDivideExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -121,7 +121,7 @@ func TestDivideExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = sdiv i32 10, 2" {
+	if inst.LLString() != "%0 = sdiv i32 10, 2" {
 		t.Fatalf("Expected sdiv i32 10, 2, got %s", inst.LLString())
 	}
 }
@@ -132,11 +132,11 @@ func TestLessThanExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -153,7 +153,7 @@ func TestLessThanExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp slt i32 5, 10" {
+	if inst.LLString() != "%0 = icmp slt i32 5, 10" {
 		t.Fatalf("Expected icmp slt i32 5, 10, got %s", inst.LLString())
 	}
 }
@@ -164,11 +164,11 @@ func TestGreaterThanExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -185,7 +185,7 @@ func TestGreaterThanExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp sgt i32 10, 5" {
+	if inst.LLString() != "%0 = icmp sgt i32 10, 5" {
 		t.Fatalf("Expected icmp sgt i32 10, 5, got %s", inst.LLString())
 	}
 }
@@ -196,11 +196,11 @@ func TestEqualExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -217,7 +217,7 @@ func TestEqualExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp eq i32 5, 5" {
+	if inst.LLString() != "%0 = icmp eq i32 5, 5" {
 		t.Fatalf("Expected icmp eq i32 5, 5, got %s", inst.LLString())
 	}
 }
@@ -228,11 +228,11 @@ func TestNotEqualExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -249,7 +249,7 @@ func TestNotEqualExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp ne i32 5, 10" {
+	if inst.LLString() != "%0 = icmp ne i32 5, 10" {
 		t.Fatalf("Expected icmp ne i32 5, 10, got %s", inst.LLString())
 	}
 }
@@ -260,11 +260,11 @@ func TestGreaterOrEqualExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -281,7 +281,7 @@ func TestGreaterOrEqualExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp sge i32 10, 5" {
+	if inst.LLString() != "%0 = icmp sge i32 10, 5" {
 		t.Fatalf("Expected icmp sge i32 10, 5, got %s", inst.LLString())
 	}
 }
@@ -292,11 +292,11 @@ func TestLessOrEqualExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -313,7 +313,7 @@ func TestLessOrEqualExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = icmp sle i32 5, 10" {
+	if inst.LLString() != "%0 = icmp sle i32 5, 10" {
 		t.Fatalf("Expected icmp sle i32 5, 10, got %s", inst.LLString())
 	}
 }
@@ -324,11 +324,11 @@ func TestBitwiseAndExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -345,7 +345,7 @@ func TestBitwiseAndExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = and i32 5, 3" {
+	if inst.LLString() != "%0 = and i32 5, 3" {
 		t.Fatalf("Expected and i32 5, 3, got %s", inst.LLString())
 	}
 }
@@ -356,11 +356,11 @@ func TestBitwiseOrExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -377,7 +377,7 @@ func TestBitwiseOrExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = or i32 5, 3" {
+	if inst.LLString() != "%0 = or i32 5, 3" {
 		t.Fatalf("Expected or i32 5, 3, got %s", inst.LLString())
 	}
 }
@@ -388,11 +388,11 @@ func TestBitwiseXorExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -409,7 +409,7 @@ func TestBitwiseXorExpression(t *testing.T) {
 	inst := block.Insts[0]
 
 	// Assert the instruction
-	if inst.LLString() != "%1 = xor i32 5, 3" {
+	if inst.LLString() != "%0 = xor i32 5, 3" {
 		t.Fatalf("Expected xor i32 5, 3, got %s", inst.LLString())
 	}
 }
@@ -420,11 +420,11 @@ func TestAssignmentExpression(t *testing.T) {
 	module := compileAndVerifyCode(code, t)
 
 	// Assert the number of functions
-	if len(module.Funcs) != 1 {
-		t.Fatalf("Expected 1 function, got %d", len(module.Funcs))
+	if len(module.CoreModule.Funcs) != 1 {
+		t.Fatalf("Expected 1 function, got %d", len(module.CoreModule.Funcs))
 	}
 
-	fn := module.Funcs[0]
+	fn := module.CoreModule.Funcs[0]
 
 	// Assert the number of blocks
 	if len(fn.Blocks) != 1 {
@@ -442,11 +442,11 @@ func TestAssignmentExpression(t *testing.T) {
 	inst2 := block.Insts[1]
 
 	// Assert the instructions
-	if inst1.LLString() != "%1 = alloca i32" {
-		t.Fatalf("Expected alloca %%1 = alloca i32, got %s", inst1.LLString())
+	if inst1.LLString() != "%0 = alloca i32" {
+		t.Fatalf("Expected alloca %%0 = alloca i32, got %s", inst1.LLString())
 	}
 
-	if inst2.LLString() != "store i32 5, i32* %1" {
-		t.Fatalf("Expected store i32 5, i32* %%1, got %s", inst2.LLString())
+	if inst2.LLString() != "store i32 5, i32* %0" {
+		t.Fatalf("Expected store i32 5, i32* %%0, got %s", inst2.LLString())
 	}
 }

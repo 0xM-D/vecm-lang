@@ -28,6 +28,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseImportStatement()
 	case token.Export:
 		return p.parseExportStatement()
+	case token.CLang:
+		return p.parseCLangStatement()
 	case token.Function:
 		if p.peekToken.Type == token.Ident {
 			return p.parseFunctionDeclarationStatement()
